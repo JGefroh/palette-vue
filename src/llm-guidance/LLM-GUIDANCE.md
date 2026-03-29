@@ -11,9 +11,21 @@ Bad:
 <button @click="onClick()">Button</button>
 ```
 
-Good: 
+Good:
 ```
 <button @click="sendEmail()">Button</button>
+```
+
+Custom events should use the `on-` prefix and be followed by a descriptive name. Handler methods should describe the action being taken, not echo the event name.
+
+Bad:
+```vue
+<Component @on-stroke-start="onStrokeStart" />
+```
+
+Good:
+```vue
+<Component @on-stroke-start="saveState" />
 ```
 
 

@@ -18,18 +18,18 @@ export class CanvasStateManager {
     if (this.history.length) {
       const currentState = this.getState()
       this.future.push(currentState)
-      return this.history.pop()
+      const state = this.history.pop()
+      this.drawingCtx.putImageData(state, 0, 0)
     }
-    return null
   }
 
   redo() {
     if (this.future.length) {
       const currentState = this.getState()
       this.history.push(currentState)
-      return this.future.pop()
+      const state = this.future.pop()
+      this.drawingCtx.putImageData(state, 0, 0)
     }
-    return null
   }
 
   getState() {

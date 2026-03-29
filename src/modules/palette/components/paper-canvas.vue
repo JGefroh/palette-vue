@@ -8,7 +8,6 @@
 <script>
 import { Pencil } from '../tools/pencil.js'
 import { CursorManager } from '../tools/cursor-manager.js'
-import { CanvasStateManager } from '../tools/canvas-state-manager.js'
 
 export default {
   props: {
@@ -21,6 +20,7 @@ export default {
       default: 10
     }
   },
+  emits: ['on-initialize', 'on-stroke-start'],
   data() {
     return {
       overlayCtx: null,
@@ -30,7 +30,6 @@ export default {
       lineWidth: 10,
       tool: null,
       tools: [],
-      canvasStateManager: null,
       cursorManager: null
     }
   },
@@ -68,11 +67,7 @@ export default {
       this.resizeCanvas(this.overlayCtx)
 
       this.cursorManager = new CursorManager(this.$refs.drawing)
-
-      this.canvasStateManager = new CanvasStateManager({
-        drawingCtx: this.drawingCtx
-      })
-
+      this.$emit('on-initialize', this.drawingCtx)
       this.initializeTools()
       this.initializeListeners()
       this.tool = this.tools[0]
@@ -120,8 +115,7 @@ export default {
       event.preventDefault()
       this.cursorManager.updateFromMouseEvent(event)
       this.cursorManager.setMouseDown(true)
-      this.canvasStateManager.saveState()
-      this.canvasStateManager.branchFuture()
+      this.$emit('on-stroke-start')
       this.tool.start(this.cursorManager.getCurrentCoordinates())
     },
 
@@ -147,20 +141,6 @@ export default {
       this.cursorManager.updateFromMouseEvent(event)
       this.tool.end(this.cursorManager.getCurrentCoordinates())
       this.cursorManager.setMouseDown(false)
-    },
-
-    undo() {
-      const state = this.canvasStateManager.undo()
-      if (state) {
-        this.drawingCtx.putImageData(state, 0, 0)
-      }
-    },
-
-    redo() {
-      const state = this.canvasStateManager.redo()
-      if (state) {
-        this.drawingCtx.putImageData(state, 0, 0)
-      }
     },
 
     resizeCanvas(context) {

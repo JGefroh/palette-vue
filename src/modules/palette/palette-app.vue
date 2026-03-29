@@ -22,13 +22,14 @@
       </button>
     </div>
     <ColorPalette v-model="selectedColor" />
-    <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" />
+    <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" @on-initialize="setupStateManager" @on-stroke-start="saveState" />
   </div>
 </template>
 
 <script>
 import PaperCanvas from './components/paper-canvas.vue'
 import ColorPalette from './components/color-palette.vue'
+import { CanvasStateManager } from './tools/canvas-state-manager.js'
 
 export default {
   components: {
@@ -39,15 +40,23 @@ export default {
     return {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
       selectedSize: 10,
-      brushSizes: [5, 10, 15, 20, 50, 100]
+      brushSizes: [5, 10, 15, 20, 50, 100],
+      canvasStateManager: null
     }
   },
   methods: {
+    setupStateManager(drawingCtx) {
+      this.canvasStateManager = new CanvasStateManager({ drawingCtx })
+    },
+    saveState() {
+      this.canvasStateManager?.saveState()
+      this.canvasStateManager?.branchFuture()
+    },
     undo() {
-      this.$refs.canvas.undo()
+      this.canvasStateManager?.undo()
     },
     redo() {
-      this.$refs.canvas.redo()
+      this.canvasStateManager?.redo()
     }
   }
 }
