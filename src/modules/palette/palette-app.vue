@@ -5,6 +5,9 @@
       <a href="http://www.jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
     </div>
     <div class="toolbar">
+      <button class="tool" @click="save" title="Save">
+        <span class="fa fa-fw fa-save"></span> Save
+      </button>
       <button class="tool" @click="undo" title="Undo">
         <span class="fa fa-fw fa-undo"></span>
       </button>
@@ -47,10 +50,14 @@ export default {
   methods: {
     setupStateManager(drawingCtx) {
       this.canvasStateManager = new CanvasStateManager({ drawingCtx })
+      this.canvasStateManager.load()
     },
     saveState() {
       this.canvasStateManager?.saveState()
       this.canvasStateManager?.branchFuture()
+    },
+    save() {
+      this.canvasStateManager?.save()
     },
     undo() {
       this.canvasStateManager?.undo()

@@ -16,3 +16,5 @@ Style| Named event handlers by trigger instead of action (e.g., onStrokeStart vs
 Process| Created unnecessary feedback_event_naming.md file instead of adding content to existing LLM-GUIDANCE.md | Low | User corrected; LLM deleted file and added guidance to existing document
 Architecture| Checked for method existence with ?. instead of trusting tool API guarantees; tried to call drawCursorPreview directly | Medium | User corrected that tool API guarantees preProcess/process/postProcess; check should be on tool, not method
 Architecture| Cursor overlay dot only updated when mouse down; attempted fix by adding state to Pencil tool instead of recognizing cursor as independent concern | High | User corrected 6 times: cursor must be completely separate from drawing logic and tool state, with independent mousemove listener
+Architecture| Added save/load logic to PaletteApp instead of CanvasStateManager | Medium | User corrected that persistence belongs in state manager; LLM moved logic
+Feature Completeness| Added save functionality but didn't implement auto-load on app startup | Low | User pointed out missing obvious next step; LLM called load() in setupStateManager

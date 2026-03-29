@@ -35,4 +35,21 @@ export class CanvasStateManager {
   getState() {
     return this.drawingCtx.getImageData(0, 0, this.drawingCtx.canvas.width, this.drawingCtx.canvas.height)
   }
+
+  save(key = 'palette-drawing') {
+    const dataUrl = this.drawingCtx.canvas.toDataURL()
+    localStorage.setItem(key, dataUrl)
+  }
+
+  load(key = 'palette-drawing') {
+    const dataUrl = localStorage.getItem(key)
+    if (dataUrl) {
+      const img = new Image()
+      img.onload = () => {
+        this.drawingCtx.clearRect(0, 0, this.drawingCtx.canvas.width, this.drawingCtx.canvas.height)
+        this.drawingCtx.drawImage(img, 0, 0)
+      }
+      img.src = dataUrl
+    }
+  }
 }
