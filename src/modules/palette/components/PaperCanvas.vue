@@ -7,7 +7,7 @@
 
 <script>
 import { Pencil } from '../tools/pencil.js'
-import { cursorManager } from '../tools/cursor-manager.js'
+import { CursorManager } from '../tools/cursor-manager.js'
 import { CanvasStateManager } from '../tools/canvas-state-manager.js'
 
 export default {
@@ -30,7 +30,8 @@ export default {
       lineWidth: 10,
       tool: null,
       tools: [],
-      canvasStateManager: null
+      canvasStateManager: null,
+      cursorManager: null
     }
   },
   watch: {
@@ -66,25 +67,28 @@ export default {
       this.resizeCanvas(this.drawingCtx)
       this.resizeCanvas(this.overlayCtx)
 
+      this.cursorManager = new CursorManager(this.$refs.drawing)
+
       this.canvasStateManager = new CanvasStateManager({
         drawingCtx: this.drawingCtx
       })
 
-      this.initializeCrayon()
       this.initializeTools()
       this.initializeListeners()
       this.tool = this.tools[0]
 
-      // Set initial color and line width
+      // Set initial context properties
+      this.lineWidth = this.brushSize
+      this.drawingCtx.lineWidth = this.lineWidth
+      this.drawingCtx.lineCap = 'round'
+      this.drawingCtx.lineJoin = 'round'
+
+      // Set initial color
       if (this.color) {
         this.drawingCtx.strokeStyle = this.color.hex
         this.overlayCtx.strokeStyle = this.color.hex
         this.overlayCtx.fillStyle = this.color.hex
       }
-      this.lineWidth = this.brushSize
-      this.drawingCtx.lineWidth = this.lineWidth
-      this.drawingCtx.lineCap = 'round'
-      this.drawingCtx.lineJoin = 'round'
 
       // Clear the overlay to make it transparent
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
@@ -102,11 +106,6 @@ export default {
       paper.addEventListener('mouseup', this.end.bind(this))
     },
 
-    initializeCrayon() {
-      this.drawingCtx.lineCap = 'round'
-      this.drawingCtx.lineWidth = this.lineWidth
-    },
-
     initializeTools() {
       this.tools = [
         new Pencil({
@@ -119,22 +118,21 @@ export default {
 
     start(event) {
       event.preventDefault()
-      const coordinates = this.getMousePosition(event)
-      cursorManager.setCurrentCoordinates(coordinates)
-      cursorManager.setMouseDown(true)
+      this.cursorManager.updateFromMouseEvent(event)
+      this.cursorManager.setMouseDown(true)
       this.canvasStateManager.saveState()
       this.canvasStateManager.branchFuture()
-      this.tool.start(coordinates)
+      this.tool.start(this.cursorManager.getCurrentCoordinates())
     },
 
     process(event) {
       event.preventDefault()
-      const coordinates = this.getMousePosition(event)
-      cursorManager.setCurrentCoordinates(coordinates)
+      this.cursorManager.updateFromMouseEvent(event)
       // Only process if we're in an active stroke
-      if (!cursorManager.getIsMouseDown()) {
+      if (!this.cursorManager.getIsMouseDown()) {
         return
       }
+      const coordinates = this.cursorManager.getCurrentCoordinates()
       if (this.tool.preProcess) {
         this.tool.preProcess(coordinates)
       }
@@ -146,10 +144,9 @@ export default {
 
     end(event) {
       event.preventDefault()
-      const coordinates = this.getMousePosition(event)
-      cursorManager.setCurrentCoordinates(coordinates)
-      this.tool.end(coordinates)
-      cursorManager.setMouseDown(false)
+      this.cursorManager.updateFromMouseEvent(event)
+      this.tool.end(this.cursorManager.getCurrentCoordinates())
+      this.cursorManager.setMouseDown(false)
     },
 
     undo() {
@@ -179,13 +176,6 @@ export default {
       }
     },
 
-    getMousePosition(event) {
-      const bounds = this.drawingCtx.canvas.getBoundingClientRect()
-      return {
-        x: event.clientX - bounds.left,
-        y: event.clientY - bounds.top
-      }
-    }
   }
 }
 </script>

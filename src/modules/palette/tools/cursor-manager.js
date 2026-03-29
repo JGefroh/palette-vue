@@ -1,10 +1,25 @@
 class CursorManager {
-  constructor() {
+  constructor(canvas) {
+    this.canvas = canvas
     this.isMouseDown = false
     this.currentCoordinates = { x: 0, y: 0 }
     this.previousCoordinates = { x: 0, y: 0 }
     this.startCoordinates = { x: 0, y: 0 }
     this.endCoordinates = { x: 0, y: 0 }
+  }
+
+  updateFromMouseEvent(event) {
+    const coordinates = this.getCoordinatesFromEvent(event)
+    this.previousCoordinates = { ...this.currentCoordinates }
+    this.currentCoordinates = { ...coordinates }
+  }
+
+  getCoordinatesFromEvent(event) {
+    const bounds = this.canvas.getBoundingClientRect()
+    return {
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top
+    }
   }
 
   setMouseDown(isDown) {
@@ -15,11 +30,6 @@ class CursorManager {
       this.endCoordinates = { ...this.currentCoordinates }
     }
     this.isMouseDown = isDown
-  }
-
-  setCurrentCoordinates(coordinates) {
-    this.previousCoordinates = { ...this.currentCoordinates }
-    this.currentCoordinates = { ...coordinates }
   }
 
   getIsMouseDown() {
@@ -43,4 +53,4 @@ class CursorManager {
   }
 }
 
-export const cursorManager = new CursorManager()
+export { CursorManager }
