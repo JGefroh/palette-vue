@@ -23,18 +23,29 @@
       >
         <span class="fa fa-fw fa-circle"></span> {{ size }}
       </button>
+      <button
+        v-for="(toolName, index) in toolNames"
+        :key="toolName"
+        class="tool"
+        :class="{ active: selectedToolIndex === index }"
+        @click="selectedToolIndex = index"
+      >
+        {{ toolName }}
+      </button>
       <button class="tool clear-button" @click="clear" title="Clear canvas" style="margin-left: auto;">
         <span class="fa fa-fw fa-trash"></span> Clear
       </button>
     </div>
     <ColorPalette v-model="selectedColor" />
-    <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" @on-initialize="setupStateManager" @on-stroke-start="saveState" @on-change="detectChange" />
+    <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" :tool="activeTool" @on-initialize="setupStateManager" @on-stroke-start="saveState" @on-change="detectChange" />
   </div>
 </template>
 
 <script>
 import PaperCanvas from './components/paper-canvas.vue'
 import ColorPalette from './components/color-palette.vue'
+import { Pencil } from './tools/pencil.js'
+import { Rectangle } from './tools/rectangle.js'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
 import { CanvasClearer } from './tools/canvas-clearer.js'
 
@@ -48,9 +59,17 @@ export default {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
       selectedSize: 10,
       brushSizes: [5, 10, 15, 20, 50, 100],
+      selectedToolIndex: 0,
+      toolNames: ['Pencil', 'Rectangle'],
+      tools: [],
       canvasStateManager: null,
       canvasClearer: null,
       unsavedChanges: false
+    }
+  },
+  computed: {
+    activeTool() {
+      return this.tools[this.selectedToolIndex] || null
     }
   },
   watch: {
@@ -62,7 +81,20 @@ export default {
     }
   },
   methods: {
-    setupStateManager(drawingCtx) {
+    setupStateManager({ drawingCtx, overlayCtx }) {
+      this.tools = [
+        new Pencil({
+          drawingCtx,
+          overlayCtx,
+          getLineWidth: () => this.$refs.canvas.lineWidth
+        }),
+        new Rectangle({
+          drawingCtx,
+          overlayCtx,
+          getLineWidth: () => this.$refs.canvas.lineWidth
+        })
+      ]
+      this.selectedToolIndex = 0
       this.canvasStateManager = new CanvasStateManager({ drawingCtx })
       this.canvasClearer = new CanvasClearer(drawingCtx)
       this.canvasStateManager.load()

@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { Pencil } from '../tools/pencil.js'
 import { CursorManager } from '../tools/cursor-manager.js'
 
 export default {
@@ -18,6 +17,10 @@ export default {
     brushSize: {
       type: Number,
       default: 10
+    },
+    tool: {
+      type: Object,
+      default: null
     }
   },
   emits: ['on-initialize', 'on-stroke-start', 'on-change'],
@@ -28,8 +31,6 @@ export default {
       defaultColor: 'black',
       defaultLineWidth: 10,
       lineWidth: 10,
-      tool: null,
-      tools: [],
       cursorManager: null
     }
   },
@@ -70,10 +71,8 @@ export default {
       this.resizeCanvas(this.overlayCtx)
 
       this.cursorManager = new CursorManager(this.$refs.drawing)
-      this.$emit('on-initialize', this.drawingCtx)
-      this.initializeTools()
+      this.$emit('on-initialize', { drawingCtx: this.drawingCtx, overlayCtx: this.overlayCtx })
       this.initializeListeners()
-      this.tool = this.tools[0]
 
       // Set initial context properties
       this.lineWidth = this.brushSize
@@ -117,16 +116,6 @@ export default {
       this.overlayCtx.fill()
       this.overlayCtx.stroke()
       this.overlayCtx.restore()
-    },
-
-    initializeTools() {
-      this.tools = [
-        new Pencil({
-          drawingCtx: this.drawingCtx,
-          overlayCtx: this.overlayCtx,
-          getLineWidth: () => this.lineWidth
-        })
-      ]
     },
 
     start(event) {
