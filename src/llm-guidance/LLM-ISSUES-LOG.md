@@ -14,3 +14,5 @@ Style| Used non-standard event names (@initialize, @stroke-start) instead of @on
 Style| Used verbose null checks instead of optional chaining (?.) | Low | User corrected; LLM simplified to use ?.
 Style| Named event handlers by trigger instead of action (e.g., onStrokeStart vs saveState) | Low | User corrected; LLM renamed handlers to describe what they do
 Process| Created unnecessary feedback_event_naming.md file instead of adding content to existing LLM-GUIDANCE.md | Low | User corrected; LLM deleted file and added guidance to existing document
+Architecture| Checked for method existence with ?. instead of trusting tool API guarantees; tried to call drawCursorPreview directly | Medium | User corrected that tool API guarantees preProcess/process/postProcess; check should be on tool, not method
+Architecture| Cursor overlay dot only updated when mouse down; attempted fix by adding state to Pencil tool instead of recognizing cursor as independent concern | High | User corrected 6 times: cursor must be completely separate from drawing logic and tool state, with independent mousemove listener
