@@ -24,13 +24,15 @@
         <span class="fa fa-fw fa-circle"></span> {{ size }}
       </button>
       <button
-        v-for="(toolName, index) in toolNames"
-        :key="toolName"
+        v-for="(tool, index) in toolList"
+        :key="tool.name"
         class="tool"
         :class="{ active: selectedToolIndex === index }"
         @click="selectedToolIndex = index"
+        :title="tool.name"
       >
-        {{ toolName }}
+        <span v-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
+        <span v-else>{{ tool.name }}</span>
       </button>
       <button class="tool clear-button" @click="clear" title="Clear canvas" style="margin-left: auto;">
         <span class="fa fa-fw fa-trash"></span> Clear
@@ -61,7 +63,11 @@ export default {
       selectedSize: 10,
       brushSizes: [5, 10, 15, 20, 50, 100],
       selectedToolIndex: 0,
-      toolNames: ['Pencil', 'Rectangle', 'Circle'],
+      toolList: [
+        { name: 'Pencil', icon: null },
+        { name: 'Rectangle', icon: 'fa-square' },
+        { name: 'Circle', icon: 'fa-circle' }
+      ],
       tools: [],
       canvasStateManager: null,
       canvasClearer: null,
