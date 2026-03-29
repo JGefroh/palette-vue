@@ -46,6 +46,7 @@ import PaperCanvas from './components/paper-canvas.vue'
 import ColorPalette from './components/color-palette.vue'
 import { Pencil } from './tools/pencil.js'
 import { Rectangle } from './tools/rectangle.js'
+import { Circle } from './tools/circle.js'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
 import { CanvasClearer } from './tools/canvas-clearer.js'
 
@@ -60,7 +61,7 @@ export default {
       selectedSize: 10,
       brushSizes: [5, 10, 15, 20, 50, 100],
       selectedToolIndex: 0,
-      toolNames: ['Pencil', 'Rectangle'],
+      toolNames: ['Pencil', 'Rectangle', 'Circle'],
       tools: [],
       canvasStateManager: null,
       canvasClearer: null,
@@ -89,6 +90,11 @@ export default {
           getLineWidth: () => this.$refs.canvas.lineWidth
         }),
         new Rectangle({
+          drawingCtx,
+          overlayCtx,
+          getLineWidth: () => this.$refs.canvas.lineWidth
+        }),
+        new Circle({
           drawingCtx,
           overlayCtx,
           getLineWidth: () => this.$refs.canvas.lineWidth
