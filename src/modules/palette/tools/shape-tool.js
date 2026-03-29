@@ -23,6 +23,7 @@ export class ShapeTool {
   }
 
   process(coordinates) {
+    if (!this.startCoordinates) return
     if (this.getLineWidth) {
       this.overlayCtx.lineWidth = this.getLineWidth()
     }
