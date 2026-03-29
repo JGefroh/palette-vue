@@ -7,6 +7,8 @@
 
 <script>
 import { Pencil } from '../tools/pencil.js'
+import { cursorManager } from '../tools/cursor-manager.js'
+import { CanvasStateManager } from '../tools/canvas-state-manager.js'
 
 export default {
   props: {
@@ -23,14 +25,12 @@ export default {
     return {
       overlayCtx: null,
       drawingCtx: null,
-      history: [],
-      future: [],
       defaultColor: 'black',
       defaultLineWidth: 10,
       lineWidth: 10,
-      isMouseDown: false,
       tool: null,
-      tools: []
+      tools: [],
+      canvasStateManager: null
     }
   },
   watch: {
@@ -65,6 +65,10 @@ export default {
 
       this.resizeCanvas(this.drawingCtx)
       this.resizeCanvas(this.overlayCtx)
+
+      this.canvasStateManager = new CanvasStateManager({
+        drawingCtx: this.drawingCtx
+      })
 
       this.initializeCrayon()
       this.initializeTools()
@@ -108,27 +112,29 @@ export default {
         new Pencil({
           drawingCtx: this.drawingCtx,
           overlayCtx: this.overlayCtx,
-          getLineWidth: () => this.lineWidth,
-          onSaveState: () => this.saveState(this.history),
-          onBranchFuture: () => this.branchFuture(),
-          onMouseDown: () => { this.isMouseDown = true },
-          onMouseUp: () => { this.isMouseDown = false }
+          getLineWidth: () => this.lineWidth
         })
       ]
     },
 
     start(event) {
       event.preventDefault()
-      this.tool.start(this.getMousePosition(event))
+      const coordinates = this.getMousePosition(event)
+      cursorManager.setCurrentCoordinates(coordinates)
+      cursorManager.setMouseDown(true)
+      this.canvasStateManager.saveState()
+      this.canvasStateManager.branchFuture()
+      this.tool.start(coordinates)
     },
 
     process(event) {
       event.preventDefault()
+      const coordinates = this.getMousePosition(event)
+      cursorManager.setCurrentCoordinates(coordinates)
       // Only process if we're in an active stroke
-      if (!this.isMouseDown) {
+      if (!cursorManager.getIsMouseDown()) {
         return
       }
-      const coordinates = this.getMousePosition(event)
       if (this.tool.preProcess) {
         this.tool.preProcess(coordinates)
       }
@@ -140,35 +146,24 @@ export default {
 
     end(event) {
       event.preventDefault()
-      this.tool.end(this.getMousePosition(event))
-    },
-
-    branchFuture() {
-      this.future = []
+      const coordinates = this.getMousePosition(event)
+      cursorManager.setCurrentCoordinates(coordinates)
+      this.tool.end(coordinates)
+      cursorManager.setMouseDown(false)
     },
 
     undo() {
-      if (this.history.length) {
-        const previousState = this.history.pop()
-        this.saveState(this.future)
-        this.drawingCtx.putImageData(previousState, 0, 0)
+      const state = this.canvasStateManager.undo()
+      if (state) {
+        this.drawingCtx.putImageData(state, 0, 0)
       }
     },
 
     redo() {
-      if (this.future.length) {
-        const nextState = this.future.pop()
-        this.saveState(this.history)
-        this.drawingCtx.putImageData(nextState, 0, 0)
+      const state = this.canvasStateManager.redo()
+      if (state) {
+        this.drawingCtx.putImageData(state, 0, 0)
       }
-    },
-
-    saveState(where) {
-      where.push(this.getState(this.drawingCtx))
-    },
-
-    getState(context) {
-      return context.getImageData(0, 0, context.canvas.width, context.canvas.height)
     },
 
     resizeCanvas(context) {

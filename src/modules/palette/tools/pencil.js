@@ -3,11 +3,6 @@ export class Pencil {
     this.drawingCtx = dependencies.drawingCtx
     this.overlayCtx = dependencies.overlayCtx
     this.getLineWidth = dependencies.getLineWidth
-    this.onSaveState = dependencies.onSaveState
-    this.onBranchFuture = dependencies.onBranchFuture
-    this.onMouseDown = dependencies.onMouseDown
-    this.onMouseUp = dependencies.onMouseUp
-    this.isMouseDown = false
   }
 
   get label() {
@@ -15,11 +10,7 @@ export class Pencil {
   }
 
   start(coordinates) {
-    if (!this.isMouseDown) {
-      this.initializeStroke(coordinates)
-      this.onMouseDown()
-    }
-    this.isMouseDown = true
+    this.initializeStroke(coordinates)
   }
 
   preProcess(coordinates) {
@@ -28,9 +19,7 @@ export class Pencil {
 
   process(coordinates) {
     this.drawCursorPreview(coordinates)
-    if (this.isMouseDown) {
-      this.drawLine(coordinates)
-    }
+    this.drawLine(coordinates)
   }
 
   end(coordinates) {
@@ -38,8 +27,6 @@ export class Pencil {
   }
 
   initializeStroke(coordinates) {
-    this.onSaveState()
-    this.onBranchFuture()
     this.drawingCtx.beginPath()
     this.drawingCtx.moveTo(coordinates.x, coordinates.y)
   }
@@ -71,8 +58,6 @@ export class Pencil {
   finalizeStroke(coordinates) {
     this.drawingCtx.lineTo(coordinates.x, coordinates.y)
     this.drawingCtx.stroke()
-    this.isMouseDown = false
-    this.onMouseUp()
   }
 
 }

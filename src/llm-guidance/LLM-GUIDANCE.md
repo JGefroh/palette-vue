@@ -33,4 +33,4 @@ Folder structure should be module-based, not sock-drawer based. Modules may have
 Modules that could potentially be used in a completely different app without modification (eg. generic components, utilities) should be in a /shared folder. There must be no domain-specific modules in that folder.
 
 ## Naming
-All files should be lower-kebab-case except for .MD files.
+All files should be lowercase and kebab-case except for .MD files.
