@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import { Pencil } from '../tools/pencil.js'
+
 export default {
   props: {
     color: {
@@ -103,44 +105,15 @@ export default {
 
     initializeTools() {
       this.tools = [
-        {
-          label: 'Pencil',
-          start: (coordinates) => {
-            if (!this.isMouseDown) {
-              this.saveState(this.history)
-              this.branchFuture()
-              this.drawingCtx.beginPath()
-              this.drawingCtx.moveTo(coordinates.x, coordinates.y)
-            }
-            this.isMouseDown = true
-          },
-          preProcess: (coordinates) => {
-            this.overlayCtx.save()
-            this.overlayCtx.fillStyle = '#FFFFFF'
-            this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-            this.overlayCtx.restore()
-          },
-          process: (coordinates) => {
-            this.overlayCtx.save()
-            this.overlayCtx.strokeStyle = '#000000'
-            this.overlayCtx.beginPath()
-            this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI, false)
-            this.overlayCtx.fill()
-            this.overlayCtx.stroke()
-            this.overlayCtx.restore()
-            if (this.isMouseDown) {
-              this.drawingCtx.lineTo(coordinates.x, coordinates.y)
-              this.drawingCtx.stroke()
-              this.drawingCtx.beginPath()
-              this.drawingCtx.moveTo(coordinates.x, coordinates.y)
-            }
-          },
-          end: (coordinates) => {
-            this.drawingCtx.lineTo(coordinates.x, coordinates.y)
-            this.drawingCtx.stroke()
-            this.isMouseDown = false
-          }
-        }
+        new Pencil({
+          drawingCtx: this.drawingCtx,
+          overlayCtx: this.overlayCtx,
+          getLineWidth: () => this.lineWidth,
+          onSaveState: () => this.saveState(this.history),
+          onBranchFuture: () => this.branchFuture(),
+          onMouseDown: () => { this.isMouseDown = true },
+          onMouseUp: () => { this.isMouseDown = false }
+        })
       ]
     },
 
