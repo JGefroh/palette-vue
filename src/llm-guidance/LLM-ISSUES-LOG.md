@@ -18,3 +18,6 @@ Architecture| Checked for method existence with ?. instead of trusting tool API 
 Architecture| Cursor overlay dot only updated when mouse down; attempted fix by adding state to Pencil tool instead of recognizing cursor as independent concern | High | User corrected 6 times: cursor must be completely separate from drawing logic and tool state, with independent mousemove listener
 Architecture| Added save/load logic to PaletteApp instead of CanvasStateManager | Medium | User corrected that persistence belongs in state manager; LLM moved logic
 Feature Completeness| Added save functionality but didn't implement auto-load on app startup | Low | User pointed out missing obvious next step; LLM called load() in setupStateManager
+Reactivity| Attempted to use integer counter as reactive trigger for computed property; didn't return value in computed | High | User corrected 2 times: computed must return a value, and integer counters are wrong approach for reactivity
+UX| Added unsaved indicator using a span element that changed button size | Low | User corrected; LLM changed to box-shadow underline that doesn't affect layout
+Reactivity| Used computed property that couldn't react to canvas mutations; implemented integer counter approach | High | User corrected: use watch on boolean with explicit updates in methods that mutate state

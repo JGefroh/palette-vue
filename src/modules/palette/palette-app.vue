@@ -5,7 +5,7 @@
       <a href="http://www.jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
     </div>
     <div class="toolbar">
-      <button class="tool" @click="save" title="Save">
+      <button class="tool" :class="{ unsaved: unsavedChanges }" @click="save" title="Save">
         <span class="fa fa-fw fa-save"></span> Save
       </button>
       <button class="tool" @click="undo" title="Undo">
@@ -25,7 +25,7 @@
       </button>
     </div>
     <ColorPalette v-model="selectedColor" />
-    <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" @on-initialize="setupStateManager" @on-stroke-start="saveState" />
+    <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" @on-initialize="setupStateManager" @on-stroke-start="saveState" @on-change="detectChange" />
   </div>
 </template>
 
@@ -44,7 +44,16 @@ export default {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
       selectedSize: 10,
       brushSizes: [5, 10, 15, 20, 50, 100],
-      canvasStateManager: null
+      canvasStateManager: null,
+      unsavedChanges: false
+    }
+  },
+  watch: {
+    canvasStateManager: {
+      handler() {
+        this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
+      },
+      deep: true
     }
   },
   methods: {
@@ -55,15 +64,22 @@ export default {
     saveState() {
       this.canvasStateManager?.saveState()
       this.canvasStateManager?.branchFuture()
+      this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
     },
     save() {
       this.canvasStateManager?.save()
+      this.unsavedChanges = false
     },
     undo() {
       this.canvasStateManager?.undo()
+      this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
     },
     redo() {
       this.canvasStateManager?.redo()
+      this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
+    },
+    detectChange() {
+      this.unsavedChanges = true
     }
   }
 }
@@ -123,5 +139,9 @@ export default {
 .tool.active {
   background-color: #34495e;
   color: white;
+}
+
+.tool.unsaved {
+  box-shadow: inset 0 -3px 0 #e74c3c;
 }
 </style>

@@ -3,6 +3,7 @@ export class CanvasStateManager {
     this.drawingCtx = dependencies.drawingCtx
     this.history = []
     this.future = []
+    this.lastSavedDataUrl = null
   }
 
   saveState() {
@@ -39,6 +40,7 @@ export class CanvasStateManager {
   save(key = 'palette-drawing') {
     const dataUrl = this.drawingCtx.canvas.toDataURL()
     localStorage.setItem(key, dataUrl)
+    this.lastSavedDataUrl = dataUrl
   }
 
   load(key = 'palette-drawing') {
@@ -48,8 +50,14 @@ export class CanvasStateManager {
       img.onload = () => {
         this.drawingCtx.clearRect(0, 0, this.drawingCtx.canvas.width, this.drawingCtx.canvas.height)
         this.drawingCtx.drawImage(img, 0, 0)
+        this.lastSavedDataUrl = dataUrl
       }
       img.src = dataUrl
     }
+  }
+
+  hasUnsavedChanges() {
+    const currentDataUrl = this.drawingCtx.canvas.toDataURL()
+    return this.lastSavedDataUrl === null || currentDataUrl !== this.lastSavedDataUrl
   }
 }

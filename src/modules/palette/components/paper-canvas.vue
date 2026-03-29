@@ -20,7 +20,7 @@ export default {
       default: 10
     }
   },
-  emits: ['on-initialize', 'on-stroke-start'],
+  emits: ['on-initialize', 'on-stroke-start', 'on-change'],
   data() {
     return {
       overlayCtx: null,
@@ -148,6 +148,7 @@ export default {
       if (this.tool.postProcess) {
         this.tool.postProcess(coordinates)
       }
+      this.$emit('on-change')
     },
 
     end(event) {
