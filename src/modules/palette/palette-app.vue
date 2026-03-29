@@ -49,6 +49,7 @@ import ColorPalette from './components/color-palette.vue'
 import { Pencil } from './tools/pencil.js'
 import { Rectangle } from './tools/rectangle.js'
 import { Circle } from './tools/circle.js'
+import { Text } from './tools/text.js'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
 import { CanvasClearer } from './tools/canvas-clearer.js'
 
@@ -66,7 +67,8 @@ export default {
       toolList: [
         { name: 'Pencil', icon: null },
         { name: 'Rectangle', icon: 'fa-square' },
-        { name: 'Circle', icon: 'fa-circle' }
+        { name: 'Circle', icon: 'fa-circle' },
+        { name: 'Text', icon: 'fa-font' }
       ],
       tools: [],
       canvasStateManager: null,
@@ -104,6 +106,10 @@ export default {
           drawingCtx,
           overlayCtx,
           getLineWidth: () => this.$refs.canvas.lineWidth
+        }),
+        new Text({
+          drawingCtx,
+          overlayCtx
         })
       ]
       this.selectedToolIndex = 0
