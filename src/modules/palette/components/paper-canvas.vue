@@ -110,11 +110,9 @@ export default {
       const coordinates = this.cursorManager.getCurrentCoordinates()
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
       this.overlayCtx.save()
-      this.overlayCtx.strokeStyle = this.overlayCtx.fillStyle
       this.overlayCtx.beginPath()
       this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI)
       this.overlayCtx.fill()
-      this.overlayCtx.stroke()
       this.overlayCtx.restore()
     },
 

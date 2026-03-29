@@ -42,11 +42,9 @@ export class Pencil {
 
   drawCursorPreview(coordinates) {
     this.overlayCtx.save()
-    this.overlayCtx.strokeStyle = '#000000'
     this.overlayCtx.beginPath()
     this.overlayCtx.arc(coordinates.x, coordinates.y, this.getLineWidth() / 2, 0, 2 * Math.PI, false)
     this.overlayCtx.fill()
-    this.overlayCtx.stroke()
     this.overlayCtx.restore()
   }
 

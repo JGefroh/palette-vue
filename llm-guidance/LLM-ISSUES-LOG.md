@@ -2,6 +2,8 @@
 
 This is a log of issues where I had to re-prompt or correct issues made by the LLM.
 
+When corrected by the user, Claude should add an entry to this file.
+
 Category|Problem| Severity |Resolution
 |-------|------|-------|-------
 Style| Ignored lower-kebab-case naming for cursorManager.js | Low | LLM after 1 corrective prompt.
@@ -28,3 +30,4 @@ Architecture| Designed shape tool integration with redundant state: activeTool p
 Architecture| Had PaperCanvas create and manage tool instances when canvas should have zero knowledge of tools | High | User asked "Why does Canvas know about tools at all?"; LLM moved tool creation to PaletteApp, now canvas receives only the current tool instance via prop
 Bug| Circle tool had incorrect geometry; anchor point at center instead of corner, then bounding box center shifted during drag, then Math.min caused jank | High | User corrected 3 times: center should be midpoint of start/end, radius should be distance from center to end point (stable through drag)
 UX| Created Circle tool with fundamentally different anchor point behavior than Rectangle tool without noting the inconsistency; user expects all shape tools to behave alike | Medium | User pointed out design consistency failure: shape tools should have uniform interaction model
+Bug| Cursor circle drawn with both fill() and stroke(), making it appear ~2x larger than actual brush stroke at large sizes | Medium | User reported; LLM removed stroke() call from both updateCursor() and drawCursorPreview()
