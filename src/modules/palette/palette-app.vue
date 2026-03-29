@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import PaperCanvas from './components/PaperCanvas.vue'
-import ColorPalette from './components/ColorPalette.vue'
+import PaperCanvas from './components/paper-canvas.vue'
+import ColorPalette from './components/color-palette.vue'
 
 export default {
   components: {

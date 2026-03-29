@@ -34,3 +34,6 @@ Modules that could potentially be used in a completely different app without mod
 
 ## Naming
 All files should be lowercase and kebab-case except for .MD files.
+
+## Errors and corrections
+If I have to correct you, update LLM-ISSUES-LOG.md with information about the correction. 
