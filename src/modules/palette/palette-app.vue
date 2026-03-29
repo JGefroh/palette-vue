@@ -23,6 +23,9 @@
       >
         <span class="fa fa-fw fa-circle"></span> {{ size }}
       </button>
+      <button class="tool clear-button" @click="clear" title="Clear canvas" style="margin-left: auto;">
+        <span class="fa fa-fw fa-trash"></span> Clear
+      </button>
     </div>
     <ColorPalette v-model="selectedColor" />
     <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" @on-initialize="setupStateManager" @on-stroke-start="saveState" @on-change="detectChange" />
@@ -33,6 +36,7 @@
 import PaperCanvas from './components/paper-canvas.vue'
 import ColorPalette from './components/color-palette.vue'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
+import { CanvasClearer } from './tools/canvas-clearer.js'
 
 export default {
   components: {
@@ -45,6 +49,7 @@ export default {
       selectedSize: 10,
       brushSizes: [5, 10, 15, 20, 50, 100],
       canvasStateManager: null,
+      canvasClearer: null,
       unsavedChanges: false
     }
   },
@@ -59,6 +64,7 @@ export default {
   methods: {
     setupStateManager(drawingCtx) {
       this.canvasStateManager = new CanvasStateManager({ drawingCtx })
+      this.canvasClearer = new CanvasClearer(drawingCtx)
       this.canvasStateManager.load()
     },
     saveState() {
@@ -80,6 +86,11 @@ export default {
     },
     detectChange() {
       this.unsavedChanges = true
+    },
+    clear() {
+      if (this.canvasClearer?.clear()) {
+        this.unsavedChanges = true
+      }
     }
   }
 }

@@ -38,10 +38,12 @@ export default {
       if (this.drawingCtx && this.overlayCtx) {
         if (newColor) {
           this.drawingCtx.strokeStyle = newColor.hex
+          this.drawingCtx.fillStyle = newColor.hex
           this.overlayCtx.strokeStyle = newColor.hex
           this.overlayCtx.fillStyle = newColor.hex
         } else {
           this.drawingCtx.strokeStyle = this.defaultColor
+          this.drawingCtx.fillStyle = this.defaultColor
           this.overlayCtx.strokeStyle = this.defaultColor
         }
       }
@@ -50,6 +52,7 @@ export default {
       this.lineWidth = newSize
       if (this.drawingCtx) {
         this.drawingCtx.lineWidth = this.lineWidth
+        this.overlayCtx.lineWidth = this.lineWidth
       }
     }
   },
@@ -81,6 +84,7 @@ export default {
       // Set initial color
       if (this.color) {
         this.drawingCtx.strokeStyle = this.color.hex
+        this.drawingCtx.fillStyle = this.color.hex
         this.overlayCtx.strokeStyle = this.color.hex
         this.overlayCtx.fillStyle = this.color.hex
       }

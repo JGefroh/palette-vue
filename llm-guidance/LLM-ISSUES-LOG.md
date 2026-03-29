@@ -21,3 +21,5 @@ Feature Completeness| Added save functionality but didn't implement auto-load on
 Reactivity| Attempted to use integer counter as reactive trigger for computed property; didn't return value in computed | High | User corrected 2 times: computed must return a value, and integer counters are wrong approach for reactivity
 UX| Added unsaved indicator using a span element that changed button size | Low | User corrected; LLM changed to box-shadow underline that doesn't affect layout
 Reactivity| Used computed property that couldn't react to canvas mutations; implemented integer counter approach | High | User corrected: use watch on boolean with explicit updates in methods that mutate state
+Bug| Caused regression in Pencil tool during refactoring; single clicks (no drag) didn't draw | Medium | User reported; LLM added strokeStartCoordinates tracking to restore point-click functionality
+Bug| Caused regression in color handling; failed to initialize drawingCtx.fillStyle, leaving points colorless while lines had color | Medium | User reported; LLM added fillStyle initialization to drawingCtx and watchers

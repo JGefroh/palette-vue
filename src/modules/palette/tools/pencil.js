@@ -3,6 +3,7 @@ export class Pencil {
     this.drawingCtx = dependencies.drawingCtx
     this.overlayCtx = dependencies.overlayCtx
     this.getLineWidth = dependencies.getLineWidth
+    this.strokeStartCoordinates = null
   }
 
   get label() {
@@ -10,6 +11,7 @@ export class Pencil {
   }
 
   start(coordinates) {
+    this.strokeStartCoordinates = { x: coordinates.x, y: coordinates.y }
     this.initializeStroke(coordinates)
   }
 
@@ -56,8 +58,16 @@ export class Pencil {
   }
 
   finalizeStroke(coordinates) {
-    this.drawingCtx.lineTo(coordinates.x, coordinates.y)
-    this.drawingCtx.stroke()
+    // If no movement occurred, draw a point
+    if (this.strokeStartCoordinates &&
+        coordinates.x === this.strokeStartCoordinates.x &&
+        coordinates.y === this.strokeStartCoordinates.y) {
+      this.drawingCtx.arc(coordinates.x, coordinates.y, this.getLineWidth() / 2, 0, 2 * Math.PI)
+      this.drawingCtx.fill()
+    } else {
+      this.drawingCtx.lineTo(coordinates.x, coordinates.y)
+      this.drawingCtx.stroke()
+    }
   }
 
 }
