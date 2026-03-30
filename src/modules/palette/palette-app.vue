@@ -142,6 +142,12 @@ export default {
       this.switchTab(id)
     },
     executeCommandFromShortcut(event) {
+      // Save: Cmd+S (Mac) or Ctrl+S (Windows/Linux)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault()
+        this.save()
+        return
+      }
       // Undo: Cmd+Z (Mac) or Ctrl+Z (Windows/Linux)
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {
         event.preventDefault()
