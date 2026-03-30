@@ -5,7 +5,7 @@
       <a href="http://www.jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
     </div>
     <div class="toolbar">
-      <button class="tool" :class="{ unsaved: unsavedChanges }" @click="save" title="Save">
+      <button class="tool" :class="{ unsaved: activeTab?.unsavedChanges }" @click="save" title="Save">
         <span class="fa fa-fw fa-save"></span> Save
       </button>
       <div class="divider"></div>
@@ -43,6 +43,17 @@
       </button>
     </div>
     <ColorPalette v-model="selectedColor" />
+    <div class="tab-bar">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        class="tab"
+        :class="{ active: activeTabId === tab.id }"
+        @click="switchTab(tab.id)"
+        @dblclick="renameTab(tab)"
+      >{{ tab.name }} <span class="tab-delete" @click.stop="deleteTab(tab)">✕</span></button>
+      <button class="tab tab-add" @click="addTab">+</button>
+    </div>
     <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" :tool="activeTool" @on-initialize="setupStateManager" @on-stroke-start="saveState" @on-change="detectChange" />
   </div>
 </template>
@@ -79,20 +90,17 @@ export default {
       tools: [],
       canvasStateManager: null,
       canvasClearer: null,
-      unsavedChanges: false
+      tabs: [{ id: 1, name: 'Canvas 1', unsavedChanges: false }],
+      activeTabId: 1,
+      nextTabId: 2
     }
   },
   computed: {
     activeTool() {
       return this.tools[this.selectedToolIndex] || null
-    }
-  },
-  watch: {
-    canvasStateManager: {
-      handler() {
-        this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
-      },
-      deep: true
+    },
+    activeTab() {
+      return this.tabs.find(t => t.id === this.activeTabId)
     }
   },
   mounted() {
@@ -102,6 +110,32 @@ export default {
     window.removeEventListener('keydown', this.executeCommandFromShortcut)
   },
   methods: {
+    deleteTab(tab) {
+      if (!confirm(`Delete "${tab.name}"?`)) return
+      const index = this.tabs.indexOf(tab)
+      this.tabs.splice(index, 1)
+      if (this.tabs.length === 0) this.tabs.push({ id: this.nextTabId++, name: 'Canvas 1', unsavedChanges: false })
+      if (this.activeTabId === tab.id) {
+        this.switchTab(this.tabs[Math.max(0, index - 1)].id)
+      }
+      this.saveTabs()
+    },
+    renameTab(tab) {
+      const name = prompt('Canvas name:', tab.name)
+      if (name) { tab.name = name; this.saveTabs() }
+    },
+    switchTab(id) {
+      this.activeTabId = id
+      const ctx = this.canvasStateManager?.drawingCtx
+      if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+      this.canvasStateManager?.load(`palette-canvas-${id}`)
+      this.activeTab.unsavedChanges = false
+    },
+    addTab() {
+      const id = this.nextTabId++
+      this.tabs.push({ id, name: `Canvas ${id}`, unsavedChanges: false })
+      this.switchTab(id)
+    },
     executeCommandFromShortcut(event) {
       const index = this.toolList.findIndex(t => t.shortcut === event.key)
       if (index !== -1) this.selectTool(index)
@@ -145,31 +179,42 @@ export default {
       this.selectedToolIndex = 0
       this.canvasStateManager = new CanvasStateManager({ drawingCtx })
       this.canvasClearer = new CanvasClearer(drawingCtx)
-      this.canvasStateManager.load()
+
+      const savedTabs = localStorage.getItem('palette-tabs')
+      if (savedTabs) {
+        this.tabs = JSON.parse(savedTabs).map(t => ({ ...t, unsavedChanges: false }))
+        this.activeTabId = this.tabs[0].id
+        this.nextTabId = Math.max(...this.tabs.map(t => t.id)) + 1
+      }
+      this.canvasStateManager.load(`palette-canvas-${this.activeTabId}`)
     },
     saveState() {
       this.canvasStateManager?.saveState()
       this.canvasStateManager?.branchFuture()
-      this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
+      this.activeTab.unsavedChanges = true
+    },
+    saveTabs() {
+      localStorage.setItem('palette-tabs', JSON.stringify(this.tabs))
     },
     save() {
-      this.canvasStateManager?.save()
-      this.unsavedChanges = false
+      this.canvasStateManager?.save(`palette-canvas-${this.activeTabId}`)
+      this.saveTabs()
+      this.activeTab.unsavedChanges = false
     },
     undo() {
       this.canvasStateManager?.undo()
-      this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
+      this.activeTab.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
     },
     redo() {
       this.canvasStateManager?.redo()
-      this.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
+      this.activeTab.unsavedChanges = this.canvasStateManager?.hasUnsavedChanges() ?? false
     },
     detectChange() {
-      this.unsavedChanges = true
+      this.activeTab.unsavedChanges = true
     },
     clear() {
       if (this.canvasClearer?.clear()) {
-        this.unsavedChanges = true
+        this.activeTab.unsavedChanges = true
       }
     }
   }
@@ -234,6 +279,57 @@ export default {
 
 .tool.unsaved {
   box-shadow: inset 0 -3px 0 #e74c3c;
+}
+
+.tab-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 20px;
+  background-color: #ecf0f1;
+  border-bottom: 2px solid #bdc3c7;
+}
+
+.tab {
+  padding: 6px 20px;
+  border: 1px solid #bdc3c7;
+  border-bottom: none;
+  background-color: #dde1e4;
+  color: #7f8c8d;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  position: relative;
+  bottom: -2px;
+}
+
+.tab.active {
+  background-color: white;
+  color: #34495e;
+  border-color: #bdc3c7;
+  border-bottom: 2px solid white;
+  font-weight: 600;
+}
+
+.tab:hover:not(.active) {
+  background-color: #cdd1d4;
+}
+
+.tab-delete {
+  color: #bdc3c7;
+  font-size: 10px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.tab-delete:hover {
+  color: #7f8c8d;
+}
+
+.tab-add {
+  font-size: 16px;
+  padding: 4px 10px;
 }
 
 .divider {
