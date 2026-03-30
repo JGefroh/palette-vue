@@ -50,6 +50,7 @@ import ColorPalette from './components/color-palette.vue'
 import { Pencil } from './tools/pencil.js'
 import { Rectangle } from './tools/rectangle.js'
 import { Circle } from './tools/circle.js'
+import { Line } from './tools/line.js'
 import { Text } from './tools/text.js'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
 import { CanvasClearer } from './tools/canvas-clearer.js'
@@ -69,6 +70,7 @@ export default {
         { name: 'Pencil', icon: null, shortcut: 'p' },
         { name: 'Rectangle', fillIcon: 'fa-square', outlineIcon: 'fa-square-o', mode: 'outline', shortcut: 'r' },
         { name: 'Circle', fillIcon: 'fa-circle', outlineIcon: 'fa-circle-o', mode: 'outline', shortcut: 'o' },
+        { name: 'Line', icon: 'fa-minus', shortcut: 'l' },
         { name: 'Text', icon: 'fa-font', shortcut: 't' }
       ],
       tools: [],
@@ -123,6 +125,11 @@ export default {
           getLineWidth: () => this.$refs.canvas.lineWidth
         }),
         new Circle({
+          drawingCtx,
+          overlayCtx,
+          getLineWidth: () => this.$refs.canvas.lineWidth
+        }),
+        new Line({
           drawingCtx,
           overlayCtx,
           getLineWidth: () => this.$refs.canvas.lineWidth
