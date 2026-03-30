@@ -69,7 +69,6 @@ export default {
   gap: 4px;
   padding: 12px 20px;
   background-color: #ecf0f1;
-  border-bottom: 1px solid #bdc3c7;
 }
 
 .color {
