@@ -8,12 +8,14 @@
       <button class="tool" :class="{ unsaved: unsavedChanges }" @click="save" title="Save">
         <span class="fa fa-fw fa-save"></span> Save
       </button>
+      <div class="divider"></div>
       <button class="tool" @click="undo" title="Undo">
         <span class="fa fa-fw fa-undo"></span>
       </button>
       <button class="tool" @click="redo" title="Redo">
         <span class="fa fa-fw fa-repeat"></span>
       </button>
+      <div class="divider"></div>
       <button
         v-for="size in brushSizes"
         :key="size"
@@ -23,6 +25,7 @@
       >
         <span class="fa fa-fw fa-circle"></span> {{ size }}
       </button>
+      <div class="divider"></div>
       <button
         v-for="(tool, index) in toolList"
         :key="tool.name"
@@ -231,5 +234,11 @@ export default {
 
 .tool.unsaved {
   box-shadow: inset 0 -3px 0 #e74c3c;
+}
+
+.divider {
+  width: 1px;
+  background-color: #bdc3c7;
+  margin: 2px 4px;
 }
 </style>
