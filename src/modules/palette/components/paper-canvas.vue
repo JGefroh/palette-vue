@@ -115,6 +115,7 @@ export default {
       paper.addEventListener('dragover', (e) => e.preventDefault())
       paper.addEventListener('drop', this.fitDroppedImage.bind(this))
       paper.addEventListener('mousemove', this.updateCursor.bind(this))
+      paper.addEventListener('mouseleave', this.hideCursor.bind(this))
       paper.addEventListener('mousedown', this.start.bind(this))
       paper.addEventListener('mousemove', this.process.bind(this))
       paper.addEventListener('mouseup', this.end.bind(this))
@@ -130,6 +131,10 @@ export default {
       this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI)
       this.overlayCtx.fill()
       this.overlayCtx.restore()
+    },
+
+    hideCursor() {
+      this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     },
 
     start(event) {
