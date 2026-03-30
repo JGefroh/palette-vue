@@ -142,6 +142,17 @@ export default {
       this.switchTab(id)
     },
     executeCommandFromShortcut(event) {
+      // Undo: Cmd+Z (Mac) or Ctrl+Z (Windows/Linux)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {
+        event.preventDefault()
+        if (event.shiftKey) {
+          this.redo()
+        } else {
+          this.undo()
+        }
+        return
+      }
+      // Tool shortcuts
       const index = this.toolList.findIndex(t => t.shortcut === event.key)
       if (index !== -1) this.selectTool(index)
     },
