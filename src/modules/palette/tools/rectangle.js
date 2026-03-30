@@ -14,7 +14,7 @@ export class Rectangle extends ShapeTool {
     ctx.save()
     ctx.beginPath()
     ctx.rect(x, y, width, height)
-    ctx.stroke()
+    this.mode === 'fill' ? ctx.fill() : ctx.stroke()
     ctx.restore()
   }
 }

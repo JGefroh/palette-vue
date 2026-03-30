@@ -28,10 +28,11 @@
         :key="tool.name"
         class="tool"
         :class="{ active: selectedToolIndex === index }"
-        @click="selectedToolIndex = index"
+        @click="selectTool(index)"
         :title="tool.name"
       >
-        <span v-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
+        <span v-if="tool.fillIcon" class="fa fa-fw" :class="tool.mode === 'fill' ? tool.fillIcon : tool.outlineIcon"></span>
+        <span v-else-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
         <span v-else>{{ tool.name }}</span>
       </button>
       <button class="tool clear-button" @click="clear" title="Clear canvas" style="margin-left: auto;">
@@ -66,8 +67,8 @@ export default {
       selectedToolIndex: 0,
       toolList: [
         { name: 'Pencil', icon: null, shortcut: 'p' },
-        { name: 'Rectangle', icon: 'fa-square', shortcut: 'r' },
-        { name: 'Circle', icon: 'fa-circle', shortcut: 'o' },
+        { name: 'Rectangle', fillIcon: 'fa-square', outlineIcon: 'fa-square-o', mode: 'outline', shortcut: 'r' },
+        { name: 'Circle', fillIcon: 'fa-circle', outlineIcon: 'fa-circle-o', mode: 'outline', shortcut: 'o' },
         { name: 'Text', icon: 'fa-font', shortcut: 't' }
       ],
       tools: [],
@@ -98,7 +99,16 @@ export default {
   methods: {
     executeCommandFromShortcut(event) {
       const index = this.toolList.findIndex(t => t.shortcut === event.key)
-      if (index !== -1) this.selectedToolIndex = index
+      if (index !== -1) this.selectTool(index)
+    },
+    selectTool(index) {
+      if (this.selectedToolIndex === index && this.toolList[index].fillIcon) {
+        const entry = this.toolList[index]
+        entry.mode = entry.mode === 'fill' ? 'outline' : 'fill'
+        this.tools[index].mode = entry.mode
+      } else {
+        this.selectedToolIndex = index
+      }
     },
     setupStateManager({ drawingCtx, overlayCtx }) {
       this.tools = [

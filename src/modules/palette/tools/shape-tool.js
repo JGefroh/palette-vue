@@ -4,6 +4,7 @@ export class ShapeTool {
     this.overlayCtx = overlayCtx
     this.getLineWidth = getLineWidth
     this.startCoordinates = null
+    this.mode = 'outline'
   }
 
   get label() {

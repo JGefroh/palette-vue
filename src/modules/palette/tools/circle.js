@@ -15,7 +15,7 @@ export class Circle extends ShapeTool {
     ctx.save()
     ctx.beginPath()
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
-    ctx.stroke()
+    this.mode === 'fill' ? ctx.fill() : ctx.stroke()
     ctx.restore()
   }
 }
