@@ -53,6 +53,16 @@ export default {
           this.overlayCtx.strokeStyle = this.defaultColor
         }
       }
+      // Redraw cursor marker if Pencil tool is selected
+      if (this.tool && this.tool.constructor.name === 'Pencil' && this.cursorManager) {
+        this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+        const coordinates = this.cursorManager.getCurrentCoordinates()
+        this.overlayCtx.save()
+        this.overlayCtx.beginPath()
+        this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI)
+        this.overlayCtx.fill()
+        this.overlayCtx.restore()
+      }
     },
     brushSize(newSize) {
       this.lineWidth = newSize
