@@ -53,6 +53,9 @@
         @dblclick="renameTab(tab)"
       >{{ tab.name }} <span class="tab-delete" @click.stop="deleteTab(tab)">✕</span></button>
       <button class="tab tab-add" @click="addTab">+</button>
+      <button class="tab tab-download" @click="download" style="margin-left: auto;" title="Download">
+        <span class="fa fa-fw fa-download"></span>
+      </button>
     </div>
     <PaperCanvas ref="canvas" :color="selectedColor" :brush-size="selectedSize" :tool="activeTool" @on-initialize="setupStateManager" @on-stroke-start="saveState" @on-change="detectChange" />
   </div>
@@ -212,6 +215,17 @@ export default {
     },
     detectChange() {
       this.activeTab.unsavedChanges = true
+    },
+    download() {
+      const link = document.createElement('a')
+      const filename = this.activeTab.name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+      link.download = `${filename}.png`
+      link.href = this.$refs.canvas.$refs.drawing.toDataURL()
+      link.click()
     },
     clear() {
       if (this.canvasClearer?.clear()) {
