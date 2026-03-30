@@ -124,8 +124,14 @@ export default {
 
     updateCursor(event) {
       this.cursorManager.updateFromMouseEvent(event)
-      const coordinates = this.cursorManager.getCurrentCoordinates()
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+
+      // Only show cursor marker for Pencil tool
+      if (!this.tool || this.tool.constructor.name !== 'Pencil') {
+        return
+      }
+
+      const coordinates = this.cursorManager.getCurrentCoordinates()
       this.overlayCtx.save()
       this.overlayCtx.beginPath()
       this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI)
