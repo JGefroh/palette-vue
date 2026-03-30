@@ -112,6 +112,8 @@ export default {
       })
 
       const paper = this.$refs.paper
+      paper.addEventListener('dragover', (e) => e.preventDefault())
+      paper.addEventListener('drop', this.fitDroppedImage.bind(this))
       paper.addEventListener('mousemove', this.updateCursor.bind(this))
       paper.addEventListener('mousedown', this.start.bind(this))
       paper.addEventListener('mousemove', this.process.bind(this))
@@ -161,6 +163,27 @@ export default {
       this.cursorManager.updateFromMouseEvent(event)
       this.tool.end(this.cursorManager.getCurrentCoordinates())
       this.cursorManager.setMouseDown(false)
+    },
+
+    fitImage(src) {
+      const img = new Image()
+      img.onload = () => {
+        const cw = this.drawingCtx.canvas.width
+        const ch = this.drawingCtx.canvas.height
+        const scale = Math.min(cw / img.width, ch / img.height)
+        const x = (cw - img.width * scale) / 2
+        const y = (ch - img.height * scale) / 2
+        this.drawingCtx.drawImage(img, x, y, img.width * scale, img.height * scale)
+        this.$emit('on-change')
+      }
+      img.src = src
+    },
+
+    fitDroppedImage(event) {
+      event.preventDefault()
+      const file = event.dataTransfer.files[0]
+      if (!file || !file.type.startsWith('image/')) return
+      this.fitImage(URL.createObjectURL(file))
     },
 
     onWheel(event) {

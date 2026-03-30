@@ -2,7 +2,7 @@
   <div class="palette-app">
     <div class="navigation">
       Palette v0.0.2
-      <a href="http://www.jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
+      <a href="https://jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
     </div>
     <div class="toolbar">
       <button class="tool" :class="{ unsaved: activeTab?.unsavedChanges }" @click="save" title="Save">
@@ -69,6 +69,7 @@ import { Rectangle } from './tools/rectangle.js'
 import { Circle } from './tools/circle.js'
 import { Line } from './tools/line.js'
 import { Text } from './tools/text.js'
+import heroImage from '../../assets/hero.jpg'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
 import { CanvasClearer } from './tools/canvas-clearer.js'
 
@@ -189,8 +190,10 @@ export default {
         this.tabs = JSON.parse(savedTabs).map(t => ({ ...t, unsavedChanges: false }))
         this.activeTabId = this.tabs[0].id
         this.nextTabId = Math.max(...this.tabs.map(t => t.id)) + 1
+        this.canvasStateManager.load(`palette-canvas-${this.activeTabId}`)
+      } else {
+        this.$refs.canvas.fitImage(heroImage)
       }
-      this.canvasStateManager.load(`palette-canvas-${this.activeTabId}`)
     },
     saveState() {
       this.canvasStateManager?.saveState()
