@@ -114,6 +114,7 @@ export default {
       if (!confirm(`Delete "${tab.name}"?`)) return
       const index = this.tabs.indexOf(tab)
       this.tabs.splice(index, 1)
+      localStorage.removeItem(`palette-canvas-${tab.id}`)
       if (this.tabs.length === 0) this.tabs.push({ id: this.nextTabId++, name: 'Canvas 1', unsavedChanges: false })
       if (this.activeTabId === tab.id) {
         this.switchTab(this.tabs[Math.max(0, index - 1)].id)
