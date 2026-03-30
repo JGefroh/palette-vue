@@ -17,8 +17,8 @@ class CursorManager {
   getCoordinatesFromEvent(event) {
     const bounds = this.canvas.getBoundingClientRect()
     return {
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top
+      x: (event.clientX - bounds.left) * (this.canvas.width / bounds.width),
+      y: (event.clientY - bounds.top) * (this.canvas.height / bounds.height)
     }
   }
 

@@ -1,7 +1,9 @@
 <template>
   <div ref="paper" class="paper">
-    <canvas ref="overlay" class="overlay"></canvas>
-    <canvas ref="drawing" class="drawing"></canvas>
+    <div class="viewport" :style="viewportStyle">
+      <canvas ref="overlay" class="overlay"></canvas>
+      <canvas ref="drawing" class="drawing"></canvas>
+    </div>
   </div>
 </template>
 
@@ -31,7 +33,10 @@ export default {
       defaultColor: 'black',
       defaultLineWidth: 10,
       lineWidth: 10,
-      cursorManager: null
+      cursorManager: null,
+      zoom: 1,
+      panX: 0,
+      panY: 0
     }
   },
   watch: {
@@ -54,6 +59,14 @@ export default {
       if (this.drawingCtx) {
         this.drawingCtx.lineWidth = this.lineWidth
         this.overlayCtx.lineWidth = this.lineWidth
+      }
+    }
+  },
+  computed: {
+    viewportStyle() {
+      return {
+        transformOrigin: '0 0',
+        transform: `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`
       }
     }
   },
@@ -103,6 +116,7 @@ export default {
       paper.addEventListener('mousedown', this.start.bind(this))
       paper.addEventListener('mousemove', this.process.bind(this))
       paper.addEventListener('mouseup', this.end.bind(this))
+      paper.addEventListener('wheel', this.onWheel.bind(this), { passive: false })
     },
 
     updateCursor(event) {
@@ -149,14 +163,27 @@ export default {
       this.cursorManager.setMouseDown(false)
     },
 
+    onWheel(event) {
+      if (!event.ctrlKey) return
+      event.preventDefault()
+      const factor = event.deltaY < 0 ? 1.1 : 0.9
+      const newZoom = Math.max(0.1, Math.min(8, this.zoom * factor))
+      const rect = this.$refs.paper.getBoundingClientRect()
+      const relX = event.clientX - rect.left
+      const relY = event.clientY - rect.top
+      const ratio = newZoom / this.zoom
+      this.panX = relX * (1 - ratio) + this.panX * ratio
+      this.panY = relY * (1 - ratio) + this.panY * ratio
+      this.zoom = newZoom
+    },
+
     resizeCanvas(context) {
       let drawing = null
       if (context.canvas.width > 0 && context.canvas.height > 0) {
         drawing = context.getImageData(0, 0, context.canvas.width, context.canvas.height)
       }
-      const rect = context.canvas.parentElement.getBoundingClientRect()
-      context.canvas.width = rect.width
-      context.canvas.height = rect.height
+      context.canvas.width = this.$refs.paper.offsetWidth
+      context.canvas.height = this.$refs.paper.offsetHeight
       if (drawing) {
         context.putImageData(drawing, 0, 0)
       }
@@ -171,6 +198,15 @@ export default {
   position: relative;
   flex: 1;
   overflow: hidden;
+  background-color: #c8c8c8;
+}
+
+.viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 canvas {
