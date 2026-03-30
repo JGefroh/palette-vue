@@ -65,10 +65,10 @@ export default {
       brushSizes: [5, 10, 15, 20, 50, 100],
       selectedToolIndex: 0,
       toolList: [
-        { name: 'Pencil', icon: null },
-        { name: 'Rectangle', icon: 'fa-square' },
-        { name: 'Circle', icon: 'fa-circle' },
-        { name: 'Text', icon: 'fa-font' }
+        { name: 'Pencil', icon: null, shortcut: 'p' },
+        { name: 'Rectangle', icon: 'fa-square', shortcut: 'r' },
+        { name: 'Circle', icon: 'fa-circle', shortcut: 'o' },
+        { name: 'Text', icon: 'fa-font', shortcut: 't' }
       ],
       tools: [],
       canvasStateManager: null,
@@ -89,7 +89,17 @@ export default {
       deep: true
     }
   },
+  mounted() {
+    window.addEventListener('keydown', this.executeCommandFromShortcut)
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.executeCommandFromShortcut)
+  },
   methods: {
+    executeCommandFromShortcut(event) {
+      const index = this.toolList.findIndex(t => t.shortcut === event.key)
+      if (index !== -1) this.selectedToolIndex = index
+    },
     setupStateManager({ drawingCtx, overlayCtx }) {
       this.tools = [
         new Pencil({
