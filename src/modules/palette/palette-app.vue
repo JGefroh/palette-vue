@@ -69,6 +69,7 @@ import { Rectangle } from './tools/rectangle.js'
 import { Circle } from './tools/circle.js'
 import { Line } from './tools/line.js'
 import { Text } from './tools/text.js'
+import { Select } from './tools/select.js'
 import heroImage from '../../assets/hero.jpg'
 import { CanvasStateManager } from './tools/canvas-state-manager.js'
 import { CanvasClearer } from './tools/canvas-clearer.js'
@@ -89,7 +90,8 @@ export default {
         { name: 'Rectangle', fillIcon: 'fa-square', outlineIcon: 'fa-square-o', mode: 'outline', shortcut: 'r' },
         { name: 'Circle', fillIcon: 'fa-circle', outlineIcon: 'fa-circle-o', mode: 'outline', shortcut: 'o' },
         { name: 'Line', icon: 'fa-minus', shortcut: 'l' },
-        { name: 'Text', icon: 'fa-font', shortcut: 't' }
+        { name: 'Text', icon: 'fa-font', shortcut: 't' },
+        { name: 'Select', fillIcon: 'fa-object-group', outlineIcon: 'fa-object-ungroup', mode: 'fill', shortcut: 's' }
       ],
       tools: [],
       canvasStateManager: null,
@@ -196,8 +198,17 @@ export default {
         new Text({
           drawingCtx,
           overlayCtx
+        }),
+        new Select({
+          drawingCtx,
+          overlayCtx,
+          getLineWidth: () => this.$refs.canvas.lineWidth
         })
       ]
+      // Set initial modes for tools that have fill/outline
+      this.tools[1].mode = this.toolList[1].mode // Rectangle
+      this.tools[2].mode = this.toolList[2].mode // Circle
+      this.tools[5].mode = this.toolList[5].mode // Select
       this.selectedToolIndex = 0
       this.canvasStateManager = new CanvasStateManager({ drawingCtx })
       this.canvasClearer = new CanvasClearer(drawingCtx)

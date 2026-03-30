@@ -134,13 +134,13 @@ export default {
 
     updateCursor(event) {
       this.cursorManager.updateFromMouseEvent(event)
-      this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
 
       // Only show cursor marker for Pencil tool
       if (!this.tool || this.tool.constructor.name !== 'Pencil') {
         return
       }
 
+      this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
       const coordinates = this.cursorManager.getCurrentCoordinates()
       this.overlayCtx.save()
       this.overlayCtx.beginPath()
