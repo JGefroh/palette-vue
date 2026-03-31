@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { CursorManager } from '../tools/cursor-manager.js'
+import { CursorManager } from '../utilities/cursor-manager.js'
 
 export default {
   props: {

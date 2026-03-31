@@ -1,4 +1,4 @@
-export class CanvasStateManager {
+export class CanvasStateService {
   constructor(dependencies) {
     this.drawingCtx = dependencies.drawingCtx
     this.history = []

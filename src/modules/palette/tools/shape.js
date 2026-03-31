@@ -1,4 +1,4 @@
-export class ShapeTool {
+export class Shape {
   constructor({ drawingCtx, overlayCtx, getLineWidth }) {
     this.drawingCtx = drawingCtx
     this.overlayCtx = overlayCtx

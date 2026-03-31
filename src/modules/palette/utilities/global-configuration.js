@@ -2,7 +2,6 @@ class GlobalConfiguration {
   constructor() {
     this.store = {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
-      selectedToolIndex: 0,
       selectedSize: 10
     }
   }

@@ -1,6 +1,6 @@
-import { ShapeTool } from './shape-tool.js'
+import { Shape } from './shape.js'
 
-export class Circle extends ShapeTool {
+export class ShapeCircle extends Shape {
   constructor(dependencies) {
     super(dependencies)
     this.name = 'Circle'
@@ -10,7 +10,7 @@ export class Circle extends ShapeTool {
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new Circle({ drawingCtx, overlayCtx, getLineWidth })
+    return new ShapeCircle({ drawingCtx, overlayCtx, getLineWidth })
   }
 
   get label() {

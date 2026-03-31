@@ -1,6 +1,6 @@
-import { ShapeTool } from './shape-tool.js'
+import { Shape } from './shape.js'
 
-export class Rectangle extends ShapeTool {
+export class ShapeRectangle extends Shape {
   constructor(dependencies) {
     super(dependencies)
     this.name = 'Rectangle'
@@ -10,7 +10,7 @@ export class Rectangle extends ShapeTool {
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new Rectangle({ drawingCtx, overlayCtx, getLineWidth })
+    return new ShapeRectangle({ drawingCtx, overlayCtx, getLineWidth })
   }
 
   get label() {

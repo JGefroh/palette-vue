@@ -1,15 +1,7 @@
 <template>
   <div class="toolbar">
-    <button class="tool" :class="{ unsaved: unsavedChanges }" @click="$emit('save')" title="Save">
-      <span class="fa fa-fw fa-save"></span> Save
-    </button>
-    <div class="divider"></div>
-    <button class="tool" @click="$emit('undo')" title="Undo">
-      <span class="fa fa-fw fa-undo"></span>
-    </button>
-    <button class="tool" @click="$emit('redo')" title="Redo">
-      <span class="fa fa-fw fa-repeat"></span>
-    </button>
+    <UndoButton />
+    <RedoButton />
     <div class="divider"></div>
     <button
       v-for="size in brushSizes"
@@ -33,28 +25,30 @@
       <span v-else-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
       <span v-else>{{ tool.name }}</span>
     </button>
-    <button class="tool clear-button" @click="$emit('clear')" title="Clear canvas" style="margin-left: auto;">
-      <span class="fa fa-fw fa-trash"></span> Clear
-    </button>
+    <ClearButton />
   </div>
 </template>
 
 <script>
-import { globalConfiguration } from '../tools/global-configuration.js'
-import { globalCanvasManager } from '../tools/global-canvas-manager.js'
+import { globalConfiguration } from '../utilities/global-configuration.js'
+import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { Pencil } from '../tools/pencil.js'
-import { Rectangle } from '../tools/rectangle.js'
-import { Circle } from '../tools/circle.js'
-import { Line } from '../tools/line.js'
+import { ShapeRectangle } from '../tools/shape-rectangle.js'
+import { ShapeCircle } from '../tools/shape-circle.js'
+import { ShapeLine } from '../tools/shape-line.js'
 import { Text } from '../tools/text.js'
 import { Select } from '../tools/select.js'
+import UndoButton from './undo-button.vue'
+import RedoButton from './redo-button.vue'
+import ClearButton from './clear-button.vue'
 
 export default {
+  components: {
+    UndoButton,
+    RedoButton,
+    ClearButton
+  },
   props: {
-    unsavedChanges: {
-      type: Boolean,
-      default: false
-    },
     activeTool: {
       type: Object,
       default: null
@@ -92,9 +86,9 @@ export default {
 
       this.toolList = [
         Pencil.new(drawingCtx, overlayCtx, getLineWidth),
-        Rectangle.new(drawingCtx, overlayCtx, getLineWidth),
-        Circle.new(drawingCtx, overlayCtx, getLineWidth),
-        Line.new(drawingCtx, overlayCtx, getLineWidth),
+        ShapeRectangle.new(drawingCtx, overlayCtx, getLineWidth),
+        ShapeCircle.new(drawingCtx, overlayCtx, getLineWidth),
+        ShapeLine.new(drawingCtx, overlayCtx, getLineWidth),
         Text.new(drawingCtx, overlayCtx),
         Select.new(drawingCtx, overlayCtx, getLineWidth)
       ]
@@ -146,10 +140,6 @@ export default {
 .tool.active {
   background-color: #34495e;
   color: white;
-}
-
-.tool.unsaved {
-  box-shadow: inset 0 -3px 0 #e74c3c;
 }
 
 .divider {
