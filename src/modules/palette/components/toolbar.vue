@@ -1,5 +1,7 @@
 <template>
   <div class="toolbar">
+    <HelpButton />
+    <div class="divider"></div>
     <UndoButton />
     <RedoButton />
     <div class="divider"></div>
@@ -41,9 +43,11 @@ import { Select } from '../tools/select.js'
 import UndoButton from './undo-button.vue'
 import RedoButton from './redo-button.vue'
 import ClearButton from './clear-button.vue'
+import HelpButton from './help-button.vue'
 
 export default {
   components: {
+    HelpButton,
     UndoButton,
     RedoButton,
     ClearButton

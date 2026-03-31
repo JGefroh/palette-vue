@@ -6,7 +6,7 @@ export class ShapeCircle extends Shape {
     this.name = 'Circle'
     this.fillIcon = 'fa-circle'
     this.outlineIcon = 'fa-circle-o'
-    this.shortcut = 'o'
+    this.shortcut = 'c'
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
