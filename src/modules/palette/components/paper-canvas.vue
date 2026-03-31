@@ -53,8 +53,8 @@ export default {
           this.overlayCtx.strokeStyle = this.defaultColor
         }
       }
-      // Redraw cursor marker if Pencil tool is selected
-      if (this.activeTool && this.activeTool.constructor.name === 'Pencil' && this.cursorManager) {
+      // Redraw cursor marker if Brush tool is selected
+      if (this.activeTool && this.activeTool.constructor.name === 'Brush' && this.cursorManager) {
         this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
         const coordinates = this.cursorManager.getCurrentCoordinates()
         this.overlayCtx.save()
@@ -135,8 +135,8 @@ export default {
     updateCursor(event) {
       this.cursorManager.updateFromMouseEvent(event)
 
-      // Only show cursor marker for Pencil tool
-      if (!this.activeTool || this.activeTool.constructor.name !== 'Pencil') {
+      // Only show cursor marker for Brush tool
+      if (!this.activeTool || this.activeTool.constructor.name !== 'Brush') {
         return
       }
 

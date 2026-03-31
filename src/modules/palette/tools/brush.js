@@ -1,20 +1,20 @@
-export class Pencil {
+export class Brush {
   constructor(dependencies) {
     this.drawingCtx = dependencies.drawingCtx
     this.overlayCtx = dependencies.overlayCtx
     this.getLineWidth = dependencies.getLineWidth
     this.strokeStartCoordinates = null
-    this.name = 'Pencil'
+    this.name = 'Brush'
     this.icon = null
-    this.shortcut = 'p'
+    this.shortcut = 'b'
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new Pencil({ drawingCtx, overlayCtx, getLineWidth })
+    return new Brush({ drawingCtx, overlayCtx, getLineWidth })
   }
 
   get label() {
-    return 'Pencil'
+    return 'Brush'
   }
 
   start(coordinates) {

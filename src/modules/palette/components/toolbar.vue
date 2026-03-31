@@ -32,7 +32,7 @@
 <script>
 import { globalConfiguration } from '../utilities/global-configuration.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import { Pencil } from '../tools/pencil.js'
+import { Brush } from '../tools/brush.js'
 import { ShapeRectangle } from '../tools/shape-rectangle.js'
 import { ShapeCircle } from '../tools/shape-circle.js'
 import { ShapeLine } from '../tools/shape-line.js'
@@ -85,7 +85,7 @@ export default {
       const getLineWidth = () => globalConfiguration.get('selectedSize')
 
       this.toolList = [
-        Pencil.new(drawingCtx, overlayCtx, getLineWidth),
+        Brush.new(drawingCtx, overlayCtx, getLineWidth),
         ShapeRectangle.new(drawingCtx, overlayCtx, getLineWidth),
         ShapeCircle.new(drawingCtx, overlayCtx, getLineWidth),
         ShapeLine.new(drawingCtx, overlayCtx, getLineWidth),
