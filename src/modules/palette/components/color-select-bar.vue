@@ -48,6 +48,8 @@ export default {
   data() {
     return {
       colors: [
+        { label: 'Pure Black', hex: '#000000' },
+        { label: 'Pure White', hex: '#FFFFFF' },
         { label: 'Turquoise', hex: '#1abc9c' },
         { label: 'Green Sea', hex: '#16a085' },
         { label: 'Emerald', hex: '#2ecc71' },
@@ -69,9 +71,7 @@ export default {
         { label: 'Clouds', hex: '#ecf0f1' },
         { label: 'Silver', hex: '#bdc3c7' },
         { label: 'Concrete', hex: '#95a5a6' },
-        { label: 'Abestos', hex: '#7f8c8d' },
-        { label: 'Pure White', hex: '#FFFFFF' },
-        { label: 'Pure Black', hex: '#000000' }
+        { label: 'Abestos', hex: '#7f8c8d' }
       ],
       colorNumbers: {}
     }
