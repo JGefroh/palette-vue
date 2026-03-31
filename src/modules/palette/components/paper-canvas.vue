@@ -20,7 +20,7 @@ export default {
       type: Number,
       default: 10
     },
-    tool: {
+    activeTool: {
       type: Object,
       default: null
     }
@@ -54,7 +54,7 @@ export default {
         }
       }
       // Redraw cursor marker if Pencil tool is selected
-      if (this.tool && this.tool.constructor.name === 'Pencil' && this.cursorManager) {
+      if (this.activeTool && this.activeTool.constructor.name === 'Pencil' && this.cursorManager) {
         this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
         const coordinates = this.cursorManager.getCurrentCoordinates()
         this.overlayCtx.save()
@@ -136,7 +136,7 @@ export default {
       this.cursorManager.updateFromMouseEvent(event)
 
       // Only show cursor marker for Pencil tool
-      if (!this.tool || this.tool.constructor.name !== 'Pencil') {
+      if (!this.activeTool || this.activeTool.constructor.name !== 'Pencil') {
         return
       }
 
@@ -158,7 +158,7 @@ export default {
       this.cursorManager.updateFromMouseEvent(event)
       this.cursorManager.setMouseDown(true)
       this.$emit('on-stroke-start')
-      this.tool.start(this.cursorManager.getCurrentCoordinates())
+      this.activeTool.start(this.cursorManager.getCurrentCoordinates())
     },
 
     process(event) {
@@ -169,12 +169,12 @@ export default {
         return
       }
       const coordinates = this.cursorManager.getCurrentCoordinates()
-      if (this.tool.preProcess) {
-        this.tool.preProcess(coordinates)
+      if (this.activeTool.preProcess) {
+        this.activeTool.preProcess(coordinates)
       }
-      this.tool.process(coordinates)
-      if (this.tool.postProcess) {
-        this.tool.postProcess(coordinates)
+      this.activeTool.process(coordinates)
+      if (this.activeTool.postProcess) {
+        this.activeTool.postProcess(coordinates)
       }
       this.$emit('on-change')
     },
@@ -182,7 +182,7 @@ export default {
     end(event) {
       event.preventDefault()
       this.cursorManager.updateFromMouseEvent(event)
-      this.tool.end(this.cursorManager.getCurrentCoordinates())
+      this.activeTool.end(this.cursorManager.getCurrentCoordinates())
       this.cursorManager.setMouseDown(false)
     },
 

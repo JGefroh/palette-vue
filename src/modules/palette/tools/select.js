@@ -10,6 +10,14 @@ export class Select {
     this.moveOffset = { x: 0, y: 0 }
     this.capturedImageData = null // Store pixels being moved
     this.mode = 'fill' // 'fill' or 'outline'
+    this.name = 'Select'
+    this.fillIcon = 'fa-object-group'
+    this.outlineIcon = 'fa-object-ungroup'
+    this.shortcut = 's'
+  }
+
+  static new(drawingCtx, overlayCtx, getLineWidth) {
+    return new Select({ drawingCtx, overlayCtx, getLineWidth })
   }
 
   isPointInSelection(x, y) {

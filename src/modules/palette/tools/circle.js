@@ -1,6 +1,18 @@
 import { ShapeTool } from './shape-tool.js'
 
 export class Circle extends ShapeTool {
+  constructor(dependencies) {
+    super(dependencies)
+    this.name = 'Circle'
+    this.fillIcon = 'fa-circle'
+    this.outlineIcon = 'fa-circle-o'
+    this.shortcut = 'o'
+  }
+
+  static new(drawingCtx, overlayCtx, getLineWidth) {
+    return new Circle({ drawingCtx, overlayCtx, getLineWidth })
+  }
+
   get label() {
     return 'Circle'
   }

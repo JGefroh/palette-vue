@@ -2,6 +2,13 @@ export class Text {
   constructor(dependencies) {
     this.drawingCtx = dependencies.drawingCtx
     this.overlayCtx = dependencies.overlayCtx
+    this.name = 'Text'
+    this.icon = 'fa-font'
+    this.shortcut = 't'
+  }
+
+  static new(drawingCtx, overlayCtx) {
+    return new Text({ drawingCtx, overlayCtx })
   }
 
   get label() {

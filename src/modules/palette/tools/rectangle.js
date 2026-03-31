@@ -1,6 +1,18 @@
 import { ShapeTool } from './shape-tool.js'
 
 export class Rectangle extends ShapeTool {
+  constructor(dependencies) {
+    super(dependencies)
+    this.name = 'Rectangle'
+    this.fillIcon = 'fa-square'
+    this.outlineIcon = 'fa-square-o'
+    this.shortcut = 'r'
+  }
+
+  static new(drawingCtx, overlayCtx, getLineWidth) {
+    return new Rectangle({ drawingCtx, overlayCtx, getLineWidth })
+  }
+
   get label() {
     return 'Rectangle'
   }

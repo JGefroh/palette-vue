@@ -4,6 +4,13 @@ export class Pencil {
     this.overlayCtx = dependencies.overlayCtx
     this.getLineWidth = dependencies.getLineWidth
     this.strokeStartCoordinates = null
+    this.name = 'Pencil'
+    this.icon = null
+    this.shortcut = 'p'
+  }
+
+  static new(drawingCtx, overlayCtx, getLineWidth) {
+    return new Pencil({ drawingCtx, overlayCtx, getLineWidth })
   }
 
   get label() {
