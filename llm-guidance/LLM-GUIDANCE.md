@@ -49,3 +49,14 @@ All files should be lowercase and kebab-case except for .MD files.
 
 ## Errors and corrections
 If I have to correct you, update LLM-ISSUES-LOG.md with information about the correction. 
+
+
+## Code Style
+Use semicolons.
+Don't do single-line if statements: always wrap it in { }.
+
+## Vue
+Avoid `ref`.
+
+## State management
+Use `globalState` for things that ought to be global.
