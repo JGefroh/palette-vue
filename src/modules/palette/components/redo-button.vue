@@ -6,8 +6,12 @@
 
 <script>
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
+import { inputHandler } from '../utilities/input-handler.js'
 
 export default {
+  mounted() {
+    inputHandler.registerCommand('cmd+shift+z', 'redo', () => this.redo());
+  },
   methods: {
     redo() {
       globalCanvasManager.redoDrawing()
