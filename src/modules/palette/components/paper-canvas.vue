@@ -177,8 +177,14 @@ export default {
     },
 
     onWheel(event) {
-      if (!event.ctrlKey) return
       event.preventDefault()
+      if (event.ctrlKey) {
+        this.adjustZoom(event)
+      } else {
+        this.adjustPan(event)
+      }
+    },
+    adjustZoom(event) {
       const factor = event.deltaY < 0 ? 1.1 : 0.9
       const newZoom = Math.max(0.1, Math.min(8, this.zoom * factor))
       const rect = this.$refs.paper.getBoundingClientRect()
@@ -188,6 +194,10 @@ export default {
       this.panX = relX * (1 - ratio) + this.panX * ratio
       this.panY = relY * (1 - ratio) + this.panY * ratio
       this.zoom = newZoom
+    },
+    adjustPan(event) {
+      this.panX += event.deltaX
+      this.panY += event.deltaY
     },
     resizeCanvas(context) {
       let drawing = null
