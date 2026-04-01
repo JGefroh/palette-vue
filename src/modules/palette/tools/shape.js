@@ -38,7 +38,7 @@ export class Shape {
         this.drawingCtx.lineWidth = this.getLineWidth()
       }
       this.drawShape(this.drawingCtx, this.startCoordinates, coordinates)
+      this.startCoordinates = null
     }
-    this.startCoordinates = null
   }
 }

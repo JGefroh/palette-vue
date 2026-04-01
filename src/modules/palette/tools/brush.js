@@ -56,6 +56,7 @@ export class Brush {
   }
 
   drawLine(coordinates) {
+    this.drawingCtx.lineWidth = this.getLineWidth()
     this.drawingCtx.lineTo(coordinates.x, coordinates.y)
     this.drawingCtx.stroke()
     this.drawingCtx.beginPath()
@@ -67,9 +68,11 @@ export class Brush {
     if (this.strokeStartCoordinates &&
         coordinates.x === this.strokeStartCoordinates.x &&
         coordinates.y === this.strokeStartCoordinates.y) {
+      this.drawingCtx.lineWidth = this.getLineWidth()
       this.drawingCtx.arc(coordinates.x, coordinates.y, this.getLineWidth() / 2, 0, 2 * Math.PI)
       this.drawingCtx.fill()
     } else {
+      this.drawingCtx.lineWidth = this.getLineWidth()
       this.drawingCtx.lineTo(coordinates.x, coordinates.y)
       this.drawingCtx.stroke()
     }

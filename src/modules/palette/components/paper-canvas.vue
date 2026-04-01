@@ -9,30 +9,21 @@
 
 <script>
 import { CursorManager } from '../utilities/cursor-manager.js'
-
+import { globalState } from '../utilities/global-state.js'
+import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
+import heroImage from '../../../assets/hero.jpg'
 export default {
   props: {
-    color: {
-      type: Object,
-      default: () => ({ hex: '#000000' })
-    },
-    brushSize: {
-      type: Number,
-      default: 10
-    },
     activeTool: {
       type: Object,
       default: null
     }
   },
-  emits: ['on-initialize', 'on-stroke-start', 'on-change'],
+  emits: ['on-initialize', 'on-stroke-start'],
   data() {
     return {
       overlayCtx: null,
       drawingCtx: null,
-      defaultColor: 'black',
-      defaultLineWidth: 10,
-      lineWidth: 10,
       cursorManager: null,
       zoom: 1,
       panX: 0,
@@ -40,39 +31,27 @@ export default {
     }
   },
   watch: {
-    color(newColor) {
-      if (this.drawingCtx && this.overlayCtx) {
-        if (newColor) {
-          this.drawingCtx.strokeStyle = newColor.hex
-          this.drawingCtx.fillStyle = newColor.hex
-          this.overlayCtx.strokeStyle = newColor.hex
-          this.overlayCtx.fillStyle = newColor.hex
-        } else {
-          this.drawingCtx.strokeStyle = this.defaultColor
-          this.drawingCtx.fillStyle = this.defaultColor
-          this.overlayCtx.strokeStyle = this.defaultColor
-        }
-      }
-      // Redraw cursor marker if Brush tool is selected
-      if (this.activeTool && this.activeTool.constructor.name === 'Brush' && this.cursorManager) {
-        this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-        const coordinates = this.cursorManager.getCurrentCoordinates()
-        this.overlayCtx.save()
-        this.overlayCtx.beginPath()
-        this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI)
-        this.overlayCtx.fill()
-        this.overlayCtx.restore()
-      }
+    canvasConfiguration() {
+      this.syncTab();
     },
-    brushSize(newSize) {
-      this.lineWidth = newSize
-      if (this.drawingCtx) {
-        this.drawingCtx.lineWidth = this.lineWidth
-        this.overlayCtx.lineWidth = this.lineWidth
-      }
+    drawingConfiguration() {
+      this.syncBrush();
+      this.syncColor();
+      this.updateCursor();
     }
   },
   computed: {
+    canvasConfiguration() {
+      return {
+        selectedTab: globalState.get('selectedTab')
+      }
+    },
+    drawingConfiguration() {
+      return {
+        selectedColor: globalState.get('selectedColor'),
+        selectedSize: globalState.get('selectedSize')
+      }
+    },
     viewportStyle() {
       return {
         transformOrigin: '0 0',
@@ -83,6 +62,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.initialize()
+      this.syncColor();
     })
   },
   methods: {
@@ -94,25 +74,21 @@ export default {
       this.resizeCanvas(this.overlayCtx)
 
       this.cursorManager = new CursorManager(this.$refs.drawing)
-      this.$emit('on-initialize', { drawingCtx: this.drawingCtx, overlayCtx: this.overlayCtx })
+      globalCanvasManager.setContexts(this.drawingCtx, this.overlayCtx)
       this.initializeListeners()
-
-      // Set initial context properties
-      this.lineWidth = this.brushSize
-      this.drawingCtx.lineWidth = this.lineWidth
-      this.drawingCtx.lineCap = 'round'
-      this.drawingCtx.lineJoin = 'round'
-
-      // Set initial color
-      if (this.color) {
-        this.drawingCtx.strokeStyle = this.color.hex
-        this.drawingCtx.fillStyle = this.color.hex
-        this.overlayCtx.strokeStyle = this.color.hex
-        this.overlayCtx.fillStyle = this.color.hex
-      }
 
       // Clear the overlay to make it transparent
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+
+      if (globalState.get('isNewUser')) {
+        this.fitImage(heroImage)
+      }
+      else {
+        const selectedTab = globalState.get('selectedTab')
+        if (selectedTab) {
+          globalCanvasManager.loadCanvas(selectedTab.id)
+        }
+      }
     },
 
     initializeListeners() {
@@ -133,7 +109,9 @@ export default {
     },
 
     updateCursor(event) {
-      this.cursorManager.updateFromMouseEvent(event)
+      if (event) {
+        this.cursorManager.updateFromMouseEvent(event)
+      }
 
       // Only show cursor marker for Brush tool
       if (!this.activeTool || this.activeTool.constructor.name !== 'Brush') {
@@ -144,7 +122,7 @@ export default {
       const coordinates = this.cursorManager.getCurrentCoordinates()
       this.overlayCtx.save()
       this.overlayCtx.beginPath()
-      this.overlayCtx.arc(coordinates.x, coordinates.y, this.lineWidth / 2, 0, 2 * Math.PI)
+      this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
       this.overlayCtx.fill()
       this.overlayCtx.restore()
     },
@@ -157,7 +135,7 @@ export default {
       event.preventDefault()
       this.cursorManager.updateFromMouseEvent(event)
       this.cursorManager.setMouseDown(true)
-      this.$emit('on-stroke-start')
+      globalCanvasManager.saveDrawingState()
       this.activeTool.start(this.cursorManager.getCurrentCoordinates())
     },
 
@@ -176,16 +154,14 @@ export default {
       if (this.activeTool.postProcess) {
         this.activeTool.postProcess(coordinates)
       }
-      this.$emit('on-change')
     },
-
     end(event) {
       event.preventDefault()
       this.cursorManager.updateFromMouseEvent(event)
       this.activeTool.end(this.cursorManager.getCurrentCoordinates())
       this.cursorManager.setMouseDown(false)
+      this.onChange();
     },
-
     fitImage(src) {
       const img = new Image()
       img.onload = () => {
@@ -195,7 +171,6 @@ export default {
         const x = (cw - img.width * scale) / 2
         const y = (ch - img.height * scale) / 2
         this.drawingCtx.drawImage(img, x, y, img.width * scale, img.height * scale)
-        this.$emit('on-change')
       }
       img.src = src
     },
@@ -220,7 +195,6 @@ export default {
       this.panY = relY * (1 - ratio) + this.panY * ratio
       this.zoom = newZoom
     },
-
     resizeCanvas(context) {
       let drawing = null
       if (context.canvas.width > 0 && context.canvas.height > 0) {
@@ -232,7 +206,38 @@ export default {
         context.putImageData(drawing, 0, 0)
       }
     },
+    syncColor() {
+      let color = globalState.get('selectedColor')
+      if (this.drawingCtx && this.overlayCtx) {
+        this.drawingCtx.strokeStyle = color.hex
+        this.drawingCtx.fillStyle = color.hex
+        this.overlayCtx.strokeStyle = color.hex
+        this.overlayCtx.fillStyle = color.hex
+      }
+    },
+    syncBrush() {
+      if (this.activeTool && this.activeTool.constructor.name === 'Brush' && this.cursorManager) {
+        this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+        const coordinates = this.cursorManager.getCurrentCoordinates()
+        this.overlayCtx.save()
+        this.overlayCtx.beginPath()
+        this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
+        this.overlayCtx.fill()
+        this.overlayCtx.restore()
+      }
 
+      this.drawingCtx.lineWidth = globalState.get('selectedSize')
+      this.drawingCtx.lineCap = 'round'
+      this.drawingCtx.lineJoin = 'round'
+    },
+    syncTab() {
+      const ctx = globalCanvasManager.getDrawingContext()
+      if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+      globalCanvasManager.loadCanvas(globalState.get('selectedTab').id)
+    },
+    onChange() {
+      globalCanvasManager.persistCanvas(globalState.get('selectedTab').id);
+    }
   }
 }
 </script>

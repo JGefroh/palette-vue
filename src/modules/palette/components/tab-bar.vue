@@ -4,91 +4,83 @@
       v-for="tab in tabs"
       :key="tab.id"
       class="tab"
-      :class="{ active: activeTabId === tab.id }"
-      @click="switchTab(tab.id)"
+      :class="{ active: getSelectedTab()?.id === tab.id }"
+      @click="selectTab(tab.id)"
       @dblclick="renameTab(tab)"
     >{{ tab.name }} <span class="tab-delete" @click.stop="deleteTab(tab)">✕</span></button>
-    <button class="tab tab-add" @click="addTab">+</button>
+    <button class="tab tab-add" @click="addTab(false)">+</button>
     <DownloadButton
-      :tab-name="getActiveTab()?.name || 'Canvas'"
+      :tab-name="getSelectedTab()?.name || 'Canvas'"
     />
   </div>
 </template>
 
 <script>
 import DownloadButton from './download-button.vue'
+import { globalState } from '../utilities/global-state.js'
 
 export default {
   components: {
     DownloadButton
   },
   props: {
-    onSwitchTab: {
-      type: Function,
-      required: true
-    }
   },
-  emits: ['tab-changed'],
+  emits: [],
   data() {
     return {
-      tabs: [{ id: 1, name: 'Canvas 1' }],
-      activeTabId: 1,
-      nextTabId: 2
+      nextTabId: 1
+    }
+  },
+  computed: {
+    tabs() {
+      return globalState.get('palette-tabs');
     }
   },
   mounted() {
     this.loadSavedTabs()
   },
   methods: {
-    switchTab(id) {
-      this.activeTabId = id
-      this.onSwitchTab(id)
+    selectTab(id) {
+      const tab = this.tabs.find(t => t.id === id)
+      if (tab) {
+        globalState.set('selectedTab', tab)
+      }
     },
-    addTab() {
-      const id = this.nextTabId++
-      this.tabs.push({ id, name: `Canvas ${id}` })
-      this.switchTab(id)
-      this.saveTabs()
+    addTab(isWelcomeTab) {
+      let id = `canvas-${Math.random()}`;
+      globalState.get('palette-tabs').push({ id: id, name: isWelcomeTab ? 'Welcome!' : `New canvas` })
+      this.selectTab(id)
     },
     deleteTab(tab) {
       if (!confirm(`Delete "${tab.name}"?`)) return
-      const index = this.tabs.indexOf(tab)
-      this.tabs.splice(index, 1)
-      localStorage.removeItem(`palette-canvas-${tab.id}`)
-      if (this.tabs.length === 0) {
-        this.tabs.push({ id: this.nextTabId++, name: 'Canvas 1' })
+      const index = globalState.get('palette-tabs').indexOf(tab);
+      globalState.get('palette-tabs').splice(index, 1)
+      globalState.delete(tab.id)
+      if (!globalState.get('palette-tabs').length) {
+        this.addTab();
       }
-      if (this.activeTabId === tab.id) {
-        this.switchTab(this.tabs[Math.max(0, index - 1)].id)
-      }
-      this.saveTabs()
+
+      const nextTabIndex = Math.max(0, Math.min(index, this.tabs.length - 1))
+      this.selectTab(this.tabs[nextTabIndex].id)
     },
     renameTab(tab) {
       const name = prompt('Canvas name:', tab.name)
       if (name) {
         tab.name = name
-        this.saveTabs()
       }
     },
-    getActiveTab() {
-      return this.tabs.find(t => t.id === this.activeTabId)
-    },
-    saveTabs() {
-      localStorage.setItem('palette-tabs', JSON.stringify(this.tabs))
-      this.$emit('tab-changed')
+    getSelectedTab() {
+      return globalState.get('selectedTab');
     },
     loadSavedTabs() {
-      const savedTabs = localStorage.getItem('palette-tabs')
-      if (savedTabs) {
-        this.tabs = JSON.parse(savedTabs)
-        this.activeTabId = this.tabs[0].id
-        this.nextTabId = Math.max(...this.tabs.map(t => t.id)) + 1
-        return true
+      if (globalState.get('palette-tabs', []).length) {
+        globalState.set('selectedTab', this.tabs[0])
+        globalState.set('isNewUser', false);
       }
-      return false
-    },
-    hasSavedTabs() {
-      return !!localStorage.getItem('palette-tabs')
+      else {
+        globalState.set('isNewUser', true);
+        this.addTab(true);
+      }
     }
   }
 }

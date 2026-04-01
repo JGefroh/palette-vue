@@ -43,7 +43,7 @@
             <li>Freehand drawing with customizable brush size (5-100px)</li>
             <li>Undo/Redo with keyboard shortcuts</li>
             <li>Multiple tabs for different drawings</li>
-            <li>Save and load drawings (persisted locally)</li>
+            <li>Auto-save and load drawings (persisted locally)</li>
             <li>Zoom in/out with Ctrl+Scroll (or Cmd+Scroll on Mac)</li>
             <li>Pan canvas while zoomed</li>
             <li>Fill and outline shapes</li>
@@ -80,7 +80,6 @@ export default {
       commands: [
         { key: 'Cmd+Z / Ctrl+Z', description: 'Undo' },
         { key: 'Cmd+Shift+Z / Ctrl+Y', description: 'Redo' },
-        { key: 'Cmd+S / Ctrl+S', description: 'Save' },
         { key: 'Ctrl+Scroll / Cmd+Scroll', description: 'Zoom' }
       ]
     }

@@ -12,11 +12,7 @@ export default {
     clear() {
       if (!confirm('Are you sure?')) return
 
-      const ctx = globalCanvasManager.getDrawingContext()
-      if (ctx) {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        globalCanvasManager.save()
-      }
+      globalCanvasManager.clear();
     }
   }
 }

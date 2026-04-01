@@ -9,8 +9,8 @@
       v-for="size in brushSizes"
       :key="size"
       class="tool"
-      :class="{ active: globalConfiguration.get('selectedSize') === size }"
-      @click="globalConfiguration.set('selectedSize', size)"
+      :class="{ active: globalState.get('selectedSize') === size }"
+      @click="globalState.set('selectedSize', size)"
     >
       <span class="fa fa-fw fa-circle"></span> {{ size }}
     </button>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { globalConfiguration } from '../utilities/global-configuration.js'
+import { globalState } from '../utilities/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { Brush } from '../tools/brush.js'
 import { ShapeRectangle } from '../tools/shape-rectangle.js'
@@ -60,7 +60,7 @@ export default {
   },
   data() {
     return {
-      globalConfiguration,
+      globalState,
       brushSizes: [5, 10, 15, 20, 50, 100],
       toolList: [],
       selectedTool: null
@@ -86,7 +86,7 @@ export default {
 
       if (!drawingCtx || !overlayCtx) return
 
-      const getLineWidth = () => globalConfiguration.get('selectedSize')
+      const getLineWidth = () => globalState.get('selectedSize')
 
       this.toolList = [
         Brush.new(drawingCtx, overlayCtx, getLineWidth),

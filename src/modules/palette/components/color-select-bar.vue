@@ -4,7 +4,7 @@
       v-for="color in colors"
       :key="color.hex"
       class="color"
-      :class="{ selected: color.hex === modelValue.hex }"
+      :class="{ selected: color.hex === selectedColor.hex }"
       :style="{
         'background-color': color.hex
       }"
@@ -17,29 +17,14 @@
 </template>
 
 <script>
+import { globalState } from '../utilities/global-state.js'
+
 export default {
   props: {
-    modelValue: {
-      type: Object,
-      default: () => ({ label: 'Turquoise', hex: '#1abc9c' })
-    }
   },
-  emits: ['update:modelValue'],
-  watch: {
-    colorNumbers: {
-      deep: true,
-      handler() {
-        localStorage.setItem('palette-color-numbers', JSON.stringify(this.colorNumbers))
-      }
-    }
-  },
+  emits: [],
   mounted() {
-    const saved = localStorage.getItem('palette-color-numbers')
-    if (saved) {
-      this.colorNumbers = JSON.parse(saved)
-    } else {
-      this.initializeDefaultColorNumbers()
-    }
+    this.initializeDefaultColorNumbers()
     window.addEventListener('keydown', this.handleColorShortcut.bind(this))
   },
   beforeUnmount() {
@@ -76,13 +61,23 @@ export default {
       colorNumbers: {}
     }
   },
+  computed: {
+    selectedColor() {
+      return globalState.get('selectedColor');
+    }
+  },
   methods: {
     initializeDefaultColorNumbers() {
-      this.colorNumbers['#000000'] = '1' // Black
-      this.colorNumbers['#FFFFFF'] = '2' // White
+      if (globalState.get('color-numbers')) {
+        this.colorNumbers = globalState.get('color-numbers');
+      }
+      else {
+        this.colorNumbers['#000000'] = '1' // Black
+        this.colorNumbers['#FFFFFF'] = '2' // White
+      }
     },
     handleColorClick(color) {
-      if (color.hex === this.modelValue.hex) {
+      if (color.hex === this.selectedColor.hex) {
         // Already selected: increment number
         this.assignNumber(color)
       } else {
@@ -91,10 +86,11 @@ export default {
       }
     },
     selectColor(color) {
-      this.$emit('update:modelValue', color)
+      globalState.set('selectedColor', color)
     },
     assignNumber(color) {
       const current = this.colorNumbers[color.hex]
+
       if (current === undefined) {
         this.colorNumbers[color.hex] = '0'
       } else if (current === '9') {
@@ -102,6 +98,8 @@ export default {
       } else {
         this.colorNumbers[color.hex] = String(parseInt(current) + 1)
       }
+      
+      globalState.set('color-numbers', this.colorNumbers);
     },
     handleColorShortcut(event) {
       // Color shortcuts: 0-9
@@ -112,7 +110,7 @@ export default {
       if (colorsWithNumber.length === 0) {
         return
       }
-      const currentIndex = colorsWithNumber.findIndex(c => c.hex === this.modelValue.hex)
+      const currentIndex = colorsWithNumber.findIndex(c => c.hex === this.selectedColor.hex)
       const nextIndex = (currentIndex + 1) % colorsWithNumber.length
       this.selectColor(colorsWithNumber[nextIndex])
     }
