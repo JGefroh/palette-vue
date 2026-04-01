@@ -4,12 +4,10 @@
       Palette v0.0.2
       <a href="https://jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
     </div>
-    <ToolBar v-model:active-tool="activeTool" />
+    <ToolBar />
     <ColorSelectBar />
     <TabBar />
-    <PaperCanvas ref="canvas" :active-tool="activeTool" />
-    <div>
-    </div>
+    <PaperCanvas />
   </div>
 </template>
 
@@ -31,7 +29,6 @@ export default {
   },
   data() {
     return {
-      activeTool: null,
     }
   },
   mounted() {

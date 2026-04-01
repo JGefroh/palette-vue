@@ -13,12 +13,6 @@ import { globalState } from '../utilities/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import heroImage from '../../../assets/hero.jpg'
 export default {
-  props: {
-    activeTool: {
-      type: Object,
-      default: null
-    }
-  },
   emits: ['on-initialize', 'on-stroke-start'],
   data() {
     return {
@@ -114,7 +108,7 @@ export default {
       }
 
       // Only show cursor marker for Brush tool
-      if (!this.activeTool || this.activeTool.constructor.name !== 'Brush') {
+      if (!globalState.get('selectedTool') || globalState.get('selectedTool').constructor.name !== 'Brush') {
         return
       }
 
@@ -136,7 +130,7 @@ export default {
       this.cursorManager.updateFromMouseEvent(event)
       this.cursorManager.setMouseDown(true)
       globalCanvasManager.saveDrawingState()
-      this.activeTool.start(this.cursorManager.getCurrentCoordinates())
+      globalState.get('selectedTool').start(this.cursorManager.getCurrentCoordinates())
     },
 
     process(event) {
@@ -147,18 +141,18 @@ export default {
         return
       }
       const coordinates = this.cursorManager.getCurrentCoordinates()
-      if (this.activeTool.preProcess) {
-        this.activeTool.preProcess(coordinates)
+      if (globalState.get('selectedTool').preProcess) {
+        globalState.get('selectedTool').preProcess(coordinates)
       }
-      this.activeTool.process(coordinates)
-      if (this.activeTool.postProcess) {
-        this.activeTool.postProcess(coordinates)
+      globalState.get('selectedTool').process(coordinates)
+      if (globalState.get('selectedTool').postProcess) {
+        globalState.get('selectedTool').postProcess(coordinates)
       }
     },
     end(event) {
       event.preventDefault()
       this.cursorManager.updateFromMouseEvent(event)
-      this.activeTool.end(this.cursorManager.getCurrentCoordinates())
+      globalState.get('selectedTool').end(this.cursorManager.getCurrentCoordinates())
       this.cursorManager.setMouseDown(false)
       this.onChange();
     },
@@ -216,7 +210,7 @@ export default {
       }
     },
     syncBrush() {
-      if (this.activeTool && this.activeTool.constructor.name === 'Brush' && this.cursorManager) {
+      if (globalState.get('selectedTool') && globalState.get('selectedTool').constructor.name === 'Brush' && this.cursorManager) {
         this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
         const coordinates = this.cursorManager.getCurrentCoordinates()
         this.overlayCtx.save()

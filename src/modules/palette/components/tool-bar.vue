@@ -19,7 +19,7 @@
       v-for="tool in toolList"
       :key="tool.name"
       class="tool"
-      :class="{ active: tool === selectedTool }"
+      :class="{ active: tool === globalState.get('selectedTool') }"
       @click="selectToolOrToggleMode(tool)"
       :title="tool.name"
     >
@@ -52,18 +52,11 @@ export default {
     RedoButton,
     ClearButton
   },
-  props: {
-    activeTool: {
-      type: Object,
-      default: null
-    }
-  },
   data() {
     return {
       globalState,
       brushSizes: [5, 10, 15, 20, 50, 100],
-      toolList: [],
-      selectedTool: null
+      toolList: []
     }
   },
   mounted() {
@@ -73,11 +66,6 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleToolShortcut)
     globalCanvasManager.onContextsReady = null
-  },
-  watch: {
-    selectedTool() {
-      this.$emit('update:activeTool', this.selectedTool)
-    }
   },
   methods: {
     initializeTools() {
@@ -97,14 +85,19 @@ export default {
         Select.new(drawingCtx, overlayCtx, getLineWidth)
       ]
 
-      this.selectedTool = this.toolList[0]
-      this.$emit('update:toolList', this.toolList)
+      const savedTool = globalState.get('selectedTool')
+      if (savedTool && savedTool.name) {
+        const tool = this.toolList.find(t => t.name === savedTool.name)
+        globalState.set('selectedTool', tool || this.toolList[0])
+      } else {
+        globalState.set('selectedTool', this.toolList[0])
+      }
     },
     selectToolOrToggleMode(tool) {
-      if (this.selectedTool === tool && tool.mode !== undefined) {
+      if (globalState.get('selectedTool') === tool && tool.mode !== undefined) {
         tool.mode = tool.mode === 'fill' ? 'outline' : 'fill'
       } else {
-        this.selectedTool = tool
+        globalState.set('selectedTool', tool)
       }
     },
     handleToolShortcut(event) {

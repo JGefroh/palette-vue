@@ -6,7 +6,8 @@ class GlobalState {
       this.loadState() || {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
       selectedSize: 10,
-      selectedTab: null
+      selectedTab: null,
+      selectedTool: null
     })
   }
 
