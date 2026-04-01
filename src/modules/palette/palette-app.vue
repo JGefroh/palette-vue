@@ -43,7 +43,7 @@ export default {
     initializeAutosave() {
       setInterval(() => {
         globalState.saveState();
-      }, 1000);
+      }, 500);
     },
   }
 }
