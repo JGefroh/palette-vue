@@ -34,6 +34,7 @@
 <script>
 import { globalState } from '../utilities/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
+import { inputHandler } from '../utilities/input-handler.js'
 import { Brush } from '../tools/brush.js'
 import { ShapeRectangle } from '../tools/shape-rectangle.js'
 import { ShapeCircle } from '../tools/shape-circle.js'
@@ -60,11 +61,9 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('keydown', this.handleToolShortcut)
     globalCanvasManager.onContextsReady = () => this.initializeTools()
   },
   beforeUnmount() {
-    window.removeEventListener('keydown', this.handleToolShortcut)
     globalCanvasManager.onContextsReady = null
   },
   methods: {
@@ -92,6 +91,15 @@ export default {
       } else {
         globalState.set('selectedTool', this.toolList[0])
       }
+
+      // Register tool shortcuts
+      this.toolList.forEach(tool => {
+        if (tool.shortcut) {
+          inputHandler.registerCommand(tool.shortcut, `select-tool-${tool.name}`, () => {
+            this.selectToolOrToggleMode(tool);
+          });
+        }
+      });
     },
     selectToolOrToggleMode(tool) {
       if (globalState.get('selectedTool') === tool && tool.mode !== undefined) {
@@ -99,10 +107,6 @@ export default {
       } else {
         globalState.set('selectedTool', tool)
       }
-    },
-    handleToolShortcut(event) {
-      const tool = this.toolList.find(t => t.shortcut === event.key)
-      if (tool) this.selectToolOrToggleMode(tool)
     }
   }
 }

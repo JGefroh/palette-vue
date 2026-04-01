@@ -18,6 +18,7 @@
 
 <script>
 import { globalState } from '../utilities/global-state.js'
+import { inputHandler } from '../utilities/input-handler.js'
 
 export default {
   props: {
@@ -25,10 +26,9 @@ export default {
   emits: [],
   mounted() {
     this.initializeDefaultColorNumbers()
-    window.addEventListener('keydown', this.handleColorShortcut.bind(this))
+    this.registerColorShortcuts()
   },
   beforeUnmount() {
-    window.removeEventListener('keydown', this.handleColorShortcut.bind(this))
   },
   data() {
     return {
@@ -70,11 +70,28 @@ export default {
     initializeDefaultColorNumbers() {
       if (globalState.get('color-numbers')) {
         this.colorNumbers = globalState.get('color-numbers');
-      }
-      else {
+      } else {
         this.colorNumbers['#000000'] = '1' // Black
         this.colorNumbers['#FFFFFF'] = '2' // White
       }
+    },
+    registerColorShortcuts() {
+      // Register 0-9 shortcuts for color selection
+      for (let i = 0; i <= 9; i++) {
+        const digit = String(i);
+        inputHandler.registerCommand(digit, `select-color-${digit}`, () => {
+          this.cycleColorsWithNumber(digit);
+        });
+      }
+    },
+    cycleColorsWithNumber(digit) {
+      const colorsWithNumber = this.colors.filter(c => this.colorNumbers[c.hex] === digit);
+      if (colorsWithNumber.length === 0) {
+        return;
+      }
+      const currentIndex = colorsWithNumber.findIndex(c => c.hex === this.selectedColor.hex);
+      const nextIndex = (currentIndex + 1) % colorsWithNumber.length;
+      this.selectColor(colorsWithNumber[nextIndex]);
     },
     handleColorClick(color) {
       if (color.hex === this.selectedColor.hex) {
@@ -98,21 +115,8 @@ export default {
       } else {
         this.colorNumbers[color.hex] = String(parseInt(current) + 1)
       }
-      
+
       globalState.set('color-numbers', this.colorNumbers);
-    },
-    handleColorShortcut(event) {
-      // Color shortcuts: 0-9
-      if (!/^[0-9]$/.test(event.key)) {
-        return
-      }
-      const colorsWithNumber = this.colors.filter(c => this.colorNumbers[c.hex] === event.key)
-      if (colorsWithNumber.length === 0) {
-        return
-      }
-      const currentIndex = colorsWithNumber.findIndex(c => c.hex === this.selectedColor.hex)
-      const nextIndex = (currentIndex + 1) % colorsWithNumber.length
-      this.selectColor(colorsWithNumber[nextIndex])
     }
   }
 }

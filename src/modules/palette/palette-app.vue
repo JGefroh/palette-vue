@@ -18,6 +18,7 @@ import ToolBar from './components/tool-bar.vue'
 import TabBar from './components/tab-bar.vue'
 import { globalState } from './utilities/global-state.js'
 import { globalCanvasManager } from './canvas/global-canvas-manager.js'
+import { inputHandler } from './utilities/input-handler.js'
 
 
 export default {
@@ -32,11 +33,11 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('keydown', this.executeCommandFromShortcut)
+    inputHandler.start();
     this.initializeAutosave();
   },
   beforeUnmount() {
-    window.removeEventListener('keydown', this.executeCommandFromShortcut)
+    inputHandler.stop();
     clearTimeout(this.saveDebounceTimer)
   },
   methods: {
