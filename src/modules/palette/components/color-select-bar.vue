@@ -1,19 +1,33 @@
 <template>
   <div class="colors">
     <button
-      v-for="color in colors"
+      v-for="(color, index) in colors"
       :key="color.hex"
       class="color"
-      :class="{ selected: color.hex === selectedColor.hex }"
+      :class="{ selected: color.hex === selectedColor.hex, dragging: draggedIndex === index, dragOver: dragOverIndex === index }"
       :style="{
         'background-color': color.hex
       }"
       @click="handleColorClick(color)"
+      @dragstart="startDragColor($event, index)"
+      @dragover.prevent="dragOverIndex = index"
+      @drop="dropColor($event, index)"
+      @dragend="endDragColor"
+      @dragleave="dragOverIndex = null"
+      draggable="true"
     >
       <span v-if="colorNumbers[color.hex] !== undefined" class="color-number">{{ colorNumbers[color.hex] }}</span>
       <span v-else>&nbsp;</span>
     </button>
     <button class="color color-add" @click="showColorPicker">+</button>
+    <button
+      v-if="draggedIndex !== null"
+      class="color color-trash"
+      :class="{ dragOverTrash: dragOverTrash }"
+      @dragover.prevent="dragOverTrash = true"
+      @drop="deleteColor"
+      @dragleave="dragOverTrash = false"
+    >🗑</button>
     <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
   </div>
 </template>
@@ -31,15 +45,21 @@ export default {
   },
   emits: [],
   mounted() {
+    this.loadColors()
     this.initializeDefaultColorNumbers()
-    this.loadCustomColors()
     this.registerColorShortcuts()
   },
   beforeUnmount() {
   },
   data() {
     return {
-      colors: [
+      colors: [],
+      colorNumbers: {},
+      isPickerOpen: false,
+      draggedIndex: null,
+      dragOverIndex: null,
+      dragOverTrash: false,
+      defaultColors: [
         { label: 'Pure Black', hex: '#000000' },
         { label: 'Pure White', hex: '#FFFFFF' },
         { label: 'Turquoise', hex: '#1abc9c' },
@@ -64,9 +84,7 @@ export default {
         { label: 'Silver', hex: '#bdc3c7' },
         { label: 'Concrete', hex: '#95a5a6' },
         { label: 'Abestos', hex: '#7f8c8d' }
-      ],
-      colorNumbers: {},
-      isPickerOpen: false
+      ]
     }
   },
   computed: {
@@ -133,21 +151,59 @@ export default {
       const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
       if (!exists) {
         this.colors.push({ label: 'Custom', hex })
-        const customColors = globalState.get('custom-colors') || []
-        customColors.push(hex)
-        globalState.set('custom-colors', customColors)
+        this.saveColors()
         this.selectColor({ label: 'Custom', hex })
       }
       this.isPickerOpen = false
     },
-    loadCustomColors() {
-      const customColors = globalState.get('custom-colors') || []
-      customColors.forEach(hex => {
-        const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
-        if (!exists) {
-          this.colors.push({ label: 'Custom', hex })
+    loadColors() {
+      const savedColors = globalState.get('saved-colors')
+      if (savedColors && savedColors.length > 0) {
+        this.colors = savedColors
+      } else {
+        this.colors = JSON.parse(JSON.stringify(this.defaultColors))
+        this.saveColors()
+      }
+    },
+    saveColors() {
+      globalState.set('saved-colors', this.colors)
+    },
+    startDragColor(event, index) {
+      this.draggedIndex = index
+      event.dataTransfer.effectAllowed = 'move'
+    },
+    dropColor(event, targetIndex) {
+      event.preventDefault()
+      if (this.draggedIndex !== null && this.draggedIndex !== targetIndex) {
+        const draggedColor = this.colors[this.draggedIndex]
+        this.colors.splice(this.draggedIndex, 1)
+        if (targetIndex > this.draggedIndex) {
+          this.colors.splice(targetIndex - 1, 0, draggedColor)
+        } else {
+          this.colors.splice(targetIndex, 0, draggedColor)
         }
-      })
+        this.saveColors()
+      }
+      this.draggedIndex = null
+      this.dragOverIndex = null
+    },
+    endDragColor() {
+      this.draggedIndex = null
+      this.dragOverIndex = null
+      this.dragOverTrash = false
+    },
+    deleteColor() {
+      if (this.draggedIndex !== null) {
+        this.colors.splice(this.draggedIndex, 1)
+        this.saveColors()
+      }
+      this.draggedIndex = null
+      this.dragOverIndex = null
+      this.dragOverTrash = false
+    },
+    saveColorOrder() {
+      const colorOrder = this.colors.map(c => c.hex)
+      globalState.set('color-order', colorOrder)
     }
   }
 }
@@ -168,7 +224,7 @@ export default {
   height: 36px;
   border: 2px solid #95a5a6;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: grab;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,6 +232,11 @@ export default {
   font-size: 18px;
   transition: all 0.2s ease;
   outline: none;
+  position: relative;
+}
+
+.color:active {
+  cursor: grabbing;
 }
 
 .color:focus {
@@ -190,6 +251,21 @@ export default {
 .color.selected {
   border: 3px solid #34495e;
   box-shadow: 0 0 0 1px #34495e;
+}
+
+.color.dragging {
+  opacity: 0.5;
+}
+
+.color.dragOver::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background-color: #34495e;
+  border-radius: 2px;
 }
 
 .color-number {
@@ -213,5 +289,18 @@ export default {
   font-size: 20px;
   font-weight: bold;
   border: 2px solid #dde1e4;
+  cursor: pointer;
+}
+
+.color-trash {
+  background-color: transparent;
+  color: #95a5a6;
+  font-size: 18px;
+  border: 2px solid #dde1e4;
+}
+
+.color-trash.dragOverTrash {
+  border-color: #e74c3c;
+  color: #e74c3c;
 }
 </style>
