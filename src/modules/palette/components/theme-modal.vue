@@ -7,7 +7,21 @@
       </div>
       <div class="modal-content">
         <div v-for="theme in themes" :key="theme.name" class="theme-option" @click="selectTheme(theme)">
-          <h3>{{ theme.name }}</h3>
+          <div class="theme-header">
+            <h3>{{ theme.name }}<span v-if="theme.name === 'Primary Shades'" class="primary-label">{{ currentPrimary }}</span></h3>
+            <button
+              v-if="theme.name === 'Random'"
+              class="reroll-btn"
+              @click.stop="rerollTheme"
+              title="Generate new random colors"
+            >↻</button>
+            <button
+              v-if="theme.name === 'Primary Shades'"
+              class="reroll-btn"
+              @click.stop="togglePrimaryColor"
+              title="Toggle primary color"
+            >↻</button>
+          </div>
           <div class="color-preview">
             <div
               v-for="color in theme.colors"
@@ -27,6 +41,139 @@ export default {
   emits: ['theme-selected', 'close'],
   data() {
     return {
+      currentPrimary: 'Green',
+      primaryColorPalettes: {
+        Red: [
+          { label: 'Very Dark Red', hex: '#330000' },
+          { label: 'Dark Red', hex: '#660000' },
+          { label: 'Deep Red', hex: '#8B0000' },
+          { label: 'Dark Crimson', hex: '#A00000' },
+          { label: 'Crimson', hex: '#DC143C' },
+          { label: 'Red', hex: '#FF0000' },
+          { label: 'Indian Red', hex: '#CD5C5C' },
+          { label: 'Light Coral', hex: '#F08080' },
+          { label: 'Salmon', hex: '#FA8072' },
+          { label: 'Light Salmon', hex: '#FFA07A' },
+          { label: 'Rose', hex: '#FF007F' },
+          { label: 'Hot Pink', hex: '#FF1493' },
+          { label: 'Deep Pink', hex: '#FF1493' },
+          { label: 'Pink', hex: '#FFC0CB' },
+          { label: 'Light Pink', hex: '#FFB6C1' },
+          { label: 'Very Light Pink', hex: '#FFE4E1' },
+          { label: 'Maroon', hex: '#800000' },
+          { label: 'Firebrick', hex: '#B22222' },
+          { label: 'Tomato', hex: '#FF6347' },
+          { label: 'Coral', hex: '#FF7F50' },
+          { label: 'Orange Red', hex: '#FF4500' },
+          { label: 'Red Orange', hex: '#FF5722' },
+          { label: 'Misty Rose', hex: '#FFE4E1' },
+          { label: 'Snow', hex: '#FFFAFA' }
+        ],
+        Blue: [
+          { label: 'Very Dark Blue', hex: '#000033' },
+          { label: 'Dark Blue', hex: '#000066' },
+          { label: 'Navy', hex: '#000080' },
+          { label: 'Dark Navy', hex: '#000099' },
+          { label: 'Midnight Blue', hex: '#191970' },
+          { label: 'Deep Blue', hex: '#00008B' },
+          { label: 'Blue', hex: '#0000FF' },
+          { label: 'Royal Blue', hex: '#4169E1' },
+          { label: 'Steel Blue', hex: '#4682B4' },
+          { label: 'Dodger Blue', hex: '#1E90FF' },
+          { label: 'Cornflower Blue', hex: '#6495ED' },
+          { label: 'Sky Blue', hex: '#87CEEB' },
+          { label: 'Light Sky Blue', hex: '#87CEFA' },
+          { label: 'Deep Sky Blue', hex: '#00BFFF' },
+          { label: 'Cyan', hex: '#00FFFF' },
+          { label: 'Light Cyan', hex: '#E0FFFF' },
+          { label: 'Slate Blue', hex: '#6A5ACD' },
+          { label: 'Medium Blue', hex: '#0000CD' },
+          { label: 'Light Blue', hex: '#ADD8E6' },
+          { label: 'Powder Blue', hex: '#B0E0E6' },
+          { label: 'Light Slate Blue', hex: '#8470D8' },
+          { label: 'Periwinkle', hex: '#CCCCFF' },
+          { label: 'Alice Blue', hex: '#F0F8FF' },
+          { label: 'Ghost White', hex: '#F8F8FF' }
+        ],
+        Yellow: [
+          { label: 'Dark Olive', hex: '#556B2F' },
+          { label: 'Olive Drab', hex: '#6B8E23' },
+          { label: 'Dark Yellow', hex: '#808000' },
+          { label: 'Brown', hex: '#8B4513' },
+          { label: 'Goldenrod', hex: '#DAA520' },
+          { label: 'Dark Goldenrod', hex: '#B8860B' },
+          { label: 'Gold', hex: '#FFD700' },
+          { label: 'Yellow', hex: '#FFFF00' },
+          { label: 'Light Yellow', hex: '#FFFFE0' },
+          { label: 'Pale Goldenrod', hex: '#EEE8AA' },
+          { label: 'Khaki', hex: '#F0E68C' },
+          { label: 'Dark Khaki', hex: '#BDB76B' },
+          { label: 'Olive', hex: '#808000' },
+          { label: 'Yellow Green', hex: '#9ACD32' },
+          { label: 'Green Yellow', hex: '#ADFF2F' },
+          { label: 'Lawn Green', hex: '#7CFC00' },
+          { label: 'Chartreuse', hex: '#7FFF00' },
+          { label: 'Moccasin', hex: '#FFE4B5' },
+          { label: 'Peach Puff', hex: '#FFDAB9' },
+          { label: 'Navajo White', hex: '#FFDEAD' },
+          { label: 'Tan', hex: '#D2B48C' },
+          { label: 'Bisque', hex: '#FFE4C4' },
+          { label: 'Cornsilk', hex: '#FFF8DC' },
+          { label: 'Linen', hex: '#FAF0E6' }
+        ],
+        Orange: [
+          { label: 'Very Dark Orange', hex: '#664400' },
+          { label: 'Dark Orange', hex: '#996600' },
+          { label: 'Brown', hex: '#A52A2A' },
+          { label: 'Saddle Brown', hex: '#8B4513' },
+          { label: 'Sienna', hex: '#A0522D' },
+          { label: 'Peru', hex: '#CD853F' },
+          { label: 'Chocolate', hex: '#D2691E' },
+          { label: 'Dark Orange', hex: '#FF8C00' },
+          { label: 'Orange', hex: '#FFA500' },
+          { label: 'Light Orange', hex: '#FFB347' },
+          { label: 'Orange Red', hex: '#FF4500' },
+          { label: 'Red Orange', hex: '#FF5722' },
+          { label: 'Coral', hex: '#FF7F50' },
+          { label: 'Light Coral', hex: '#F08080' },
+          { label: 'Salmon', hex: '#FA8072' },
+          { label: 'Light Salmon', hex: '#FFA07A' },
+          { label: 'Tomato', hex: '#FF6347' },
+          { label: 'Pumpkin', hex: '#D35400' },
+          { label: 'Carrot', hex: '#E67E22' },
+          { label: 'Papaya Whip', hex: '#FFEFD5' },
+          { label: 'Wheat', hex: '#F5DEB3' },
+          { label: 'Antique White', hex: '#FAEBD7' },
+          { label: 'Floral White', hex: '#FFFAF0' },
+          { label: 'Light Goldenrod', hex: '#FAFAD2' }
+        ],
+        Green: [
+          { label: 'Very Dark Green', hex: '#001000' },
+          { label: 'Deep Green', hex: '#003300' },
+          { label: 'Dark Forest Green', hex: '#004000' },
+          { label: 'Forest Green', hex: '#228B22' },
+          { label: 'Dark Green', hex: '#006400' },
+          { label: 'Green', hex: '#008000' },
+          { label: 'Sea Green', hex: '#2E8B57' },
+          { label: 'Medium Sea Green', hex: '#3CB371' },
+          { label: 'Dark Sea Green', hex: '#8FBC8F' },
+          { label: 'Olive Green', hex: '#6B8E23' },
+          { label: 'Olive Drab', hex: '#556B2F' },
+          { label: 'Yellow Green', hex: '#9ACD32' },
+          { label: 'Spring Green', hex: '#00FF7F' },
+          { label: 'Green Yellow', hex: '#ADFF2F' },
+          { label: 'Lawn Green', hex: '#7CFC00' },
+          { label: 'Lime', hex: '#00FF00' },
+          { label: 'Lime Green', hex: '#32CD32' },
+          { label: 'Light Green', hex: '#90EE90' },
+          { label: 'Pale Green', hex: '#98FB98' },
+          { label: 'Mint Green', hex: '#98FF98' },
+          { label: 'Chartreuse', hex: '#7FFF00' },
+          { label: 'Medium Green', hex: '#004C00' },
+          { label: 'Dark Spring Green', hex: '#00A86B' },
+          { label: 'Pure Green', hex: '#00FF00' }
+        ]
+      },
       themes: [
         {
           name: 'Classic',
@@ -56,6 +203,10 @@ export default {
             { label: 'Concrete', hex: '#95a5a6' },
             { label: 'Abestos', hex: '#7f8c8d' }
           ]
+        },
+        {
+          name: 'Random',
+          colors: []
         },
         {
           name: 'Pastels',
@@ -145,35 +296,6 @@ export default {
           ]
         },
         {
-          name: 'Sunset',
-          colors: [
-            { label: 'Deep Orange', hex: '#FF5722' },
-            { label: 'Dark Orange', hex: '#FF6F00' },
-            { label: 'Orange', hex: '#FFA500' },
-            { label: 'Light Orange', hex: '#FFB74D' },
-            { label: 'Yellow Orange', hex: '#FFCA28' },
-            { label: 'Golden Yellow', hex: '#FFD54F' },
-            { label: 'Light Yellow', hex: '#FFEB3B' },
-            { label: 'Light Pink', hex: '#F48FB1' },
-            { label: 'Pink', hex: '#EC407A' },
-            { label: 'Deep Pink', hex: '#E91E63' },
-            { label: 'Hot Pink', hex: '#FF1493' },
-            { label: 'Red', hex: '#FF0000' },
-            { label: 'Dark Red', hex: '#D32F2F' },
-            { label: 'Very Dark Red', hex: '#B71C1C' },
-            { label: 'Deep Purple', hex: '#512DA8' },
-            { label: 'Purple', hex: '#7B1FA2' },
-            { label: 'Dark Blue', hex: '#1A237E' },
-            { label: 'Dark Navy', hex: '#0D47A1' },
-            { label: 'Navy', hex: '#1976D2' },
-            { label: 'Blue', hex: '#2196F3' },
-            { label: 'Light Blue', hex: '#42A5F5' },
-            { label: 'Very Light Blue', hex: '#90CAF9' },
-            { label: 'Gray', hex: '#757575' },
-            { label: 'Light Gray', hex: '#BDBDBD' }
-          ]
-        },
-        {
           name: 'Nature',
           colors: [
             { label: 'Forest Green', hex: '#228B22' },
@@ -201,13 +323,97 @@ export default {
             { label: 'Black', hex: '#000000' },
             { label: 'White', hex: '#FFFFFF' }
           ]
+        },
+        {
+          name: 'Primary Shades',
+          colors: []
+        },
+        {
+          name: 'Paint',
+          colors: [
+            { label: 'Black', hex: '#000000' },
+            { label: 'Gray', hex: '#808080' },
+            { label: 'Maroon', hex: '#800000' },
+            { label: 'Olive', hex: '#808000' },
+            { label: 'Dark Green', hex: '#008000' },
+            { label: 'Teal', hex: '#008080' },
+            { label: 'Navy', hex: '#000080' },
+            { label: 'Purple', hex: '#800080' },
+            { label: 'Khaki', hex: '#C0C000' },
+            { label: 'Dark Teal', hex: '#004080' },
+            { label: 'Blue', hex: '#0080FF' },
+            { label: 'Dark Blue', hex: '#000040' },
+            { label: 'Magenta', hex: '#FF00FF' },
+            { label: 'Brown', hex: '#804000' },
+            { label: 'White', hex: '#FFFFFF' },
+            { label: 'Light Gray', hex: '#C0C0C0' },
+            { label: 'Red', hex: '#FF0000' },
+            { label: 'Yellow', hex: '#FFFF00' },
+            { label: 'Lime', hex: '#00FF00' },
+            { label: 'Cyan', hex: '#00FFFF' },
+            { label: 'Bright Blue', hex: '#0000FF' },
+            { label: 'Hot Pink', hex: '#FF00FF' },
+            { label: 'Light Yellow', hex: '#FFFF80' },
+            { label: 'Light Green', hex: '#80FF80' },
+            { label: 'Light Cyan', hex: '#80FFFF' },
+            { label: 'Light Blue', hex: '#8080FF' },
+            { label: 'Pink', hex: '#FF80FF' },
+            { label: 'Orange', hex: '#FF8000' }
+          ]
         }
       ]
     }
   },
   methods: {
+    generateRandomColor() {
+      const letters = '0123456789ABCDEF'
+      let color = '#'
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)]
+      }
+      return color
+    },
+    generateRandomTheme() {
+      const colors = []
+      for (let i = 0; i < 24; i++) {
+        colors.push({
+          label: `Color ${i + 1}`,
+          hex: this.generateRandomColor()
+        })
+      }
+      return colors
+    },
     selectTheme(theme) {
       this.$emit('theme-selected', theme.colors)
+    },
+    rerollTheme() {
+      const randomTheme = this.themes.find(t => t.name === 'Random')
+      if (randomTheme) {
+        randomTheme.colors = this.generateRandomTheme()
+      }
+    },
+    togglePrimaryColor() {
+      const primaryColors = ['Green', 'Red', 'Blue', 'Yellow', 'Orange']
+      const currentIndex = primaryColors.indexOf(this.currentPrimary)
+      this.currentPrimary = primaryColors[(currentIndex + 1) % primaryColors.length]
+
+      const primaryShadesTheme = this.themes.find(t => t.name === 'Primary Shades')
+      if (primaryShadesTheme) {
+        primaryShadesTheme.colors = this.primaryColorPalettes[this.currentPrimary]
+      }
+    }
+  },
+  mounted() {
+    // Initialize random theme with colors
+    const randomTheme = this.themes.find(t => t.name === 'Random')
+    if (randomTheme) {
+      randomTheme.colors = this.generateRandomTheme()
+    }
+
+    // Initialize primary shades theme with green colors
+    const primaryShadesTheme = this.themes.find(t => t.name === 'Primary Shades')
+    if (primaryShadesTheme) {
+      primaryShadesTheme.colors = this.primaryColorPalettes['Green']
     }
   }
 }
@@ -294,11 +500,38 @@ export default {
   box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
 }
 
+.theme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .theme-option h3 {
-  margin: 0 0 8px 0;
+  margin: 0;
   color: #34495e;
   font-size: 14px;
   font-weight: 600;
+}
+
+.reroll-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: transform 0.2s ease;
+}
+
+.reroll-btn:hover {
+  transform: rotate(180deg);
+}
+
+.primary-label {
+  font-size: 12px;
+  color: #95a5a6;
+  margin-left: 6px;
+  font-weight: normal;
 }
 
 .color-preview {
