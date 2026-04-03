@@ -86,6 +86,8 @@ class InputHandler {
       normalized = 'enter';
     } else if (normalized === 'escape') {
       normalized = 'esc';
+    } else if (normalized === 'tab') {
+      normalized = 'tab';
     }
     return normalized;
   }
@@ -122,6 +124,8 @@ class InputHandler {
       key = 'enter';
     } else if (key === 'escape') {
       key = 'esc';
+    } else if (key === 'tab') {
+      key = 'tab';
     }
 
     parts.push(key);

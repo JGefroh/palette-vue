@@ -18,6 +18,7 @@
 <script>
 import DownloadButton from './download-button.vue'
 import { globalState } from '../utilities/global-state.js'
+import { inputHandler } from '../utilities/input-handler.js'
 
 export default {
   components: {
@@ -38,6 +39,8 @@ export default {
   },
   mounted() {
     this.loadSavedTabs()
+    inputHandler.registerCommand('tab', 'nextTab', () => this.nextTab())
+    inputHandler.registerCommand('shift+tab', 'prevTab', () => this.prevTab())
   },
   methods: {
     selectTab(id) {
@@ -80,6 +83,22 @@ export default {
       else {
         globalState.set('isNewUser', true);
         this.addTab(true);
+      }
+    },
+    nextTab() {
+      const currentTab = this.getSelectedTab()
+      const currentIndex = this.tabs.findIndex(t => t.id === currentTab?.id)
+      if (currentIndex !== -1) {
+        const nextIndex = (currentIndex + 1) % this.tabs.length
+        this.selectTab(this.tabs[nextIndex].id)
+      }
+    },
+    prevTab() {
+      const currentTab = this.getSelectedTab()
+      const currentIndex = this.tabs.findIndex(t => t.id === currentTab?.id)
+      if (currentIndex !== -1) {
+        const prevIndex = (currentIndex - 1 + this.tabs.length) % this.tabs.length
+        this.selectTab(this.tabs[prevIndex].id)
       }
     }
   }
