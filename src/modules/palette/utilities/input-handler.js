@@ -2,6 +2,8 @@ class InputHandler {
   constructor() {
     this.commands = new Map(); // Map<commandType, Set<callbacks>>
     this.shortcuts = new Map(); // Map<shortcutString, commandType>
+    this.keyComboCommands = new Map(); // Map<keyCombo, Set<commandType>> (e.g., "shift_press" -> Set["enableSnap"])
+    this.pressedKeys = new Set(); // Track currently pressed keys
     this.modes = {
       cmd: false,
       ctrl: false,
@@ -53,12 +55,39 @@ class InputHandler {
     };
   }
 
+  registerKeyCombo(keyCombo, commandType) {
+    if (!this.keyComboCommands.has(keyCombo)) {
+      this.keyComboCommands.set(keyCombo, new Set());
+    }
+    this.keyComboCommands.get(keyCombo).add(commandType);
+  }
+
   getMode() {
     return { ...this.modes };
   }
 
   normalizeShortcut(shortcut) {
     return shortcut.toLowerCase().trim();
+  }
+
+  normalizeKey(key) {
+    let normalized = key.toLowerCase();
+    if (normalized === ' ') {
+      normalized = 'space';
+    } else if (normalized === 'arrowup') {
+      normalized = 'up';
+    } else if (normalized === 'arrowdown') {
+      normalized = 'down';
+    } else if (normalized === 'arrowleft') {
+      normalized = 'left';
+    } else if (normalized === 'arrowright') {
+      normalized = 'right';
+    } else if (normalized === 'enter') {
+      normalized = 'enter';
+    } else if (normalized === 'escape') {
+      normalized = 'esc';
+    }
+    return normalized;
   }
 
   buildCurrentShortcut(event) {
@@ -114,6 +143,16 @@ class InputHandler {
       this.modes.alt = true;
     }
 
+    // Generic key press detection
+    const normalizedKey = this.normalizeKey(event.key);
+    if (!this.pressedKeys.has(normalizedKey)) {
+      this.pressedKeys.add(normalizedKey);
+      const commands = this.keyComboCommands.get(`${normalizedKey}_press`);
+      if (commands) {
+        commands.forEach(commandType => this.dispatchCommand(commandType));
+      }
+    }
+
     const shortcut = this.buildCurrentShortcut(event);
     const commandType = this.shortcuts.get(shortcut);
 
@@ -136,6 +175,16 @@ class InputHandler {
     }
     if (!event.altKey) {
       this.modes.alt = false;
+    }
+
+    // Generic key release detection
+    const normalizedKey = this.normalizeKey(event.key);
+    if (this.pressedKeys.has(normalizedKey)) {
+      this.pressedKeys.delete(normalizedKey);
+      const commands = this.keyComboCommands.get(`${normalizedKey}_release`);
+      if (commands) {
+        commands.forEach(commandType => this.dispatchCommand(commandType));
+      }
     }
   }
 
