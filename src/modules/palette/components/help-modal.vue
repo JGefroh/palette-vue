@@ -33,8 +33,9 @@
         </div>
 
         <div class="section">
-          <h3>Color Shortcuts</h3>
+          <h3>Color Management</h3>
           <p class="info-text">Number keys 0-9 cycle through colors you've assigned them to. Click a color multiple times to assign a number.</p>
+          <p class="info-text">Click the <strong>+</strong> button at the end of the color bar to add a custom color from the color wheel. Your custom colors are automatically saved.</p>
         </div>
 
         <div class="section">
@@ -42,15 +43,16 @@
           <ul class="features-list">
             <li>Freehand drawing with customizable brush size (5-100px)</li>
             <li>Undo/Redo with keyboard shortcuts</li>
-            <li>Multiple tabs for different drawings</li>
+            <li>Multiple tabs with Tab/Shift+Tab navigation</li>
             <li>Auto-save and load drawings (persisted locally)</li>
             <li>Zoom in/out with Ctrl+Scroll (or Cmd+Scroll on Mac)</li>
             <li>Pan canvas while zoomed</li>
             <li>Fill and outline shapes</li>
             <li>Text tool</li>
             <li>Selection and manipulation of drawn elements</li>
+            <li>Copy/Paste for selected elements</li>
             <li>Drag and drop image import</li>
-            <li>24-color palette with custom shortcuts</li>
+            <li>24-color palette with custom color support</li>
           </ul>
         </div>
 
@@ -80,7 +82,11 @@ export default {
       commands: [
         { key: 'Cmd+Z / Ctrl+Z', description: 'Undo' },
         { key: 'Cmd+Shift+Z / Ctrl+Y', description: 'Redo' },
-        { key: 'Ctrl+Scroll / Cmd+Scroll', description: 'Zoom' }
+        { key: 'Ctrl+Scroll / Cmd+Scroll', description: 'Zoom' },
+        { key: 'Tab', description: 'Next tab' },
+        { key: 'Shift+Tab', description: 'Previous tab' },
+        { key: 'Cmd+C / Ctrl+C', description: 'Copy selected elements' },
+        { key: 'Cmd+V / Ctrl+V', description: 'Paste copied elements' }
       ]
     }
   },
@@ -191,8 +197,13 @@ export default {
 
 .info-text {
   color: #7f8c8d;
-  margin: 0;
+  margin: 0 0 8px 0;
   font-size: 14px;
+}
+
+.info-text strong {
+  color: #34495e;
+  font-weight: 600;
 }
 
 .features-list {

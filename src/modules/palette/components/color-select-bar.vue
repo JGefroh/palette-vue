@@ -13,19 +13,26 @@
       <span v-if="colorNumbers[color.hex] !== undefined" class="color-number">{{ colorNumbers[color.hex] }}</span>
       <span v-else>&nbsp;</span>
     </button>
+    <button class="color color-add" @click="showColorPicker">+</button>
+    <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
   </div>
 </template>
 
 <script>
 import { globalState } from '../utilities/global-state.js'
 import { inputHandler } from '../utilities/input-handler.js'
+import ColorWheelPicker from './color-wheel-picker.vue'
 
 export default {
+  components: {
+    ColorWheelPicker
+  },
   props: {
   },
   emits: [],
   mounted() {
     this.initializeDefaultColorNumbers()
+    this.loadCustomColors()
     this.registerColorShortcuts()
   },
   beforeUnmount() {
@@ -58,7 +65,8 @@ export default {
         { label: 'Concrete', hex: '#95a5a6' },
         { label: 'Abestos', hex: '#7f8c8d' }
       ],
-      colorNumbers: {}
+      colorNumbers: {},
+      isPickerOpen: false
     }
   },
   computed: {
@@ -117,6 +125,29 @@ export default {
       }
 
       globalState.set('color-numbers', this.colorNumbers);
+    },
+    showColorPicker() {
+      this.isPickerOpen = true
+    },
+    addCustomColor(hex) {
+      const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
+      if (!exists) {
+        this.colors.push({ label: 'Custom', hex })
+        const customColors = globalState.get('custom-colors') || []
+        customColors.push(hex)
+        globalState.set('custom-colors', customColors)
+        this.selectColor({ label: 'Custom', hex })
+      }
+      this.isPickerOpen = false
+    },
+    loadCustomColors() {
+      const customColors = globalState.get('custom-colors') || []
+      customColors.forEach(hex => {
+        const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
+        if (!exists) {
+          this.colors.push({ label: 'Custom', hex })
+        }
+      })
     }
   }
 }
@@ -129,6 +160,7 @@ export default {
   gap: 4px;
   padding: 12px 20px;
   background-color: #ecf0f1;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .color {
@@ -173,5 +205,13 @@ export default {
     1px 0px 0 #34495e;
   font-weight: bold;
   font-size: 16px;
+}
+
+.color-add {
+  background-color: transparent;
+  color: #95a5a6;
+  font-size: 20px;
+  font-weight: bold;
+  border: 2px solid #dde1e4;
 }
 </style>
