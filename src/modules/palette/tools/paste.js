@@ -1,4 +1,6 @@
 import { inputHandler } from '../utilities/input-handler.js'
+import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
+import { globalState } from '../utilities/global-state.js'
 
 export class Paste {
   constructor({ drawingCtx, overlayCtx }) {
@@ -59,6 +61,7 @@ export class Paste {
               const x = this.currentCoordinates.x - img.width / 2
               const y = this.currentCoordinates.y - img.height / 2
               this.drawingCtx.drawImage(img, x, y)
+              globalCanvasManager.persistCanvas(globalState.get('selectedTab').id)
             }
             img.src = URL.createObjectURL(blob)
           })
