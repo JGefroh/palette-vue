@@ -1,3 +1,5 @@
+import { inputHandler } from '../utilities/input-handler.js'
+
 export class Select {
   constructor({ drawingCtx, overlayCtx, getLineWidth }) {
     this.drawingCtx = drawingCtx
@@ -14,6 +16,10 @@ export class Select {
     this.fillIcon = 'fa-object-group'
     this.outlineIcon = 'fa-object-ungroup'
     this.shortcut = 's'
+
+    inputHandler.registerCommand('cmd+c', 'copy', () => {
+      this.copy()
+    })
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
@@ -127,6 +133,26 @@ export class Select {
       this.isMoving = false
       this.capturedImageData = null
     }
+  }
+
+  copy() {
+    if (!this.selection) return
+    const { x, y, width, height } = this.selection
+    const imageData = this.drawingCtx.getImageData(x, y, width, height)
+
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = width
+    tempCanvas.height = height
+    const tempCtx = tempCanvas.getContext('2d')
+    tempCtx.putImageData(imageData, 0, 0)
+
+    tempCanvas.toBlob(blob => {
+      navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]).catch(err => {
+        console.error('Failed to copy:', err)
+      })
+    })
   }
 
   preProcess(coordinates) {

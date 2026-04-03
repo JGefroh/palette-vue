@@ -41,6 +41,7 @@ import { ShapeCircle } from '../tools/shape-circle.js'
 import { ShapeLine } from '../tools/shape-line.js'
 import { Text } from '../tools/text.js'
 import { Select } from '../tools/select.js'
+import { Paste } from '../tools/paste.js'
 import UndoButton from './undo-button.vue'
 import RedoButton from './redo-button.vue'
 import ClearButton from './clear-button.vue'
@@ -83,6 +84,10 @@ export default {
         Text.new(drawingCtx, overlayCtx),
         Select.new(drawingCtx, overlayCtx, getLineWidth)
       ]
+
+      // Initialize Paste tool (always listening, hidden from toolbar)
+      const pasteTool = Paste.new(drawingCtx, overlayCtx)
+      pasteTool.start({ x: 0, y: 0 })
 
       const savedTool = globalState.get('selectedTool')
       if (savedTool && savedTool.name) {
