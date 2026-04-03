@@ -28,7 +28,9 @@
       @drop="deleteColor"
       @dragleave="dragOverTrash = false"
     >🗑</button>
+    <button class="color color-settings" @click="showThemeModal">⚙</button>
     <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
+    <ThemeModal v-if="isThemeModalOpen" @theme-selected="applyTheme" @close="isThemeModalOpen = false" />
   </div>
 </template>
 
@@ -36,10 +38,12 @@
 import { globalState } from '../utilities/global-state.js'
 import { inputHandler } from '../utilities/input-handler.js'
 import ColorWheelPicker from './color-wheel-picker.vue'
+import ThemeModal from './theme-modal.vue'
 
 export default {
   components: {
-    ColorWheelPicker
+    ColorWheelPicker,
+    ThemeModal
   },
   props: {
   },
@@ -56,6 +60,7 @@ export default {
       colors: [],
       colorNumbers: {},
       isPickerOpen: false,
+      isThemeModalOpen: false,
       draggedIndex: null,
       dragOverIndex: null,
       dragOverTrash: false,
@@ -201,6 +206,14 @@ export default {
       this.dragOverIndex = null
       this.dragOverTrash = false
     },
+    showThemeModal() {
+      this.isThemeModalOpen = true
+    },
+    applyTheme(themeColors) {
+      this.colors = JSON.parse(JSON.stringify(themeColors))
+      this.saveColors()
+      this.isThemeModalOpen = false
+    },
     saveColorOrder() {
       const colorOrder = this.colors.map(c => c.hex)
       globalState.set('color-order', colorOrder)
@@ -302,5 +315,14 @@ export default {
 .color-trash.dragOverTrash {
   border-color: #e74c3c;
   color: #e74c3c;
+}
+
+.color-settings {
+  background-color: transparent;
+  color: #95a5a6;
+  font-size: 16px;
+  border: 2px solid #dde1e4;
+  cursor: pointer;
+  margin-left: auto;
 }
 </style>
