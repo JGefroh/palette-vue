@@ -1,4 +1,5 @@
 import { inputHandler } from '../utilities/input-handler.js'
+import { globalState } from '../utilities/global-state.js'
 import { SelectSizer } from './select-sizer.js'
 import { SelectMove } from './select-move.js'
 import { SelectIdle } from './select-idle.js'
@@ -27,6 +28,10 @@ export class Select {
 
     inputHandler.registerCommand('cmd+c', 'copy', () => {
       this.clipboard.copySelectedContent()
+    })
+
+    inputHandler.registerCommand('cmd+a', 'select-all', () => {
+      this.selectAll()
     })
   }
 
@@ -114,6 +119,18 @@ export class Select {
       width: Math.abs(currentCoords.x - startCoords.x),
       height: Math.abs(currentCoords.y - startCoords.y)
     }
+  }
+
+  selectAll() {
+    globalState.set('selectedTool', this)
+    this.selectionBounds = {
+      x: 0,
+      y: 0,
+      width: this.drawingCtx.canvas.width,
+      height: this.drawingCtx.canvas.height
+    }
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+    this.idleHandler.restore()
   }
 
 
