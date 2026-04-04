@@ -1,15 +1,13 @@
 import { inputHandler } from '../utilities/input-handler.js'
 
 export class Select {
-  constructor({ drawingCtx, overlayCtx, getLineWidth }) {
+  constructor({ drawingCtx, overlayCtx }) {
     this.drawingCtx = drawingCtx
     this.overlayCtx = overlayCtx
-    this.getLineWidth = getLineWidth
     this.startCoordinates = null
     this.selectionBounds = null // { x, y, width, height }
     this.moveStartCoordinates = null
-    this.moveOffset = { x: 0, y: 0 }
-    this.capturedImageData = null // Store pixels being moved
+    this.selectedImageData = null // Pixel data of selected region
     this.mode = 'fill' // 'fill' or 'outline'
     this.name = 'Select'
     this.fillIcon = 'fa-object-group'
@@ -21,12 +19,12 @@ export class Select {
     })
   }
 
-  static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new Select({ drawingCtx, overlayCtx, getLineWidth })
+  static new(drawingCtx, overlayCtx) {
+    return new Select({ drawingCtx, overlayCtx })
   }
   
   identifyOperationState(coordinates) {
-    if (this.capturedImageData) {
+    if (this.selectedImageData) {
       return 'moving'
     } else if (this.startCoordinates) {
       return 'selecting'
@@ -50,24 +48,33 @@ export class Select {
   }
 
   preProcess(coordinates) {
-    const operationState = this.identifyOperationState()
-    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-    if (operationState === 'idle') {
-      this.restoreIdleSelectionOutline()
-    }
+    const operationState = this.identifyOperationState(coordinates)
+    this.updateOverlay(operationState, coordinates)
   }
 
   process(coordinates) {
-    const operationState = this.identifyOperationState()
-    if (operationState === 'moving') {
-      this.updateLivePreviewDuringMove(coordinates)
-    } else if (operationState === 'selecting') {
-      this.updateSelectionOutlineAsUserDrags(coordinates)
+    const operationState = this.identifyOperationState(coordinates)
+    this.updateOverlay(operationState, coordinates)
+  }
+
+  updateOverlay(operationState, coordinates) {
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+
+    switch(operationState) {
+      case 'idle':
+        this.restoreIdleSelectionOutline()
+        break
+      case 'selecting':
+        this.updateSelectionOutlineAsUserDrags(coordinates)
+        break
+      case 'moving':
+        this.updateLivePreviewDuringMove(coordinates)
+        break
     }
   }
 
   end(coordinates) {
-    const operationState = this.identifyOperationState()
+    const operationState = this.identifyOperationState(coordinates)
     if (operationState === 'moving') {
       this.endMove(coordinates)
     } else if (operationState === 'selecting') {
@@ -82,7 +89,7 @@ export class Select {
 
   initiateNewSelection(coordinates) {
     this.selectionBounds = null
-    this.capturedImageData = null
+    this.selectedImageData = null
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     this.startCoordinates = { x: coordinates.x, y: coordinates.y }
   }
@@ -102,33 +109,27 @@ export class Select {
 
   initiateSelectionMove(coordinates) {
     this.moveStartCoordinates = { ...coordinates }
-    this.moveOffset = { x: 0, y: 0 }
     const { x, y, width, height } = this.selectionBounds
-    this.capturedImageData = this.drawingCtx.getImageData(x, y, width, height)
+    this.selectedImageData = this.drawingCtx.getImageData(x, y, width, height)
     this.drawingCtx.clearRect(x, y, width, height)
   }
 
   updateLivePreviewDuringMove(coordinates) {
-    this.moveOffset.x = coordinates.x - this.moveStartCoordinates.x
-    this.moveOffset.y = coordinates.y - this.moveStartCoordinates.y
-    const newX = this.selectionBounds.x + this.moveOffset.x
-    const newY = this.selectionBounds.y + this.moveOffset.y
+    const offsetX = coordinates.x - this.moveStartCoordinates.x
+    const offsetY = coordinates.y - this.moveStartCoordinates.y
+    const newX = this.selectionBounds.x + offsetX
+    const newY = this.selectionBounds.y + offsetY
     this.processMoveOverlay(newX, newY)
   }
 
   processMoveOverlay(newX, newY) {
-    this.drawMovedContentForMode(this.overlayCtx, newX, newY)
+    this.drawImageData(this.overlayCtx, this.selectedImageData, newX, newY, this.mode)
     this.drawSelectionOutline(this.overlayCtx, newX, newY, this.selectionBounds.width, this.selectionBounds.height)
   }
 
-  drawMovedContentForMode(ctx, newX, newY) {
-    if (!this.capturedImageData) return
-    const keepWhite = this.mode === 'fill'
-    this.drawImageData(ctx, this.capturedImageData, newX, newY, keepWhite)
-  }
-
-  drawImageData(ctx, imageData, x, y, keepWhite = true) {
-    if (keepWhite) {
+  drawImageData(ctx, imageData, x, y, mode = 'fill') {
+    if (!imageData) return
+    if (mode === 'fill') {
       this.drawImageDataForFillMode(ctx, imageData, x, y)
     } else {
       this.drawImageDataForOutlineMode(ctx, imageData, x, y)
@@ -173,18 +174,21 @@ export class Select {
   }
 
   endMove(coordinates) {
-    const newX = this.selectionBounds.x + this.moveOffset.x
-    const newY = this.selectionBounds.y + this.moveOffset.y
-    this.drawMovedContentForMode(this.drawingCtx, newX, newY)
+    const offsetX = coordinates.x - this.moveStartCoordinates.x
+    const offsetY = coordinates.y - this.moveStartCoordinates.y
+    const newX = this.selectionBounds.x + offsetX
+    const newY = this.selectionBounds.y + offsetY
+    this.drawImageData(this.drawingCtx, this.selectedImageData, newX, newY, this.mode)
     this.moveStartCoordinates = null
-    this.capturedImageData = null
+    this.selectedImageData = null
   }
 
   // Idle
 
   restoreIdleSelectionOutline() {
     if (!this.selectionBounds) return
-    this.drawSelectionOutline(this.overlayCtx, this.selectionBounds.x, this.selectionBounds.y, this.selectionBounds.width, this.selectionBounds.height)
+    const { x, y, width, height } = this.selectionBounds
+    this.drawSelectionOutline(this.overlayCtx, x, y, width, height)
   }
 
   shouldStartMovingSelection(coordinates) {
@@ -206,7 +210,7 @@ export class Select {
     }
   }
 
-  // Selection Box Helpers
+  // Selection Bounds Helpers
 
   drawSelectionOutline(ctx, x, y, width, height) {
     ctx.save()
@@ -248,7 +252,6 @@ export class Select {
 
     if (operationState === 'moving') {
       this.selectionBounds = null
-      this.moveOffset = { x: 0, y: 0 }
     } else if (this.selectionBounds) {
       this.restoreIdleSelectionOutline()
     }
