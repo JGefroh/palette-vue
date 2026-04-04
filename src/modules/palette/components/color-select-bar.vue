@@ -284,13 +284,17 @@ export default {
 }
 
 .color:hover {
-  background-color: rgba(52, 73, 94, 0.08);
-  border-color: rgba(185, 185, 185, 0.7);
+  transform: scale(1.08);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
 }
 
 .color.selected {
-  border: 1px solid #34495e;
+  border: 2px solid #34495e;
   background-color: rgba(52, 73, 94, 0.12);
+}
+
+.color.selected:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .color.dragging {
