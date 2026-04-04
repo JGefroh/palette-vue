@@ -373,7 +373,7 @@ export default {
   width: 36px;
   height: 36px;
   background-color: transparent;
-  color: #95a5a6;
+  color: #34495e;
   font-size: 16px;
   border: 1px solid rgba(185, 185, 185, 0.5);
   cursor: pointer;
@@ -385,7 +385,7 @@ export default {
 }
 
 .color-settings:hover {
-  background-color: rgba(52, 73, 94, 0.05);
+  background-color: rgba(52, 73, 94, 0.1);
   border-color: rgba(185, 185, 185, 0.7);
 }
 </style>
