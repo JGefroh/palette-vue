@@ -11,4 +11,4 @@ npm run dev
 ```
 
 # Screenshot
-<img width="1172" height="693" alt="Screenshot 2026-03-28 at 8 10 35 PM" src="https://github.com/user-attachments/assets/389a4dfc-a814-453a-bf29-501a0f45f82c" />
+![screenshot](https://github.com/user-attachments/assets/4939af1d-4ec6-43eb-b69b-a4d0f4cd2668)
