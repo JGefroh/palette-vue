@@ -11,7 +11,7 @@
 import { CursorManager } from '../utilities/cursor-manager.js'
 import { globalState } from '../utilities/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import heroImage from '../../../assets/hero.jpg'
+import logoImage from '../../../assets/logo.png'
 export default {
   emits: ['on-initialize', 'on-stroke-start'],
   data() {
@@ -75,7 +75,7 @@ export default {
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
 
       if (globalState.get('isNewUser')) {
-        this.fitImage(heroImage)
+        this.fitImage(logoImage)
       }
       else {
         const selectedTab = globalState.get('selectedTab')
