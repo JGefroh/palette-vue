@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 
 class GlobalState {
   constructor() {
+    this.ignoreList = new Set(['selectedTool'])
     this.store = reactive(
       this.loadState() || {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
@@ -30,7 +31,13 @@ class GlobalState {
   }
 
   saveState() {
-    localStorage.setItem(`palette-state`, JSON.stringify(this.store))
+    const toSerialize = {}
+    for (const [key, value] of Object.entries(this.store)) {
+      if (!this.ignoreList.has(key)) {
+        toSerialize[key] = value
+      }
+    }
+    localStorage.setItem(`palette-state`, JSON.stringify(toSerialize))
   }
 
   loadState() {
