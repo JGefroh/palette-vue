@@ -28,6 +28,8 @@ export class Shape {
     if (this.getLineWidth) {
       this.overlayCtx.lineWidth = this.getLineWidth()
     }
+    this.overlayCtx.lineCap = 'round'
+    this.overlayCtx.lineJoin = 'round'
     this.drawShape(this.overlayCtx, this.startCoordinates, coordinates)
   }
 
@@ -37,6 +39,8 @@ export class Shape {
       if (this.getLineWidth) {
         this.drawingCtx.lineWidth = this.getLineWidth()
       }
+      this.drawingCtx.lineCap = 'round'
+      this.drawingCtx.lineJoin = 'round'
       this.drawShape(this.drawingCtx, this.startCoordinates, coordinates)
       this.startCoordinates = null
     }
