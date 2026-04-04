@@ -426,23 +426,26 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .modal {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 600px;
   max-height: 80vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(15px);
+  font-family: 'Montserrat', sans-serif;
 }
 
 .modal-header {
@@ -450,29 +453,31 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid rgba(185, 185, 185, 0.3);
   flex-shrink: 0;
+  background-color: transparent;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   color: #34495e;
-  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   color: #95a5a6;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.2s ease;
 }
 
 .close-btn:hover {
@@ -483,21 +488,21 @@ export default {
   padding: 16px 20px;
   overflow-y: auto;
   flex: 1;
+  background-color: transparent;
 }
 
 .theme-option {
   padding: 12px;
   margin-bottom: 12px;
-  border: 2px solid #ecf0f1;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .theme-option:hover {
-  border-color: #3498db;
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+  background-color: rgba(52, 73, 94, 0.05);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 
 .theme-header {
@@ -505,30 +510,33 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .theme-option h3 {
   margin: 0;
   color: #34495e;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .reroll-btn {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
+  color: #95a5a6;
   padding: 2px 6px;
   transition: transform 0.2s ease;
 }
 
 .reroll-btn:hover {
   transform: rotate(180deg);
+  color: #34495e;
 }
 
 .primary-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #95a5a6;
   margin-left: 6px;
   font-weight: normal;
@@ -543,6 +551,6 @@ export default {
 .preview-swatch {
   flex: 1;
   border-radius: 2px;
-  border: 1px solid #ecf0f1;
+  border: 1px solid rgba(185, 185, 185, 0.3);
 }
 </style>
