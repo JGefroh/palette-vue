@@ -30,8 +30,21 @@ export class Select {
       this.clipboard.copySelectedContent()
     })
 
+    inputHandler.registerCommand('cmd+x', 'cut', () => {
+      this.clipboard.copySelectedContent()
+      this.deleteSelection()
+    })
+
     inputHandler.registerCommand('cmd+a', 'select-all', () => {
       this.selectAll()
+    })
+
+    inputHandler.registerCommand('delete', 'delete-selection', () => {
+      this.deleteSelection()
+    })
+
+    inputHandler.registerCommand('backspace', 'delete-selection', () => {
+      this.deleteSelection()
     })
   }
 
@@ -133,8 +146,13 @@ export class Select {
     this.idleHandler.restore()
   }
 
-
-
+  deleteSelection() {
+    if (!this.selectionBounds) return
+    const { x, y, width, height } = this.selectionBounds
+    this.drawingCtx.clearRect(x, y, width, height)
+    this.selectionBounds = null
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+  }
 
   cleanupAfterOperation(operationState) {
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
