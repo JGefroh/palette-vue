@@ -1,34 +1,29 @@
 <template>
-  <div class="colors">
-    <button
-      v-for="(color, index) in colors"
-      :key="color.hex"
-      class="color"
-      :class="{ selected: color.hex === selectedColor.hex, dragging: draggedIndex === index, dragOver: dragOverIndex === index }"
-      :style="{
-        'background-color': color.hex
-      }"
-      @click="handleColorClick(color)"
-      @dragstart="startDragColor($event, index)"
-      @dragover.prevent="dragOverIndex = index"
-      @drop="dropColor($event, index)"
-      @dragend="endDragColor"
-      @dragleave="dragOverIndex = null"
-      draggable="true"
-    >
-      <span v-if="colorNumbers[color.hex] !== undefined" class="color-number">{{ colorNumbers[color.hex] }}</span>
-      <span v-else>&nbsp;</span>
-    </button>
-    <button class="color color-add" @click="showColorPicker">+</button>
-    <button
-      v-if="draggedIndex !== null"
-      class="color color-trash"
-      :class="{ dragOverTrash: dragOverTrash }"
-      @dragover.prevent="dragOverTrash = true"
-      @drop="deleteColor"
-      @dragleave="dragOverTrash = false"
-    >🗑</button>
-    <button class="color color-settings" @click="showThemeModal">⚙</button>
+  <div>
+    <div class="colors">
+      <button
+        v-for="(color, index) in colors"
+        :key="color.hex"
+        class="color"
+        :class="{ selected: color.hex === selectedColor.hex, dragging: draggedIndex === index, dragOver: dragOverIndex === index }"
+        :style="{
+          'background-color': color.hex
+        }"
+        @click="handleColorClick(color)"
+        @dragstart="startDragColor($event, index)"
+        @dragover.prevent="dragOverIndex = index"
+        @drop="dropColor($event, index)"
+        @dragend="endDragColor"
+        @dragleave="dragOverIndex = null"
+        draggable="true"
+      >
+        <span v-if="colorNumbers[color.hex] !== undefined" class="color-number">{{ colorNumbers[color.hex] }}</span>
+        <span v-else>&nbsp;</span>
+      </button>
+      <div v-if="colors.length % 2 === 1" class="color-placeholder"></div>
+      <button class="color color-add" @click="showColorPicker">+</button>
+      <button class="color color-settings" @click="showThemeModal">⚙</button>
+    </div>
     <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
     <ThemeModal v-if="isThemeModalOpen" @theme-selected="applyTheme" @close="isThemeModalOpen = false" />
   </div>
@@ -52,6 +47,25 @@ export default {
     this.loadColors()
     this.initializeDefaultColorNumbers()
     this.registerColorShortcuts()
+    const canvas = document.querySelector('canvas')
+    if (canvas) {
+      this._handleCanvasDragover = (e) => e.preventDefault()
+      this._handleCanvasDrop = (e) => {
+        e.preventDefault()
+        if (this.draggedIndex !== null) {
+          this.deleteColor()
+        }
+      }
+      canvas.addEventListener('dragover', this._handleCanvasDragover)
+      canvas.addEventListener('drop', this._handleCanvasDrop)
+    }
+  },
+  beforeUnmount() {
+    const canvas = document.querySelector('canvas')
+    if (canvas && this._handleCanvasDragover && this._handleCanvasDrop) {
+      canvas.removeEventListener('dragover', this._handleCanvasDragover)
+      canvas.removeEventListener('drop', this._handleCanvasDrop)
+    }
   },
   beforeUnmount() {
   },
@@ -227,15 +241,28 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 12px 20px;
-  background-color: #ecf0f1;
+  padding: 8px;
+  background-color: #d3d3d37e;
   font-family: 'Montserrat', sans-serif;
+  position: absolute;
+  min-width: 95px;
+  max-width: 90px;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  box-shadow: 1px 1px 3px #c6c6c6;
+  z-index: 99;
+}
+
+.color-placeholder {
+  width: 36px;
+  height: 36px;
 }
 
 .color {
   width: 36px;
   height: 36px;
-  border: 2px solid #95a5a6;
+  border: 1px solid #b9b9b9d9;
   border-radius: 4px;
   cursor: grab;
   display: flex;
@@ -257,13 +284,13 @@ export default {
 }
 
 .color:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background-color: rgba(52, 73, 94, 0.08);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 
 .color.selected {
-  border: 3px solid #34495e;
-  box-shadow: 0 0 0 1px #34495e;
+  border: 1px solid #34495e;
+  background-color: rgba(52, 73, 94, 0.12);
 }
 
 .color.dragging {
@@ -297,32 +324,68 @@ export default {
 }
 
 .color-add {
+  width: 36px;
+  height: 36px;
   background-color: transparent;
-  color: #95a5a6;
+  color: #34495e;
   font-size: 20px;
   font-weight: bold;
-  border: 2px solid #dde1e4;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-add:hover {
+  background-color: rgba(52, 73, 94, 0.1);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 
 .color-trash {
+  width: 36px;
+  height: 36px;
   background-color: transparent;
   color: #95a5a6;
   font-size: 18px;
-  border: 2px solid #dde1e4;
+  border: 1px solid rgba(185, 185, 185, 0.5);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-trash:hover {
+  background-color: rgba(52, 73, 94, 0.05);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 
 .color-trash.dragOverTrash {
   border-color: #e74c3c;
   color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
 }
 
 .color-settings {
+  width: 36px;
+  height: 36px;
   background-color: transparent;
   color: #95a5a6;
   font-size: 16px;
-  border: 2px solid #dde1e4;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   cursor: pointer;
-  margin-left: auto;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-settings:hover {
+  background-color: rgba(52, 73, 94, 0.05);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 </style>

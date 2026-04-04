@@ -176,20 +176,23 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .modal {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 500px;
   overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+  backdrop-filter: blur(15px);
 }
 
 .modal-header {
@@ -197,27 +200,30 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid rgba(185, 185, 185, 0.3);
+  background-color: transparent;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   color: #34495e;
+  font-weight: 600;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   color: #95a5a6;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.2s ease;
 }
 
 .close-btn:hover {
@@ -230,10 +236,11 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  background-color: transparent;
 }
 
 canvas {
-  border: 2px solid #ecf0f1;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   border-radius: 4px;
   cursor: crosshair;
 }
@@ -248,57 +255,64 @@ canvas {
 .preview-color {
   width: 60px;
   height: 60px;
-  border: 2px solid #95a5a6;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   border-radius: 4px;
 }
 
 input[type="text"] {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid #bdc3c7;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   border-radius: 4px;
   font-family: monospace;
-  font-size: 14px;
+  font-size: 12px;
+  background-color: transparent;
+  color: #34495e;
 }
 
 input[type="text"]:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  border-color: rgba(185, 185, 185, 0.7);
+  background-color: rgba(52, 73, 94, 0.05);
 }
 
 .modal-footer {
   display: flex;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid #ecf0f1;
+  border-top: 1px solid rgba(185, 185, 185, 0.3);
   justify-content: flex-end;
+  background-color: transparent;
 }
 
 button {
   padding: 8px 16px;
-  border: none;
+  border: 1px solid rgba(185, 185, 185, 0.5);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
+  background-color: transparent;
+  color: #34495e;
+  transition: all 0.2s ease;
 }
 
 .btn-cancel {
-  background-color: #ecf0f1;
-  color: #34495e;
+  color: #7f8c8d;
 }
 
 .btn-cancel:hover {
-  background-color: #dde1e4;
+  background-color: rgba(52, 73, 94, 0.05);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 
 .btn-confirm {
-  background-color: #3498db;
-  color: white;
+  color: #34495e;
+  border-color: rgba(52, 73, 94, 0.3);
 }
 
 .btn-confirm:hover {
-  background-color: #2980b9;
+  background-color: rgba(52, 73, 94, 0.1);
+  border-color: rgba(52, 73, 94, 0.5);
 }
 </style>

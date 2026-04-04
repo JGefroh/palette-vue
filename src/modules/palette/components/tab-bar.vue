@@ -109,47 +109,46 @@ export default {
 .tab-bar {
   display: flex;
   align-items: flex-end;
-  gap: 2px;
-  padding: 0 20px;
-  background-color: #ecf0f1;
-  border-bottom: 2px solid #bdc3c7;
+  gap: 4px;
+  padding: 0 8px;
+  background-color: #d3d3d37e;
 }
 
 .tab {
-  padding: 6px 20px;
-  border: 1px solid #bdc3c7;
-  border-bottom: none;
-  background-color: #dde1e4;
+  padding: 8px 20px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background-color: transparent;
   color: #7f8c8d;
-  border-radius: 4px 4px 0 0;
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   position: relative;
-  bottom: -2px;
+  transition: all 0.2s ease;
 }
 
 .tab.active {
-  background-color: white;
+  background-color: transparent;
   color: #34495e;
-  border-color: #bdc3c7;
-  border-bottom: 2px solid white;
+  border-bottom-color: #95a5a6;
   font-weight: 600;
 }
 
 .tab:hover:not(.active) {
-  background-color: #cdd1d4;
+  color: #34495e;
+  border-bottom-color: rgba(52, 73, 94, 0.3);
 }
 
 .tab-delete {
-  color: #bdc3c7;
+  color: rgba(185, 185, 185, 0.6);
   font-size: 10px;
   margin-left: 6px;
   vertical-align: middle;
+  transition: color 0.2s ease;
 }
 
 .tab-delete:hover {
-  color: #7f8c8d;
+  color: #95a5a6;
 }
 
 .tab-add {

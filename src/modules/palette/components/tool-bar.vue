@@ -119,38 +119,43 @@ export default {
 
 <style scoped>
 .toolbar {
-  background-color: #ecf0f1;
-  padding: 12px 20px;
+  background-color: rgba(211, 211, 211, 0.49);
+  padding: 8px;
   display: flex;
-  gap: 8px;
-  border-bottom: 1px solid #bdc3c7;
+  gap: 4px;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  box-shadow: -1px -1px 3px #c6c6c6;
 }
 
 .tool {
   padding: 8px 12px;
-  border: 1px solid #95a5a6;
-  background-color: white;
+  border: 1px solid rgba(185, 185, 185, 0.5);
+  background-color: transparent;
   color: #34495e;
   border-radius: 4px;
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   transition: all 0.2s ease;
 }
 
 .tool:hover {
-  background-color: #34495e;
-  color: white;
+  background-color: rgba(52, 73, 94, 0.1);
+  border-color: rgba(185, 185, 185, 0.7);
 }
 
 .tool.active {
-  background-color: #34495e;
-  color: white;
+  background-color: rgba(52, 73, 94, 0.15);
+  border-color: rgba(52, 73, 94, 0.5);
+  color: #34495e;
 }
 
 .divider {
   width: 1px;
-  background-color: #bdc3c7;
+  background-color: #c6c6c6;
   margin: 2px 4px;
 }
 </style>

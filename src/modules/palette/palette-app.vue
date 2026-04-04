@@ -1,13 +1,13 @@
 <template>
   <div class="palette-app">
     <div class="navigation">
-      Palette v0.0.2
-      <a href="https://jgefroh.com" style="float: right;">Created by Joseph Gefroh</a>
+      <div class="nav-left">Palette <span class="version">v0.0.2</span></div>
+      <a href="https://jgefroh.com" class="nav-right">Created by Joseph Gefroh</a>
     </div>
-    <ToolBar />
-    <ColorSelectBar />
     <TabBar />
     <PaperCanvas />
+    <ToolBar />
+    <ColorSelectBar />
   </div>
 </template>
 
@@ -59,20 +59,38 @@ export default {
 }
 
 .navigation {
-  background-color: #34495e;
-  color: white;
-  padding: 12px 20px;
+  background-color: rgba(211, 211, 211, 0.3);
+  color: #34495e;
+  padding: 10px 20px;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(185, 185, 185, 0.2);
 }
 
-.navigation a {
-  color: white;
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.version {
+  color: #95a5a6;
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.nav-right {
+  color: #34495e;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.navigation a:hover {
-  text-decoration: underline;
+.nav-right:hover {
+  color: #7f8c8d;
 }
 </style>
