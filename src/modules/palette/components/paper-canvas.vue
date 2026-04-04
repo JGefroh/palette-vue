@@ -11,6 +11,7 @@
 import { CursorManager } from '../utilities/cursor-manager.js'
 import { globalState } from '../utilities/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
+import { particleEffect } from '../utilities/particle-effect.js'
 import logoImage from '../../../assets/logo.png'
 export default {
   emits: ['on-initialize', 'on-stroke-start'],
@@ -69,6 +70,7 @@ export default {
 
       this.cursorManager = new CursorManager(this.$refs.drawing)
       globalCanvasManager.setContexts(this.drawingCtx, this.overlayCtx)
+      particleEffect.setOverlayContext(this.$refs.overlay, this.overlayCtx)
       this.initializeListeners()
 
       // Clear the overlay to make it transparent

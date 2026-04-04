@@ -32,6 +32,7 @@
 <script>
 import { globalState } from '../utilities/global-state.js'
 import { inputHandler } from '../utilities/input-handler.js'
+import { particleEffect } from '../utilities/particle-effect.js'
 import ColorWheelPicker from './color-wheel-picker.vue'
 import ThemeModal from './theme-modal.vue'
 
@@ -53,7 +54,9 @@ export default {
       this._handleCanvasDrop = (e) => {
         e.preventDefault()
         if (this.draggedIndex !== null) {
-          this.deleteColor()
+          const dropX = e.clientX
+          const dropY = e.clientY
+          this.deleteColor(dropX, dropY)
         }
       }
       canvas.addEventListener('dragover', this._handleCanvasDragover)
@@ -211,10 +214,21 @@ export default {
       this.dragOverIndex = null
       this.dragOverTrash = false
     },
-    deleteColor() {
+    deleteColor(dropX = null, dropY = null) {
       if (this.draggedIndex !== null) {
+        const deletedColor = this.colors[this.draggedIndex]
         this.colors.splice(this.draggedIndex, 1)
         this.saveColors()
+
+        if (dropX !== null && dropY !== null) {
+          const canvas = document.querySelector('canvas.overlay')
+          if (canvas) {
+            const rect = canvas.getBoundingClientRect()
+            const canvasX = dropX - rect.left
+            const canvasY = dropY - rect.top
+            particleEffect.createConfetti(canvasX, canvasY, deletedColor.hex)
+          }
+        }
       }
       this.draggedIndex = null
       this.dragOverIndex = null
