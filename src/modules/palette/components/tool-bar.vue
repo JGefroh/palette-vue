@@ -8,7 +8,7 @@
     <button
       v-for="size in brushSizes"
       :key="size"
-      class="tool"
+      class="tool with-text"
       :class="{ active: globalState.get('selectedSize') === size }"
       @click="globalState.set('selectedSize', size)"
     >
@@ -19,7 +19,7 @@
       v-for="tool in toolList"
       :key="tool.name"
       class="tool"
-      :class="{ active: tool === globalState.get('selectedTool') }"
+      :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon }"
       @click="selectToolOrToggleMode(tool)"
       :title="tool.name"
     >
@@ -131,7 +131,12 @@ export default {
 }
 
 .tool {
-  padding: 8px 12px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   border: 1px solid rgba(185, 185, 185, 0.5);
   background-color: transparent;
   color: #34495e;
@@ -151,6 +156,11 @@ export default {
   background-color: rgba(52, 73, 94, 0.15);
   border-color: rgba(52, 73, 94, 0.5);
   color: #34495e;
+}
+
+.tool.with-text {
+  width: auto;
+  padding: 8px 12px;
 }
 
 .divider {

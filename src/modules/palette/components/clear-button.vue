@@ -1,5 +1,5 @@
 <template>
-  <button class="tool clear-button" @click="clear" title="Clear canvas">
+  <button class="tool with-text clear-button" @click="clear" title="Clear canvas">
     <span class="fa fa-fw fa-trash"></span> Clear
   </button>
 </template>
