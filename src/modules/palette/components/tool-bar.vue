@@ -145,6 +145,7 @@ export default {
   font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   transition: all 0.2s ease;
+  outline: none;
 }
 
 .tool:hover {

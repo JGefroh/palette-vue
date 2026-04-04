@@ -36,6 +36,9 @@ export class Brush {
   }
 
   initializeStroke(coordinates) {
+    this.drawingCtx.lineWidth = this.getLineWidth()
+    this.drawingCtx.lineCap = 'round'
+    this.drawingCtx.lineJoin = 'round'
     this.drawingCtx.beginPath()
     this.drawingCtx.moveTo(coordinates.x, coordinates.y)
   }
