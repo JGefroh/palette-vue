@@ -253,8 +253,7 @@ export default {
   background-color: #d3d3d37e;
   font-family: 'Montserrat', sans-serif;
   position: absolute;
-  min-width: 95px;
-  max-width: 90px;
+  width: 92px;
   top: 50%;
   left: 8px;
   transform: translateY(-50%);
