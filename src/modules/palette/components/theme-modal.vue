@@ -2,7 +2,7 @@
   <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal">
       <div class="modal-header">
-        <h2>Color Themes</h2>
+        <h2>Palettes</h2>
         <button class="close-btn" @click="$emit('close')">✕</button>
       </div>
       <div class="modal-content">
