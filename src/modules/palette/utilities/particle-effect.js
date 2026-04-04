@@ -2,17 +2,35 @@ export class ParticleEffect {
   constructor() {
     this.particles = []
     this.animationId = null
-    this.overlayCanvas = null
-    this.overlayCtx = null
+    this.canvas = null
+    this.ctx = null
   }
 
-  setOverlayContext(overlayCanvas, overlayCtx) {
-    this.overlayCanvas = overlayCanvas
-    this.overlayCtx = overlayCtx
+  initialize() {
+    if (this.canvas) return
+
+    this.canvas = document.createElement('canvas')
+    this.canvas.style.position = 'fixed'
+    this.canvas.style.top = '0'
+    this.canvas.style.left = '0'
+    this.canvas.style.zIndex = '1000'
+    this.canvas.style.pointerEvents = 'none'
+    this.ctx = this.canvas.getContext('2d')
+
+    this.resizeCanvas()
+    window.addEventListener('resize', () => this.resizeCanvas())
+    document.body.appendChild(this.canvas)
+  }
+
+  resizeCanvas() {
+    if (this.canvas) {
+      this.canvas.width = window.innerWidth
+      this.canvas.height = window.innerHeight
+    }
   }
 
   createConfetti(x, y, color, count = 8) {
-    if (!this.overlayCtx) return
+    this.initialize()
 
     const particles = []
     for (let i = 0; i < count; i++) {
@@ -38,12 +56,12 @@ export class ParticleEffect {
       cancelAnimationFrame(this.animationId)
     }
 
-    if (!this.overlayCtx || !this.overlayCanvas) return
+    if (!this.ctx || !this.canvas) return
 
     const frame = () => {
       this.particles = this.particles.filter(p => p.life > 0)
 
-      this.overlayCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height)
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
       this.particles.forEach(p => {
         p.vy += p.gravity
@@ -51,13 +69,13 @@ export class ParticleEffect {
         p.y += p.vy
         p.life -= 0.02
 
-        this.overlayCtx.save()
-        this.overlayCtx.globalAlpha = p.life
-        this.overlayCtx.fillStyle = p.color
-        this.overlayCtx.beginPath()
-        this.overlayCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        this.overlayCtx.fill()
-        this.overlayCtx.restore()
+        this.ctx.save()
+        this.ctx.globalAlpha = p.life
+        this.ctx.fillStyle = p.color
+        this.ctx.beginPath()
+        this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        this.ctx.fill()
+        this.ctx.restore()
       })
 
       if (this.particles.length > 0) {

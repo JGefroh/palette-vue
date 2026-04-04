@@ -221,13 +221,7 @@ export default {
         this.saveColors()
 
         if (dropX !== null && dropY !== null) {
-          const canvas = document.querySelector('canvas.overlay')
-          if (canvas) {
-            const rect = canvas.getBoundingClientRect()
-            const canvasX = dropX - rect.left
-            const canvasY = dropY - rect.top
-            particleEffect.createConfetti(canvasX, canvasY, deletedColor.hex)
-          }
+          particleEffect.createConfetti(dropX, dropY, deletedColor.hex)
         }
       }
       this.draggedIndex = null
