@@ -41,6 +41,8 @@
                   {{ tool.name }}
                   <br v-if="tool.toggleMode" />
                   <span v-if="tool.toggleMode" class="toggle-info">fill/outline</span>
+                  <br v-if="tool.brushOptions" />
+                  <span v-if="tool.brushOptions" class="toggle-info">B or Cmd+B to toggle arrow</span>
                   <br v-if="tool.lineOptions" />
                   <span v-if="tool.lineOptions" class="toggle-info">L to cycle style, Cmd+L for arrow</span>
                 </td>
@@ -112,7 +114,7 @@ export default {
       activeTab: 'intro',
       hoveredFeature: null,
       featuresList: [
-        { title: 'Drawing & Shapes', detail: 'Freehand drawing and 4 shape tools (rectangle, circle, line) with fill or outline mode. Draw freely with the brush tool or use shapes for structured elements. Click a shape tool twice to toggle between fill and outline modes.\n- B - Brush\n- R - Rectangle\n- C - Circle\n- L - Line (with style and arrow options)\nClick and drag to draw. Hold Shift while dragging shapes to preserve aspect ratio. Lines snap to axis.' },
+        { title: 'Drawing & Shapes', detail: 'Freehand drawing and 4 shape tools (rectangle, circle, line) with fill or outline mode. Draw freely with the brush tool or use shapes for structured elements. Click a shape tool twice to toggle between fill and outline modes.\n- B - Brush (with arrow option)\n- R - Rectangle\n- C - Circle\n- L - Line (with style and arrow options)\nClick and drag to draw. Hold Shift while dragging shapes to preserve aspect ratio. Lines snap to axis.' },
         { title: 'Color Palette', detail: 'Manage colors with custom colors from the color wheel or pre-made themes. Add, remove, reorder, and assign keyboard shortcuts to colors.\n- + button - Add custom color\n- ⚙ button - Browse themes\n- Drag to reorder colors\n- Drag out to remove\n- Click a color repeatedly to assign 0–9 shortcuts\n- 0–9 - Toggle between assigned colors' },
         { title: 'Undo, Redo & Auto-Save', detail: 'Full undo/redo history and automatic saving to browser storage every 500ms. Your work persists even after closing the browser, unless your browser settings change this.\n- Cmd+Z - Undo\n- Cmd+Shift+Z - Redo\nAuto-save happens silently in the background.' },
         { title: 'Zoom & Pan', detail: 'Zoom in to see fine details or out for the full picture. Pan around the canvas while zoomed to explore different areas.\n- Ctrl+Scroll - Zoom (Cmd+Scroll on Mac)\nPan to navigate without losing focus on zoomed areas.' },
@@ -124,7 +126,7 @@ export default {
         { title: 'Snap & Aspect Ratio', detail: 'Draw precisely aligned shapes and maintain proportional resizes. Snap to axes for pixel-perfect alignment.\n- Hold modifiers while dragging\nGreat for creating grids and consistent designs.' }
       ],
       tools: [
-        { key: 'B', name: 'Brush' },
+        { key: 'B', name: 'Brush', brushOptions: true },
         { key: 'R', name: 'Rectangle', toggleMode: true },
         { key: 'C', name: 'Circle', toggleMode: true },
         { key: 'L', name: 'Line', lineOptions: true },
