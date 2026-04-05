@@ -1,17 +1,20 @@
 <template>
   <div v-if="shouldShow" class="tool-options" :style="{ left: calculatedLeft }">
-    <div v-for="option in tool.options" :key="option.key" class="option-group">
-      <button
-        v-for="choice in option.choices"
-        :key="choice.value"
-        class="option-button"
-        :class="{ active: option.selected === choice.value }"
-        @click="option.selected = choice.value"
-        :title="choice.label"
-      >
-        <span class="fa fa-fw" :class="choice.icon"></span>
-      </button>
-    </div>
+    <template v-for="(option, index) in tool.options" :key="option.key">
+      <div v-if="index > 0" class="divider"></div>
+      <div class="option-group">
+        <button
+          v-for="choice in option.choices"
+          :key="choice.value"
+          class="option-button"
+          :class="{ active: option.selected === choice.value }"
+          @click="option.selected = choice.value"
+          :title="choice.label"
+        >
+          <span class="fa fa-fw" :class="choice.icon"></span>
+        </button>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -71,6 +74,12 @@ export default {
 .option-group {
   display: flex;
   gap: 4px;
+}
+
+.divider {
+  width: 1px;
+  background-color: #c6c6c6;
+  margin: 0 4px;
 }
 
 .option-button {

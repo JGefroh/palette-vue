@@ -11,14 +11,25 @@ export class ShapeLine extends Shape {
     this.shortcut = 'l'
     this.unsubscribeEnableSnap = null
     this.unsubscribeDisableSnap = null
-    this.options = reactive([{
-      key: 'arrowStyle',
-      choices: [
-        { value: 'none', icon: 'fa-minus', label: 'Nub' },
-        { value: 'arrow', icon: 'fa-arrow-right', label: 'Arrow' }
-      ],
-      selected: 'none'
-    }])
+    this.options = reactive([
+      {
+        key: 'arrowStyle',
+        choices: [
+          { value: 'none', icon: 'fa-minus', label: 'Nub' },
+          { value: 'arrow', icon: 'fa-arrow-right', label: 'Arrow' }
+        ],
+        selected: 'none'
+      },
+      {
+        key: 'lineStyle',
+        choices: [
+          { value: 'solid', icon: 'fa-minus', label: 'Solid' },
+          { value: 'dashed', icon: 'fa-ellipsis-h', label: 'Dashed' },
+          { value: 'dotted', icon: 'fa-circle', label: 'Dotted' }
+        ],
+        selected: 'solid'
+      }
+    ])
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
@@ -92,12 +103,57 @@ export class ShapeLine extends Shape {
     }
   }
 
-  drawShape(ctx, startCoords, endCoords) {
-    ctx.save()
+  drawSolidLine(ctx, startCoords, endCoords) {
     ctx.beginPath()
     ctx.moveTo(startCoords.x, startCoords.y)
     ctx.lineTo(endCoords.x, endCoords.y)
     ctx.stroke()
+  }
+
+  drawDashedLine(ctx, startCoords, endCoords) {
+    ctx.setLineDash([ctx.lineWidth, ctx.lineWidth * 2])
+    ctx.beginPath()
+    ctx.moveTo(startCoords.x, startCoords.y)
+    ctx.lineTo(endCoords.x, endCoords.y)
+    ctx.stroke()
+    ctx.setLineDash([])
+  }
+
+  drawDottedLine(ctx, startCoords, endCoords) {
+    const dx = endCoords.x - startCoords.x
+    const dy = endCoords.y - startCoords.y
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    const dotSpacing = ctx.lineWidth * 2
+    const dotRadius = ctx.lineWidth / 2
+
+    const numDots = Math.ceil(distance / dotSpacing)
+
+    ctx.fillStyle = ctx.strokeStyle
+
+    for (let i = 0; i <= numDots; i++) {
+      const t = numDots > 0 ? i / numDots : 0
+      const x = startCoords.x + dx * t
+      const y = startCoords.y + dy * t
+
+      ctx.beginPath()
+      ctx.arc(x, y, dotRadius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+
+  drawShape(ctx, startCoords, endCoords) {
+    ctx.save()
+
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    const lineStyle = lineStyleOption?.selected || 'solid'
+
+    if (lineStyle === 'dashed') {
+      this.drawDashedLine(ctx, startCoords, endCoords)
+    } else if (lineStyle === 'dotted') {
+      this.drawDottedLine(ctx, startCoords, endCoords)
+    } else {
+      this.drawSolidLine(ctx, startCoords, endCoords)
+    }
 
     const arrowOption = this.options.find(o => o.key === 'arrowStyle')
     if (arrowOption && arrowOption.selected === 'arrow') {
