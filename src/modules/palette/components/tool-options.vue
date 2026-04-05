@@ -74,6 +74,19 @@ export default {
   z-index: 101;
 }
 
+.tool-options::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 6px solid rgba(211, 211, 211, 0.49);
+}
+
 .option-group {
   display: flex;
   gap: 4px;
