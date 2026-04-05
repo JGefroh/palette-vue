@@ -1,6 +1,7 @@
 import { Shape } from './shape.js'
 import { inputHandler } from '../utilities/input-handler.js'
 import { globalState } from '../utilities/global-state.js'
+import { reactive } from 'vue'
 
 export class ShapeLine extends Shape {
   constructor(dependencies) {
@@ -10,6 +11,14 @@ export class ShapeLine extends Shape {
     this.shortcut = 'l'
     this.unsubscribeEnableSnap = null
     this.unsubscribeDisableSnap = null
+    this.options = reactive([{
+      key: 'arrowStyle',
+      choices: [
+        { value: 'none', icon: 'fa-minus', label: 'Nub' },
+        { value: 'arrow', icon: 'fa-arrow-right', label: 'Arrow' }
+      ],
+      selected: 'none'
+    }])
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
@@ -89,6 +98,26 @@ export class ShapeLine extends Shape {
     ctx.moveTo(startCoords.x, startCoords.y)
     ctx.lineTo(endCoords.x, endCoords.y)
     ctx.stroke()
+
+    const arrowOption = this.options.find(o => o.key === 'arrowStyle')
+    if (arrowOption && arrowOption.selected === 'arrow') {
+      const angle = Math.atan2(endCoords.y - startCoords.y, endCoords.x - startCoords.x)
+      const arrowLength = ctx.lineWidth * 4
+      const arrowWidth = ctx.lineWidth * 2
+
+      ctx.save()
+      ctx.translate(endCoords.x, endCoords.y)
+      ctx.rotate(angle)
+      ctx.fillStyle = ctx.strokeStyle
+      ctx.beginPath()
+      ctx.moveTo(ctx.lineWidth, 0)
+      ctx.lineTo(-arrowLength + ctx.lineWidth, arrowWidth)
+      ctx.lineTo(-arrowLength + ctx.lineWidth, -arrowWidth)
+      ctx.closePath()
+      ctx.fill()
+      ctx.restore()
+    }
+
     ctx.restore()
   }
 }
