@@ -9,20 +9,18 @@
       @dblclick="renameTab(tab)"
     >{{ tab.name }} <span class="tab-delete" @click.stop="deleteTab(tab)">✕</span></button>
     <button class="tab tab-add" @click="addTab(false)">+</button>
-    <DownloadButton
-      :tab-name="getSelectedTab()?.name || 'Canvas'"
-    />
+    <HelpButton />
   </div>
 </template>
 
 <script>
-import DownloadButton from './download-button.vue'
+import HelpButton from './help-button.vue'
 import { globalState } from '../utilities/global-state.js'
 import { inputHandler } from '../utilities/input-handler.js'
 
 export default {
   components: {
-    DownloadButton
+    HelpButton
   },
   props: {
   },

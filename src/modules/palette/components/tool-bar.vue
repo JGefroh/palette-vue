@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar">
-    <HelpButton />
+    <DownloadButton />
     <div class="divider"></div>
     <UndoButton />
     <RedoButton />
@@ -51,12 +51,12 @@ import { Paste } from '../tools/paste.js'
 import UndoButton from './undo-button.vue'
 import RedoButton from './redo-button.vue'
 import ClearButton from './clear-button.vue'
-import HelpButton from './help-button.vue'
+import DownloadButton from './download-button.vue'
 import ToolOptions from './tool-options.vue'
 
 export default {
   components: {
-    HelpButton,
+    DownloadButton,
     UndoButton,
     RedoButton,
     ClearButton,
