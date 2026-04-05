@@ -39,7 +39,7 @@ export class Brush {
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
     const instance = new Brush({ drawingCtx, overlayCtx, getLineWidth })
-    inputHandler.registerCommand('cmd+b', 'brush-toggle-arrow', () => {
+    inputHandler.onCommand('brush-toggle-arrow', () => {
       const selectedTool = globalState.get('selectedTool')
       if (selectedTool && selectedTool.name === 'Brush') {
         selectedTool.toggleArrow()

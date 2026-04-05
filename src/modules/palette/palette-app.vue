@@ -36,8 +36,8 @@ export default {
     }
   },
   mounted() {
-    inputHandler.start();
-    this.initializeAutosave();
+    inputHandler.start()
+    this.initializeAutosave()
   },
   beforeUnmount() {
     inputHandler.stop();

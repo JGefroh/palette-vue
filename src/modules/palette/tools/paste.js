@@ -31,7 +31,7 @@ export class Paste {
   }
 
   start(coordinates) {
-    inputHandler.registerCommand('cmd+v', 'paste', () => {
+    inputHandler.onCommand('paste', () => {
       this.paste()
     })
 

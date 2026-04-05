@@ -10,7 +10,7 @@ import { inputHandler } from '../utilities/input-handler.js'
 
 export default {
   mounted() {
-    inputHandler.registerCommand('cmd+shift+z', 'redo', () => this.redo());
+    inputHandler.onCommand('redo', () => this.redo());
   },
   methods: {
     redo() {

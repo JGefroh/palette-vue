@@ -35,7 +35,7 @@ export class ShapeLine extends Shape {
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
     const instance = new ShapeLine({ drawingCtx, overlayCtx, getLineWidth })
-    inputHandler.registerCommand('cmd+l', 'line-toggle-arrow', () => {
+    inputHandler.onCommand('line-toggle-arrow', () => {
       const selectedTool = globalState.get('selectedTool')
       if (selectedTool && selectedTool.name === 'Line') {
         selectedTool.toggleArrow()
@@ -90,8 +90,6 @@ export class ShapeLine extends Shape {
   start(coordinates) {
     super.start(coordinates)
     globalState.set('snapEnabled', false)
-    inputHandler.registerKeyCombo('shift_press', 'enableSnap')
-    inputHandler.registerKeyCombo('shift_release', 'disableSnap')
 
     this.unsubscribeEnableSnap = inputHandler.onCommand('enableSnap', () => {
       globalState.set('snapEnabled', true)

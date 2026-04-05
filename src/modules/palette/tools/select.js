@@ -26,24 +26,20 @@ export class Select {
     this.clipboard = new SelectClipboard(this)
     this.outline = new SelectOutline(this)
 
-    inputHandler.registerCommand('cmd+c', 'copy', () => {
+    inputHandler.onCommand('copy', () => {
       this.clipboard.copySelectedContent()
     })
 
-    inputHandler.registerCommand('cmd+x', 'cut', () => {
+    inputHandler.onCommand('cut', () => {
       this.clipboard.copySelectedContent()
       this.deleteSelection()
     })
 
-    inputHandler.registerCommand('cmd+a', 'select-all', () => {
+    inputHandler.onCommand('select-all', () => {
       this.selectAll()
     })
 
-    inputHandler.registerCommand('delete', 'delete-selection', () => {
-      this.deleteSelection()
-    })
-
-    inputHandler.registerCommand('backspace', 'delete-selection', () => {
+    inputHandler.onCommand('delete-selection', () => {
       this.deleteSelection()
     })
   }

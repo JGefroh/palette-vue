@@ -10,7 +10,7 @@ import { inputHandler } from '../utilities/input-handler.js'
 
 export default {
   mounted() {
-    inputHandler.registerCommand('cmd+z', 'undo', () => this.undo());
+    inputHandler.onCommand('undo', () => this.undo());
   },
   methods: {
     undo() {

@@ -41,6 +41,7 @@
 import { globalState } from '../utilities/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../utilities/input-handler.js'
+import { shortcuts } from '../concerns/shortcuts.js'
 import { Brush } from '../tools/brush.js'
 import { ShapeRectangle } from '../tools/shape-rectangle.js'
 import { ShapeCircle } from '../tools/shape-circle.js'
@@ -105,10 +106,11 @@ export default {
         globalState.set('selectedTool', this.toolList[0])
       }
 
-      // Register tool shortcuts
+      // Register tool shortcuts and set up listeners
+      shortcuts.register(this.toolList)
       this.toolList.forEach(tool => {
         if (tool.shortcut) {
-          inputHandler.registerCommand(tool.shortcut, `select-tool-${tool.name}`, () => {
+          inputHandler.onCommand(`select-tool-${tool.name}`, () => {
             this.selectToolOrToggleMode(tool);
           });
         }

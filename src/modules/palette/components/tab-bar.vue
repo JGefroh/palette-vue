@@ -37,8 +37,8 @@ export default {
   },
   mounted() {
     this.loadSavedTabs()
-    inputHandler.registerCommand('tab', 'nextTab', () => this.nextTab())
-    inputHandler.registerCommand('shift+tab', 'prevTab', () => this.prevTab())
+    inputHandler.onCommand('nextTab', () => this.nextTab())
+    inputHandler.onCommand('prevTab', () => this.prevTab())
   },
   methods: {
     selectTab(id) {

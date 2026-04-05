@@ -124,10 +124,9 @@ export default {
       }
     },
     registerColorShortcuts() {
-      // Register 0-9 shortcuts for color selection
       for (let i = 0; i <= 9; i++) {
         const digit = String(i);
-        inputHandler.registerCommand(digit, `select-color-${digit}`, () => {
+        inputHandler.onCommand(`select-color-${digit}`, () => {
           this.cycleColorsWithNumber(digit);
         });
       }

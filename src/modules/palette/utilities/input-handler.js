@@ -33,14 +33,9 @@ class InputHandler {
     this.isListening = false;
   }
 
-  registerCommand(shortcut, commandType, callback) {
+  registerCommand(shortcut, commandType) {
     const normalizedShortcut = this.normalizeShortcut(shortcut);
     this.shortcuts.set(normalizedShortcut, commandType);
-
-    if (!this.commands.has(commandType)) {
-      this.commands.set(commandType, new Set());
-    }
-    this.commands.get(commandType).add(callback);
   }
 
   onCommand(commandType, callback) {
