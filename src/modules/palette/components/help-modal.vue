@@ -12,7 +12,25 @@
         </div>
       </div>
 
+      <div class="modal-tabs">
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'intro' }"
+          @click="activeTab = 'intro'"
+        >
+          Intro
+        </button>
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'features' }"
+          @click="activeTab = 'features'"
+        >
+          Features
+        </button>
+      </div>
+
       <div class="modal-body">
+        <div v-if="activeTab === 'intro'">
         <div class="shortcuts-grid">
           <div class="shortcuts-column">
             <h3>Tools</h3>
@@ -55,7 +73,30 @@
           <h3>Legal</h3>
           <p class="info-text">Author assumes absolutely no liability of any kind, reserves all rights, and provides as-is without any warranty.</p>
         </div>
+        </div>
 
+        <div v-if="activeTab === 'features'">
+          <p class="info-text">Palette's goal is simple, rapid sketching.</p>
+          <ul class="features-list">
+            <li
+              v-for="(feature, index) in featuresList"
+              :key="index"
+              @mouseenter="hoveredFeature = index"
+              @mouseleave="hoveredFeature = null"
+              :class="{ hovered: hoveredFeature === index }"
+            >
+              {{ feature.title }}
+            </li>
+          </ul>
+          <div v-if="hoveredFeature !== null" class="feature-detail">
+            <div class="detail-divider"></div>
+            <div class="detail-text">
+              <div v-for="(line, index) in featuresList[hoveredFeature].detail.split('\n')" :key="index" :class="{ 'detail-bullet': line.trim().startsWith('-') }">
+                {{ line.trim().startsWith('-') ? line.trim().substring(2) : line }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,6 +107,20 @@ export default {
   emits: ['close'],
   data() {
     return {
+      activeTab: 'intro',
+      hoveredFeature: null,
+      featuresList: [
+        { title: 'Drawing & Shapes', detail: 'Freehand drawing and 4 shape tools (rectangle, circle, triangle, line) with fill or outline mode. Draw freely with the brush tool or use shapes for structured elements. Click a shape tool twice to toggle between fill and outline modes.\n- B - Brush\n- R - Rectangle\n- C - Circle\n- L - Line\nClick and drag to draw. Hold Shift while dragging shapes to preserve aspect ratio. Lines snap to axis.' },
+        { title: 'Color Palette', detail: 'Manage colors with custom colors from the color wheel or pre-made themes. Add, remove, reorder, and assign keyboard shortcuts to colors.\n- + button - Add custom color\n- ⚙ button - Browse themes\n- Drag to reorder colors\n- Drag out to remove\n- Click a color repeatedly to assign 0–9 shortcuts\n- 0–9 - Toggle between assigned colors' },
+        { title: 'Undo, Redo & Auto-Save', detail: 'Full undo/redo history and automatic saving to browser storage every 500ms. Your work persists even after closing the browser, unless your browser settings change this.\n- Cmd+Z - Undo\n- Cmd+Shift+Z - Redo\nAuto-save happens silently in the background.' },
+        { title: 'Zoom & Pan', detail: 'Zoom in to see fine details or out for the full picture. Pan around the canvas while zoomed to explore different areas.\n- Ctrl+Scroll - Zoom (Cmd+Scroll on Mac)\nPan to navigate without losing focus on zoomed areas.' },
+        { title: 'Image Import', detail: 'Drag images directly into your canvas for use as references, backgrounds, or tracing guides.\n- Drag any image onto canvas\nPerfect for tracing photos or layering backgrounds.' },
+        { title: 'Select, Copy & Paste', detail: 'Select elements on your canvas, copy them, and paste multiple times to duplicate and arrange.\n- S - Select\n- Cmd+C - Copy\n- Cmd+V - Paste\n- Delete - Delete selected elements\nGreat for creating patterns and symmetrical designs.' },
+        { title: 'Tabs', detail: 'Work on multiple drawings simultaneously. Each tab is independent with its own auto-save.\n- Tab - Next tab\n- Shift+Tab - Previous tab\n- Double-click tab name - Rename tab\n- Click X on tab - Delete tab\nSwitch between projects instantly.' },
+        { title: 'Keyboard Shortcuts', detail: 'Every tool and command has a keyboard shortcut for efficient workflow.\n- B - Brush, R - Rectangle, C - Circle, L - Line\n- T - Text, S - Select\nAll shortcuts are listed in the Tools section of Help.' },
+        { title: 'Download', detail: 'Export your drawing as a PNG file. The filename automatically matches your tab name.\n- Download button in nav bar\nSupports full transparency.' },
+        { title: 'Snap & Aspect Ratio', detail: 'Draw precisely aligned shapes and maintain proportional resizes. Snap to axes for pixel-perfect alignment.\n- Hold modifiers while dragging\nGreat for creating grids and consistent designs.' }
+      ],
       tools: [
         { key: 'B', name: 'Brush' },
         { key: 'R', name: 'Rectangle', toggleMode: true },
@@ -112,8 +167,8 @@ export default {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  max-height: 80vh;
+  width: 600px;
+  height: 640px;
   position: relative;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
@@ -154,6 +209,41 @@ export default {
   color: #7f8c8d;
 }
 
+.modal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px;
+  background-color: rgba(185, 185, 185, 0.1);
+  border-bottom: 1px solid rgba(185, 185, 185, 0.2);
+}
+
+.tab-button {
+  padding: 8px 16px;
+  border: 1px solid rgba(185, 185, 185, 0.3);
+  border-radius: 4px;
+  background-color: transparent;
+  color: #7f8c8d;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tab-button:hover {
+  color: #34495e;
+  background-color: rgba(52, 73, 94, 0.05);
+  border-color: rgba(185, 185, 185, 0.5);
+}
+
+.tab-button.active {
+  color: #34495e;
+  background-color: rgba(52, 73, 94, 0.15);
+  border-color: rgba(52, 73, 94, 0.5);
+}
+
 .modal-body {
   padding: 16px 20px;
   overflow-y: auto;
@@ -163,6 +253,62 @@ export default {
 
 .section {
   margin-bottom: 12px;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features-list li {
+  padding: 6px 0;
+  color: #34495e;
+  border-bottom: 1px solid rgba(185, 185, 185, 0.15);
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.features-list li:last-child {
+  border-bottom: none;
+}
+
+.features-list li.hovered {
+  background-color: rgba(52, 73, 94, 0.05);
+}
+
+.feature-detail {
+  margin-top: 12px;
+  padding-top: 8px;
+}
+
+.detail-divider {
+  height: 1px;
+  background-color: rgba(185, 185, 185, 0.2);
+  margin-bottom: 8px;
+}
+
+.detail-text {
+  color: #7f8c8d;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.detail-text > div {
+  margin: 4px 0;
+}
+
+.detail-text > div.detail-bullet {
+  margin-left: 12px;
+  color: #7f8c8d;
+}
+
+.detail-text > div.detail-bullet::before {
+  content: '• ';
+  color: #95a5a6;
+  margin-right: 4px;
 }
 
 .shortcuts-grid {
