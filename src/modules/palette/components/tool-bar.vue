@@ -19,11 +19,14 @@
       v-for="tool in toolList"
       :key="tool.name"
       class="tool"
-      :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon }"
+      :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon && !tool.icons }"
       @click="selectToolOrToggleMode(tool)"
       :title="tool.name"
     >
-      <span v-if="tool.fillIcon" class="fa fa-fw" :class="tool.mode === 'fill' ? tool.fillIcon : tool.outlineIcon"></span>
+      <div v-if="tool.icons" class="icon-container" :class="{ 'icon-container-compact': tool.icons.includes('fa-arrow-right') }">
+        <span v-for="(icon, idx) in tool.icons" :key="idx" class="fa fa-fw" :class="[icon, { 'icon-small-minus': tool.icons.includes('fa-arrow-right') && icon === 'fa-minus' }]"></span>
+      </div>
+      <span v-else-if="tool.fillIcon" class="fa fa-fw" :class="tool.mode === 'fill' ? tool.fillIcon : tool.outlineIcon"></span>
       <span v-else-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
       <span v-else>{{ tool.name }}</span>
     </button>
@@ -111,8 +114,12 @@ export default {
       });
     },
     selectToolOrToggleMode(tool) {
-      if (globalState.get('selectedTool') === tool && tool.mode !== undefined) {
-        tool.mode = tool.mode === 'fill' ? 'outline' : 'fill'
+      if (globalState.get('selectedTool') === tool) {
+        if (tool.mode !== undefined) {
+          tool.mode = tool.mode === 'fill' ? 'outline' : 'fill'
+        } else if (tool.onAlreadySelected) {
+          tool.onAlreadySelected()
+        }
       } else {
         globalState.set('selectedTool', tool)
       }
@@ -175,5 +182,20 @@ export default {
   width: 1px;
   background-color: #c6c6c6;
   margin: 2px 4px;
+}
+
+.icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.icon-container-compact {
+  gap: 1px;
+}
+
+.icon-small-minus {
+  font-size: 0.5em;
 }
 </style>

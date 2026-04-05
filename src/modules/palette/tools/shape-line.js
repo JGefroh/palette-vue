@@ -7,8 +7,9 @@ export class ShapeLine extends Shape {
   constructor(dependencies) {
     super(dependencies)
     this.name = 'Line'
-    this.icon = 'fa-minus'
+    this._icon = 'fa-minus'
     this.shortcut = 'l'
+    this.mode = undefined
     this.unsubscribeEnableSnap = null
     this.unsubscribeDisableSnap = null
     this.options = reactive([
@@ -24,8 +25,8 @@ export class ShapeLine extends Shape {
         key: 'lineStyle',
         choices: [
           { value: 'solid', icon: 'fa-minus', label: 'Solid' },
-          { value: 'dashed', icon: 'fa-ellipsis-h', label: 'Dashed' },
-          { value: 'dotted', icon: 'fa-circle', label: 'Dotted' }
+          { value: 'dashed', icons: ['fa-minus', 'fa-minus'], label: 'Dashed' },
+          { value: 'dotted', icon: 'fa-ellipsis-h', label: 'Dotted' }
         ],
         selected: 'solid'
       }
@@ -33,24 +34,72 @@ export class ShapeLine extends Shape {
   }
 
   static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new ShapeLine({ drawingCtx, overlayCtx, getLineWidth })
+    const instance = new ShapeLine({ drawingCtx, overlayCtx, getLineWidth })
+    inputHandler.registerCommand('cmd+l', 'line-toggle-arrow', () => {
+      const selectedTool = globalState.get('selectedTool')
+      if (selectedTool && selectedTool.name === 'Line') {
+        selectedTool.toggleArrow()
+      }
+    })
+    return instance
   }
 
   get label() {
     return 'Line'
   }
 
+  get icon() {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    if (!lineStyleOption) return this._icon
+
+    switch (lineStyleOption.selected) {
+      case 'dashed':
+        return null
+      case 'dotted':
+        return 'fa-ellipsis-h'
+      default:
+        return 'fa-minus'
+    }
+  }
+
+  get icons() {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    const arrowOption = this.options.find(o => o.key === 'arrowStyle')
+
+    const hasArrow = arrowOption && arrowOption.selected === 'arrow'
+    const lineStyle = lineStyleOption?.selected || 'solid'
+
+    let icons = []
+
+    if (lineStyle === 'solid' && hasArrow) {
+      icons = ['fa-arrow-right']
+    } else if (lineStyle === 'dashed') {
+      icons = ['fa-minus', 'fa-minus']
+      if (hasArrow) icons.push('fa-arrow-right')
+    } else if (lineStyle === 'dotted') {
+      icons = ['fa-ellipsis-h']
+      if (hasArrow) icons.push('fa-arrow-right')
+    } else {
+      icons = ['fa-minus']
+    }
+
+    return icons.length > 0 ? icons : null
+  }
+
+
   start(coordinates) {
     super.start(coordinates)
     globalState.set('snapEnabled', false)
     inputHandler.registerKeyCombo('shift_press', 'enableSnap')
     inputHandler.registerKeyCombo('shift_release', 'disableSnap')
+
     this.unsubscribeEnableSnap = inputHandler.onCommand('enableSnap', () => {
       globalState.set('snapEnabled', true)
     })
     this.unsubscribeDisableSnap = inputHandler.onCommand('disableSnap', () => {
       globalState.set('snapEnabled', false)
     })
+
     if (inputHandler.getMode().shift) {
       globalState.set('snapEnabled', true)
     }
@@ -175,5 +224,31 @@ export class ShapeLine extends Shape {
     }
 
     ctx.restore()
+  }
+
+  onAlreadySelected() {
+    this.cycleLineStyle()
+  }
+
+  cycleLineStyle() {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    if (!lineStyleOption) return
+
+    const choices = lineStyleOption.choices
+    const currentIndex = choices.findIndex(c => c.value === lineStyleOption.selected)
+    const nextIndex = (currentIndex + 1) % choices.length
+
+    Object.assign(lineStyleOption, { selected: choices[nextIndex].value })
+  }
+
+  toggleArrow() {
+    const arrowOption = this.options.find(o => o.key === 'arrowStyle')
+    if (!arrowOption) return
+
+    const choices = arrowOption.choices
+    const currentIndex = choices.findIndex(c => c.value === arrowOption.selected)
+    const nextIndex = (currentIndex + 1) % choices.length
+
+    Object.assign(arrowOption, { selected: choices[nextIndex].value })
   }
 }

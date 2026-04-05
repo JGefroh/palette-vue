@@ -11,7 +11,10 @@
           @click="option.selected = choice.value"
           :title="choice.label"
         >
-          <span class="fa fa-fw" :class="choice.icon"></span>
+          <template v-if="choice.icons">
+            <span v-for="(icon, idx) in choice.icons" :key="idx" class="fa fa-fw icon-small" :class="icon"></span>
+          </template>
+          <span v-else class="fa fa-fw" :class="choice.icon"></span>
         </button>
       </div>
     </template>
@@ -109,5 +112,10 @@ export default {
   background-color: rgba(52, 73, 94, 0.15);
   border-color: rgba(52, 73, 94, 0.5);
   color: #34495e;
+}
+
+.icon-small {
+  font-size: 0.6em;
+  margin: 0 2px;
 }
 </style>
