@@ -19,7 +19,7 @@
       v-for="tool in toolList"
       :key="tool.name"
       class="tool"
-      :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon && !tool.icons }"
+      :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon && !tool.icons, 'tool-brush': tool.name === 'Brush' }"
       @click="selectToolOrToggleMode(tool)"
       :title="tool.name"
     >
@@ -27,7 +27,8 @@
         <span v-for="(icon, idx) in tool.icons" :key="idx" class="fa fa-fw" :class="[icon, { 'icon-small-minus': tool.icons.includes('fa-arrow-right') && icon === 'fa-minus' }]"></span>
       </div>
       <span v-else-if="tool.fillIcon" class="fa fa-fw" :class="tool.mode === 'fill' ? tool.fillIcon : tool.outlineIcon"></span>
-      <span v-else-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
+      <span v-else-if="tool.icon && tool.icon.startsWith('fa-')" class="fa fa-fw" :class="tool.icon"></span>
+      <span v-else-if="tool.icon" class="unicode-icon">{{ tool.icon }}</span>
       <span v-else>{{ tool.name }}</span>
     </button>
     <div class="divider"></div>
@@ -197,5 +198,14 @@ export default {
 
 .icon-small-minus {
   font-size: 0.5em;
+}
+
+.unicode-icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.tool-brush {
+  width: 65px;
 }
 </style>

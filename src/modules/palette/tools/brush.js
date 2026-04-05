@@ -10,8 +10,10 @@ export class Brush {
     this.strokeStartCoordinates = null
     this.strokeEndCoordinates = null
     this.recentCoordinates = []
+    this.lineDashOffset = 0
+    this.dotAccumulator = 0
     this.name = 'Brush'
-    this.icon = null
+    this.icon = 'fa-pencil'
     this.shortcut = 'b'
     this.mode = undefined
     this.options = reactive([
@@ -22,6 +24,15 @@ export class Brush {
           { value: 'arrow', icon: 'fa-arrow-right', label: 'Arrow' }
         ],
         selected: 'none'
+      },
+      {
+        key: 'lineStyle',
+        choices: [
+          { value: 'solid', icon: 'fa-circle', label: 'Solid' },
+          { value: 'dashed', icons: ['fa-minus', 'fa-minus'], label: 'Dashed' },
+          { value: 'dotted', icon: 'fa-ellipsis-h', label: 'Dotted' }
+        ],
+        selected: 'solid'
       }
     ])
   }
@@ -42,16 +53,33 @@ export class Brush {
   }
 
   get icons() {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
     const arrowOption = this.options.find(o => o.key === 'arrowStyle')
-    if (arrowOption && arrowOption.selected === 'arrow') {
-      return ['fa-arrow-right']
+
+    const hasArrow = arrowOption && arrowOption.selected === 'arrow'
+    const lineStyle = lineStyleOption?.selected || 'solid'
+
+    let icons = ['fa-pencil']
+
+    if (lineStyle === 'dashed') {
+      icons.push('fa-minus')
+      icons.push('fa-minus')
+    } else if (lineStyle === 'dotted') {
+      icons.push('fa-ellipsis-h')
     }
-    return null
+
+    if (hasArrow) {
+      icons.push('fa-arrow-right')
+    }
+
+    return icons
   }
 
   start(coordinates) {
     this.strokeStartCoordinates = { x: coordinates.x, y: coordinates.y }
     this.recentCoordinates = []
+    this.lineDashOffset = 0
+    this.dotAccumulator = 0
     this.initializeStroke(coordinates)
   }
 
@@ -75,8 +103,19 @@ export class Brush {
   }
 
   onAlreadySelected() {
-    // Brush cycles through arrow options when selected repeatedly
-    this.toggleArrow()
+    // Brush cycles through line style when selected repeatedly
+    this.cycleLineStyle()
+  }
+
+  cycleLineStyle() {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    if (!lineStyleOption) return
+
+    const choices = lineStyleOption.choices
+    const currentIndex = choices.findIndex(c => c.value === lineStyleOption.selected)
+    const nextIndex = (currentIndex + 1) % choices.length
+
+    Object.assign(lineStyleOption, { selected: choices[nextIndex].value })
   }
 
   toggleArrow() {
@@ -120,6 +159,7 @@ export class Brush {
     this.drawingCtx.lineWidth = this.getLineWidth()
     this.drawingCtx.lineCap = 'round'
     this.drawingCtx.lineJoin = 'round'
+    this.applyLineStyle(this.drawingCtx)
     this.drawingCtx.beginPath()
     this.drawingCtx.moveTo(coordinates.x, coordinates.y)
   }
@@ -140,14 +180,70 @@ export class Brush {
   }
 
   drawLine(coordinates) {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    const lineStyle = lineStyleOption?.selected || 'solid'
+
+    const lastCoords = this.recentCoordinates[this.recentCoordinates.length - 1] || this.strokeStartCoordinates
+    const dx = coordinates.x - lastCoords.x
+    const dy = coordinates.y - lastCoords.y
+    const distance = Math.sqrt(dx * dx + dy * dy)
+
     this.drawingCtx.lineWidth = this.getLineWidth()
-    this.drawingCtx.lineTo(coordinates.x, coordinates.y)
-    this.drawingCtx.stroke()
+
+    if (lineStyle === 'dotted') {
+      this.drawDottedLine(lastCoords, coordinates, distance)
+    } else {
+      this.drawingCtx.lineTo(coordinates.x, coordinates.y)
+      this.drawingCtx.stroke()
+
+      this.lineDashOffset += distance
+      this.drawingCtx.lineDashOffset = this.lineDashOffset
+    }
+
     this.drawingCtx.beginPath()
     this.drawingCtx.moveTo(coordinates.x, coordinates.y)
   }
 
+  drawDottedLine(fromCoords, toCoords, distance) {
+    const dotSpacing = this.getLineWidth() * 2
+    const dotRadius = this.getLineWidth() / 2
+
+    this.dotAccumulator += distance
+    const numDots = Math.floor(this.dotAccumulator / dotSpacing)
+
+    if (numDots > 0) {
+      const stepX = (toCoords.x - fromCoords.x) / (distance || 1)
+      const stepY = (toCoords.y - fromCoords.y) / (distance || 1)
+
+      for (let i = 0; i < numDots; i++) {
+        const offset = (i + 1) * dotSpacing - (this.dotAccumulator - distance)
+        const x = fromCoords.x + stepX * offset
+        const y = fromCoords.y + stepY * offset
+
+        this.drawingCtx.beginPath()
+        this.drawingCtx.arc(x, y, dotRadius, 0, Math.PI * 2)
+        this.drawingCtx.fill()
+      }
+
+      this.dotAccumulator -= numDots * dotSpacing
+    }
+  }
+
+  applyLineStyle(ctx) {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    const lineStyle = lineStyleOption?.selected || 'solid'
+
+    if (lineStyle === 'dashed') {
+      ctx.setLineDash([ctx.lineWidth, ctx.lineWidth * 2])
+    } else {
+      ctx.setLineDash([])
+    }
+  }
+
   finalizeStroke(coordinates) {
+    const lineStyleOption = this.options.find(o => o.key === 'lineStyle')
+    const lineStyle = lineStyleOption?.selected || 'solid'
+
     // If no movement occurred, draw a point
     if (this.strokeStartCoordinates &&
         coordinates.x === this.strokeStartCoordinates.x &&
@@ -155,11 +251,15 @@ export class Brush {
       this.drawingCtx.lineWidth = this.getLineWidth()
       this.drawingCtx.arc(coordinates.x, coordinates.y, this.getLineWidth() / 2, 0, 2 * Math.PI)
       this.drawingCtx.fill()
-    } else {
+    } else if (lineStyle !== 'dotted') {
       this.drawingCtx.lineWidth = this.getLineWidth()
       this.drawingCtx.lineTo(coordinates.x, coordinates.y)
       this.drawingCtx.stroke()
     }
+    this.drawingCtx.setLineDash([])
+    this.drawingCtx.lineDashOffset = 0
+    this.lineDashOffset = 0
+    this.dotAccumulator = 0
   }
 
 }
