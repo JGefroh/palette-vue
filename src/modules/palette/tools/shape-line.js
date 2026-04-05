@@ -130,6 +130,8 @@ export class ShapeLine extends Shape {
     this.overlayCtx.lineCap = 'round'
     this.overlayCtx.lineJoin = 'round'
     this.drawShape(this.overlayCtx, this.startCoordinates, snappedCoords)
+    const angle = Math.atan2(snappedCoords.y - this.startCoordinates.y, snappedCoords.x - this.startCoordinates.x)
+    this.drawAngleIndicator(this.overlayCtx, this.startCoordinates, angle)
   }
 
   end(coordinates) {
@@ -204,9 +206,10 @@ export class ShapeLine extends Shape {
       this.drawSolidLine(ctx, startCoords, endCoords)
     }
 
+    const angle = Math.atan2(endCoords.y - startCoords.y, endCoords.x - startCoords.x)
+
     const arrowOption = this.options.find(o => o.key === 'arrowStyle')
     if (arrowOption && arrowOption.selected === 'arrow') {
-      const angle = Math.atan2(endCoords.y - startCoords.y, endCoords.x - startCoords.x)
       const arrowLength = ctx.lineWidth * 4
       const arrowWidth = ctx.lineWidth * 2
 
@@ -223,6 +226,26 @@ export class ShapeLine extends Shape {
       ctx.restore()
     }
 
+    ctx.restore()
+  }
+
+  drawAngleIndicator(ctx, startCoords, angle) {
+    let angleDegrees = Math.round((angle * 180) / Math.PI)
+    const normalized = ((angleDegrees % 180) + 180) % 180
+    angleDegrees = normalized > 90 ? 180 - normalized : normalized
+
+    const distance = ctx.lineWidth * 2.5
+    const oppositeAngle = angle + Math.PI
+    const textX = startCoords.x + Math.cos(oppositeAngle) * distance
+    const textY = startCoords.y + Math.sin(oppositeAngle) * distance
+
+    ctx.save()
+    ctx.font = `14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
+    ctx.fillStyle = ctx.strokeStyle
+    ctx.globalAlpha = 0.6
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(`${angleDegrees}°`, textX, textY)
     ctx.restore()
   }
 
