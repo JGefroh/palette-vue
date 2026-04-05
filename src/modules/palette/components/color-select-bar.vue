@@ -259,6 +259,7 @@ export default {
   transform: translateY(-50%);
   box-shadow: 1px 1px 3px #c6c6c6;
   z-index: 99;
+  backdrop-filter: blur(15px);
 }
 
 .color-placeholder {

@@ -70,6 +70,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(185, 185, 185, 0.2);
+  backdrop-filter: blur(15px);
 }
 
 .nav-left {

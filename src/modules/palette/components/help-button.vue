@@ -3,7 +3,9 @@
     <button class="tool" @click="showModal = true" title="Help">
       <span class="fa fa-fw fa-question"></span>
     </button>
-    <HelpModal v-if="showModal" @close="showModal = false" />
+    <Teleport to="body">
+      <HelpModal v-if="showModal" @close="showModal = false" />
+    </Teleport>
   </div>
 </template>
 

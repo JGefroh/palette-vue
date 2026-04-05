@@ -112,6 +112,7 @@ export default {
   gap: 4px;
   padding: 0 8px;
   background-color: #d3d3d37e;
+  backdrop-filter: blur(15px);
 }
 
 .tab {

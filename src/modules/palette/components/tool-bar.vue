@@ -27,6 +27,7 @@
       <span v-else-if="tool.icon" class="fa fa-fw" :class="tool.icon"></span>
       <span v-else>{{ tool.name }}</span>
     </button>
+    <div class="divider"></div>
     <ClearButton />
   </div>
 </template>
@@ -124,10 +125,13 @@ export default {
   display: flex;
   gap: 4px;
   position: absolute;
-  bottom: 0px;
-  right: 0px;
-  left: 0px;
-  box-shadow: -1px -1px 3px #c6c6c6;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 100;
+  backdrop-filter: blur(15px);
 }
 
 .tool {
