@@ -4,63 +4,58 @@
       <button class="close-button" @click="closeModal">×</button>
 
       <div class="modal-header">
-        <h2>Help & Features</h2>
+        <div class="header-title">
+          <h2>Get started with Palette</h2>
+          <a href="https://github.com/jgefroh/palette-vue" target="_blank" rel="noopener noreferrer" class="github-link" title="View on GitHub">
+            <span class="fa fa-fw fa-github"></span>
+          </a>
+        </div>
       </div>
 
       <div class="modal-body">
-        <div class="section">
-          <h3>Tool Shortcuts</h3>
-          <table class="shortcuts-table">
-            <tr v-for="tool in tools" :key="tool.key">
-              <td class="key">{{ tool.key }}</td>
-              <td class="description">
-                {{ tool.name }}
-                <br v-if="tool.toggleMode" />
-                <span v-if="tool.toggleMode" class="toggle-info">toggle fill / outline</span>
-              </td>
-            </tr>
-          </table>
+        <div class="shortcuts-grid">
+          <div class="shortcuts-column">
+            <h3>Tools</h3>
+            <table class="shortcuts-table">
+              <tr v-for="tool in tools" :key="tool.key">
+                <td class="key">{{ tool.key }}</td>
+                <td class="description">
+                  {{ tool.name }}
+                  <br v-if="tool.toggleMode" />
+                  <span v-if="tool.toggleMode" class="toggle-info">fill/outline</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="shortcuts-column">
+            <h3>Commands</h3>
+            <table class="shortcuts-table">
+              <tr v-for="command in commands" :key="command.key">
+                <td class="key">{{ command.key }}</td>
+                <td class="description">{{ command.description }}</td>
+              </tr>
+            </table>
+          </div>
         </div>
 
         <div class="section">
-          <h3>Commands</h3>
-          <table class="shortcuts-table">
-            <tr v-for="command in commands" :key="command.key">
-              <td class="key">{{ command.key }}</td>
-              <td class="description">{{ command.description }}</td>
-            </tr>
-          </table>
+          <h3>Colors</h3>
+          <p class="info-text"><strong>Assign shortcuts:</strong> Click a number repeatedly to assign shortcuts.</p>
+          <p class="info-text"><strong>Organize:</strong> Drag colors to reorder, drag out to remove.</p>
+          <p class="info-text"><strong>Add & browse:</strong> + to add new colors, ⚙ to select a theme.</p>
         </div>
 
         <div class="section">
-          <h3>Color Management</h3>
-          <p class="info-text">Number keys 0-9 cycle through colors you've assigned them to. Click a color multiple times to assign a number.</p>
-          <p class="info-text">Click the <strong>+</strong> button at the end of the color bar to add a custom color from the color wheel. Your custom colors are automatically saved.</p>
+          <h3>Storage</h3>
+          <p class="info-text">Palette auto-saves work to your browser storage.</p>
         </div>
 
         <div class="section">
-          <h3>Supported Features</h3>
-          <ul class="features-list">
-            <li>Freehand drawing with customizable brush size (5-100px)</li>
-            <li>Undo/Redo with keyboard shortcuts</li>
-            <li>Multiple tabs with Tab/Shift+Tab navigation</li>
-            <li>Auto-save and load drawings (persisted locally)</li>
-            <li>Zoom in/out with Ctrl+Scroll (or Cmd+Scroll on Mac)</li>
-            <li>Pan canvas while zoomed</li>
-            <li>Fill and outline shapes</li>
-            <li>Text tool</li>
-            <li>Selection and manipulation of drawn elements</li>
-            <li>Copy/Paste for selected elements</li>
-            <li>Drag and drop image import</li>
-            <li>24-color palette with custom color support</li>
-          </ul>
+          <h3>Legal</h3>
+          <p class="info-text">Author assumes absolutely no liability of any kind, reserves all rights, and provides as-is without any warranty.</p>
         </div>
 
-        <div class="section footer-section">
-          <a href="https://github.com/jgefroh/palette-vue" target="_blank" rel="noopener noreferrer">
-            <span class="fa fa-fw fa-github"></span> View on GitHub
-          </a>
-        </div>
       </div>
     </div>
   </div>
@@ -128,35 +123,71 @@ export default {
 }
 
 .modal-header {
-  padding: 24px 24px 16px 24px;
+  padding: 16px 20px 12px 20px;
   border-bottom: 1px solid rgba(185, 185, 185, 0.3);
   background-color: transparent;
   flex-shrink: 0;
 }
 
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .modal-header h2 {
   margin: 0;
   color: #34495e;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
 }
 
+.github-link {
+  color: #34495e;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.github-link:hover {
+  color: #7f8c8d;
+}
+
 .modal-body {
-  padding: 24px;
+  padding: 16px 20px;
   overflow-y: auto;
   flex: 1;
   background-color: transparent;
 }
 
 .section {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.shortcuts-column h3 {
+  margin: 0 0 8px 0;
+  color: #34495e;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .section h3 {
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
   color: #34495e;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .shortcuts-table {
@@ -165,7 +196,7 @@ export default {
 }
 
 .shortcuts-table tr {
-  border-bottom: 1px solid rgba(185, 185, 185, 0.2);
+  border-bottom: 1px solid rgba(185, 185, 185, 0.15);
 }
 
 .shortcuts-table tr:last-child {
@@ -173,60 +204,44 @@ export default {
 }
 
 .shortcuts-table td {
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .shortcuts-table td.key {
   font-family: 'Monaco', 'Menlo', monospace;
   background-color: rgba(52, 73, 94, 0.05);
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 4px 8px;
+  border-radius: 3px;
   color: #34495e;
   font-weight: 600;
-  width: 120px;
-  font-size: 12px;
+  width: 70px;
+  font-size: 11px;
 }
 
 .shortcuts-table td.description {
-  padding-left: 16px;
+  padding-left: 8px;
   color: #34495e;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .toggle-info {
-  display: block;
+  display: inline;
   color: #95a5a6;
-  font-size: 11px;
+  font-size: 10px;
   font-style: italic;
-  margin-top: 4px;
+  margin-left: 4px;
 }
 
 .info-text {
   color: #7f8c8d;
-  margin: 0 0 8px 0;
-  font-size: 12px;
+  margin: 0 0 6px 0;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .info-text strong {
   color: #34495e;
   font-weight: 600;
-}
-
-.features-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.features-list li {
-  padding: 8px 0;
-  color: #34495e;
-  border-bottom: 1px solid rgba(185, 185, 185, 0.2);
-  font-size: 12px;
-}
-
-.features-list li:last-child {
-  border-bottom: none;
 }
 
 .close-button {
@@ -251,19 +266,19 @@ export default {
 }
 
 .footer-section {
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(185, 185, 185, 0.3);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(185, 185, 185, 0.2);
   text-align: center;
 }
 
 .footer-section a {
   color: #34495e;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 11px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   transition: color 0.2s ease;
 }
 

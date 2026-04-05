@@ -1,7 +1,10 @@
 <template>
   <div class="palette-app">
     <div class="navigation">
-      <div class="nav-left">Palette <span class="version">v0.0.2</span></div>
+      <div class="nav-left">
+        <img src="../../assets/favicon.ico" alt="Palette" class="favicon" />
+        Palette <span class="version">v0.0.3</span>
+      </div>
       <a href="https://jgefroh.com" class="nav-right">Created by Joseph Gefroh</a>
     </div>
     <TabBar />
@@ -77,6 +80,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.favicon {
+  width: 16px;
+  height: 16px;
 }
 
 .version {
