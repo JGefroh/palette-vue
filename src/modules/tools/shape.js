@@ -1,4 +1,4 @@
-import { globalState } from '../utilities/global-state.js'
+import { globalState } from '../persistence/global-state.js'
 
 export class Shape {
   constructor({ drawingCtx, overlayCtx }) {

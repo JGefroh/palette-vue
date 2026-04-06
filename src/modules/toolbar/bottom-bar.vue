@@ -38,12 +38,12 @@
 </template>
 
 <script>
-import { globalState } from '../utilities/global-state.js'
-import UndoButton from './undo-button.vue'
-import RedoButton from './redo-button.vue'
-import ClearButton from './clear-button.vue'
-import DownloadButton from './download-button.vue'
-import ToolOptions from './tool-options.vue'
+import { globalState } from '../persistence/global-state.js'
+import UndoButton from '../buttons-uncategorized/undo-button.vue'
+import RedoButton from '../buttons-uncategorized/redo-button.vue'
+import ClearButton from '../buttons-uncategorized/clear-button.vue'
+import DownloadButton from '../buttons-uncategorized/download-button.vue'
+import ToolOptions from '../toolbar/tool-options.vue'
 
 export default {
   components: {

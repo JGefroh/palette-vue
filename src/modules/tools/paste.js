@@ -1,6 +1,6 @@
-import { inputHandler } from '../utilities/input-handler.js'
+import { inputHandler } from '../input/input-handler.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import { globalState } from '../utilities/global-state.js'
+import { globalState } from '../persistence/global-state.js'
 
 export class Paste {
   constructor({ drawingCtx, overlayCtx }) {

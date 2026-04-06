@@ -14,9 +14,9 @@
 </template>
 
 <script>
-import HelpButton from './help-button.vue'
-import { globalState } from '../utilities/global-state.js'
-import { inputHandler } from '../utilities/input-handler.js'
+import HelpButton from '../help/help-button.vue'
+import { globalState } from '../persistence/global-state.js'
+import { inputHandler } from '../input/input-handler.js'
 
 export default {
   components: {

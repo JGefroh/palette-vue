@@ -1,5 +1,5 @@
-import { inputHandler } from '../utilities/input-handler.js'
-import { globalState } from '../utilities/global-state.js'
+import { inputHandler } from '../input/input-handler.js'
+import { globalState } from '../persistence/global-state.js'
 import { SelectSizer } from './select-sizer.js'
 import { SelectMove } from './select-move.js'
 import { SelectIdle } from './select-idle.js'

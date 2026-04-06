@@ -1,4 +1,4 @@
-import { inputHandler } from '../utilities/input-handler.js'
+import { inputHandler } from '../input/input-handler.js'
 
 class Shortcuts {
   register() {

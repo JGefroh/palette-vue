@@ -1,4 +1,4 @@
-import { globalState } from '../utilities/global-state.js'
+import { globalState } from '../persistence/global-state.js'
 
 class GlobalCanvasManager {
   constructor() {

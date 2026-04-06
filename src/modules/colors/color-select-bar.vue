@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import { globalState } from '../utilities/global-state.js'
-import { inputHandler } from '../utilities/input-handler.js'
-import { particleEffect } from '../utilities/particle-effect.js'
+import { globalState } from '../persistence/global-state.js'
+import { inputHandler } from '../input/input-handler.js'
+import { particleEffect } from './particle-effect.js'
 import ColorWheelPicker from './color-wheel-picker.vue'
 import ThemeModal from './theme-modal.vue'
 

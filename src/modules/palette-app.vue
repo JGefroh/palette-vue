@@ -2,26 +2,26 @@
   <div class="palette-app">
     <div class="navigation">
       <div class="nav-left">
-        <img src="../../assets/favicon.ico" alt="Palette" class="favicon" />
+        <img src="../assets/favicon.ico" alt="Palette" class="favicon" />
         Palette <span class="version">v0.0.3</span>
       </div>
       <a href="https://jgefroh.com" class="nav-right">Created by Joseph Gefroh</a>
     </div>
     <TabBar />
-    <PaperCanvas />
-    <ToolBar :tools-definition="toolbarTools" />
+    <PaperCanvas @on-initialize="onPaperCanvasInitialize" />
+    <BottomBar :tools-definition="toolbarTools" />
     <ColorSelectBar />
   </div>
 </template>
 
 <script>
-import PaperCanvas from './components/paper-canvas.vue'
-import ColorSelectBar from './components/color-select-bar.vue'
-import ToolBar from './components/tool-bar.vue'
-import TabBar from './components/tab-bar.vue'
-import { globalState } from './utilities/global-state.js'
+import PaperCanvas from './canvas/paper-canvas.vue'
+import ColorSelectBar from './colors/color-select-bar.vue'
+import BottomBar from './toolbar/bottom-bar.vue'
+import TabBar from './tabs/tab-bar.vue'
+import { globalState } from './persistence/global-state.js'
 import { globalCanvasManager } from './canvas/global-canvas-manager.js'
-import { inputHandler } from './utilities/input-handler.js'
+import { inputHandler } from './input/input-handler.js'
 import { Brush } from './tools/brush.js'
 import { ShapeRectangle } from './tools/shape-rectangle.js'
 import { ShapeCircle } from './tools/shape-circle.js'
@@ -29,19 +29,21 @@ import { ShapeLine } from './tools/shape-line.js'
 import { Text } from './tools/text.js'
 import { Select } from './tools/select.js'
 import { Paste } from './tools/paste.js'
-import { shortcuts } from './concerns/shortcuts.js'
+import { ToolUse } from './tools/tool-use.js'
+import { shortcuts } from './input/shortcuts.js'
 
 
 export default {
   components: {
     PaperCanvas,
     ColorSelectBar,
-    ToolBar,
+    BottomBar,
     TabBar
   },
   data() {
     return {
-      toolbarTools: []
+      toolbarTools: [],
+      toolUse: null
     }
   },
   mounted() {
@@ -111,6 +113,21 @@ export default {
       } else {
         globalState.set('selectedTool', tool)
       }
+    },
+    onPaperCanvasInitialize(cursorManager) {
+      this.toolUse = new ToolUse(cursorManager)
+      this.registerToolUseCommands()
+    },
+    registerToolUseCommands() {
+      inputHandler.onCommand('tool-start', () => {
+        this.toolUse.start()
+      })
+      inputHandler.onCommand('tool-process', () => {
+        this.toolUse.process()
+      })
+      inputHandler.onCommand('tool-end', () => {
+        this.toolUse.end()
+      })
     }
   }
 }

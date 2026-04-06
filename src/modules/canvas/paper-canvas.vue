@@ -8,10 +8,11 @@
 </template>
 
 <script>
-import { CursorManager } from '../utilities/cursor-manager.js'
-import { globalState } from '../utilities/global-state.js'
+import { CursorManager } from '../input/cursor-manager.js'
+import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import logoImage from '../../../assets/logo.png'
+import { inputHandler } from '../input/input-handler.js'
+import logoImage from '../../assets/logo.png'
 export default {
   emits: ['on-initialize', 'on-stroke-start'],
   data() {
@@ -69,7 +70,9 @@ export default {
 
       this.cursorManager = new CursorManager(this.$refs.drawing)
       globalCanvasManager.setContexts(this.drawingCtx, this.overlayCtx)
-      this.initializeListeners()
+      inputHandler.registerPaperElement(this.$refs.paper, this.cursorManager)
+      this.registerCommandHandlers()
+      this.$emit('on-initialize', this.cursorManager)
 
       // Clear the overlay to make it transparent
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
@@ -85,21 +88,31 @@ export default {
       }
     },
 
-    initializeListeners() {
+    registerCommandHandlers() {
       window.addEventListener('resize', () => {
         this.resizeCanvas(this.overlayCtx)
         this.resizeCanvas(this.drawingCtx)
       })
 
-      const paper = this.$refs.paper
-      paper.addEventListener('dragover', (e) => e.preventDefault())
-      paper.addEventListener('drop', this.fitDroppedImage.bind(this))
-      paper.addEventListener('mousemove', this.updateCursor.bind(this))
-      paper.addEventListener('mouseleave', this.hideCursor.bind(this))
-      paper.addEventListener('mousedown', this.start.bind(this))
-      paper.addEventListener('mousemove', this.process.bind(this))
-      paper.addEventListener('mouseup', this.end.bind(this))
-      paper.addEventListener('wheel', this.onWheel.bind(this), { passive: false })
+      inputHandler.onCommand('image-drop', (e) => {
+        this.fitDroppedImage(e)
+      })
+
+      inputHandler.onCommand('cursor-update', (e) => {
+        this.updateCursor(e)
+      })
+
+      inputHandler.onCommand('cursor-hide', () => {
+        this.hideCursor()
+      })
+
+      inputHandler.onCommand('zoom', (e) => {
+        this.adjustZoom(e)
+      })
+
+      inputHandler.onCommand('pan', (e) => {
+        this.adjustPan(e)
+      })
     },
 
     updateCursor(event) {
@@ -124,38 +137,6 @@ export default {
     hideCursor() {
       this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     },
-
-    start(event) {
-      event.preventDefault()
-      this.cursorManager.updateFromMouseEvent(event)
-      this.cursorManager.setMouseDown(true)
-      globalCanvasManager.saveDrawingState()
-      globalState.get('selectedTool').start(this.cursorManager.getCurrentCoordinates())
-    },
-
-    process(event) {
-      event.preventDefault()
-      this.cursorManager.updateFromMouseEvent(event)
-      // Only process if we're in an active stroke
-      if (!this.cursorManager.getIsMouseDown()) {
-        return
-      }
-      const coordinates = this.cursorManager.getCurrentCoordinates()
-      if (globalState.get('selectedTool').preProcess) {
-        globalState.get('selectedTool').preProcess(coordinates)
-      }
-      globalState.get('selectedTool').process(coordinates)
-      if (globalState.get('selectedTool').postProcess) {
-        globalState.get('selectedTool').postProcess(coordinates)
-      }
-    },
-    end(event) {
-      event.preventDefault()
-      this.cursorManager.updateFromMouseEvent(event)
-      globalState.get('selectedTool').end(this.cursorManager.getCurrentCoordinates())
-      this.cursorManager.setMouseDown(false)
-      this.onChange();
-    },
     fitImage(src) {
       const img = new Image()
       img.onload = () => {
@@ -176,14 +157,6 @@ export default {
       this.fitImage(URL.createObjectURL(file))
     },
 
-    onWheel(event) {
-      event.preventDefault()
-      if (event.ctrlKey) {
-        this.adjustZoom(event)
-      } else {
-        this.adjustPan(event)
-      }
-    },
     adjustZoom(event) {
       const factor = event.deltaY < 0 ? 1.1 : 0.9
       const newZoom = Math.max(0.1, Math.min(8, this.zoom * factor))
@@ -238,9 +211,6 @@ export default {
       const ctx = globalCanvasManager.getDrawingContext()
       if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
       globalCanvasManager.loadCanvas(globalState.get('selectedTab').id)
-    },
-    onChange() {
-      globalCanvasManager.persistCanvas(globalState.get('selectedTab').id);
     }
   }
 }

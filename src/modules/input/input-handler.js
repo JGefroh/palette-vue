@@ -13,6 +13,8 @@ class InputHandler {
     this.isListening = false;
     this.boundKeyDown = this.handleKeyDown.bind(this);
     this.boundKeyUp = this.handleKeyUp.bind(this);
+    this.paperElement = null;
+    this.cursorManager = null;
   }
 
   start() {
@@ -31,6 +33,66 @@ class InputHandler {
     window.removeEventListener('keydown', this.boundKeyDown);
     window.removeEventListener('keyup', this.boundKeyUp);
     this.isListening = false;
+  }
+
+  registerPaperElement(paperElement, cursorManager) {
+    this.paperElement = paperElement;
+    this.cursorManager = cursorManager;
+    this.initializeMouseListeners();
+  }
+
+  initializeMouseListeners() {
+    if (!this.paperElement) return;
+
+    this.paperElement.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    this.paperElement.addEventListener('drop', (e) => {
+      e.preventDefault();
+      this.dispatchCommand('image-drop', e);
+    });
+
+    this.paperElement.addEventListener('mousemove', (e) => {
+      if (this.cursorManager) {
+        this.cursorManager.updateFromMouseEvent(e);
+      }
+      this.dispatchCommand('cursor-update', e);
+      if (this.cursorManager && this.cursorManager.getIsMouseDown()) {
+        this.dispatchCommand('tool-process', e);
+      }
+    });
+
+    this.paperElement.addEventListener('mouseleave', () => {
+      this.dispatchCommand('cursor-hide');
+    });
+
+    this.paperElement.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      if (this.cursorManager) {
+        this.cursorManager.updateFromMouseEvent(e);
+        this.cursorManager.setMouseDown(true);
+      }
+      this.dispatchCommand('tool-start', e);
+    });
+
+    this.paperElement.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+      if (this.cursorManager) {
+        this.cursorManager.updateFromMouseEvent(e);
+        this.cursorManager.setMouseDown(false);
+      }
+      this.dispatchCommand('tool-end', e);
+    });
+
+    this.paperElement.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.ctrlKey) {
+        this.dispatchCommand('zoom', e);
+      } else {
+        this.dispatchCommand('pan', e);
+      }
+    }, { passive: false });
   }
 
   registerCommand(shortcut, commandType) {
@@ -187,11 +249,11 @@ class InputHandler {
     }
   }
 
-  dispatchCommand(commandType) {
+  dispatchCommand(commandType, data) {
     if (this.commands.has(commandType)) {
       const callbacks = this.commands.get(commandType);
       callbacks.forEach(callback => {
-        callback();
+        callback(data);
       });
     }
   }

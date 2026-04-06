@@ -6,7 +6,7 @@
 
 <script>
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import { inputHandler } from '../utilities/input-handler.js'
+import { inputHandler } from '../input/input-handler.js'
 
 export default {
   mounted() {

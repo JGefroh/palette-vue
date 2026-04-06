@@ -1,6 +1,6 @@
 import { Shape } from './shape.js'
-import { globalState } from '../utilities/global-state.js'
-import { inputHandler } from '../utilities/input-handler.js'
+import { globalState } from '../persistence/global-state.js'
+import { inputHandler } from '../input/input-handler.js'
 
 export class ShapeRectangle extends Shape {
   constructor(dependencies) {

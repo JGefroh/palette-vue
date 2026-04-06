@@ -1,7 +1,7 @@
 import { Shape } from './shape.js'
-import { globalState } from '../utilities/global-state.js'
+import { globalState } from '../persistence/global-state.js'
 import { reactive } from 'vue'
-import { inputHandler } from '../utilities/input-handler.js'
+import { inputHandler } from '../input/input-handler.js'
 
 export class ShapeLine extends Shape {
   constructor(dependencies) {

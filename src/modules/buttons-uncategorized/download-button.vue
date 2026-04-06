@@ -6,7 +6,7 @@
 
 <script>
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import { globalState } from '../utilities/global-state.js'
+import { globalState } from '../persistence/global-state.js'
 
 export default {
   methods: {
