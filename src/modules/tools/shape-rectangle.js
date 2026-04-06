@@ -23,8 +23,6 @@ export class ShapeRectangle extends Shape {
   start(coordinates) {
     super.start(coordinates)
     globalState.set('constrainToSquare', false)
-    inputHandler.registerKeyCombo('shift_press', 'constrainSquare')
-    inputHandler.registerKeyCombo('shift_release', 'unconstrainSquare')
     this.unsubscribeConstrainSquare = inputHandler.onCommand('constrainSquare', () => {
       globalState.set('constrainToSquare', true)
     })
