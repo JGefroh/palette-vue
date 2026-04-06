@@ -16,7 +16,6 @@ export class Select {
     this.name = 'Select'
     this.fillIcon = 'fa-object-group'
     this.outlineIcon = 'fa-object-ungroup'
-    this.shortcut = 's'
 
     // Operation handlers
     this.sizerHandler = new SelectSizer(this)

@@ -1,7 +1,7 @@
 import { inputHandler } from '../utilities/input-handler.js'
 
 class Shortcuts {
-  register(toolList = []) {
+  register() {
     // Global shortcuts
     inputHandler.registerCommand('cmd+z', 'undo')
     inputHandler.registerCommand('cmd+shift+z', 'redo')
@@ -27,11 +27,12 @@ class Shortcuts {
     inputHandler.registerCommand('cmd+v', 'paste')
 
     // Tool shortcuts
-    toolList.forEach(tool => {
-      if (tool.shortcut) {
-        inputHandler.registerCommand(tool.shortcut, `select-tool-${tool.name}`)
-      }
-    })
+    inputHandler.registerCommand('b', 'select-tool-Brush')
+    inputHandler.registerCommand('r', 'select-tool-Rectangle')
+    inputHandler.registerCommand('c', 'select-tool-Circle')
+    inputHandler.registerCommand('l', 'select-tool-Line')
+    inputHandler.registerCommand('t', 'select-tool-Text')
+    inputHandler.registerCommand('s', 'select-tool-Select')
 
     // Brush shortcuts
     inputHandler.registerCommand('cmd+b', 'brush-toggle-arrow')

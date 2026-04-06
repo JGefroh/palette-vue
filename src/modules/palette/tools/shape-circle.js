@@ -6,11 +6,10 @@ export class ShapeCircle extends Shape {
     this.name = 'Circle'
     this.fillIcon = 'fa-circle'
     this.outlineIcon = 'fa-circle-o'
-    this.shortcut = 'c'
   }
 
-  static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new ShapeCircle({ drawingCtx, overlayCtx, getLineWidth })
+  static new(drawingCtx, overlayCtx) {
+    return new ShapeCircle({ drawingCtx, overlayCtx })
   }
 
   get label() {

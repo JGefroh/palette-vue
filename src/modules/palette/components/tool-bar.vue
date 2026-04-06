@@ -16,7 +16,7 @@
     </button>
     <div class="divider"></div>
     <button
-      v-for="tool in toolList"
+      v-for="tool in toolsDefinition"
       :key="tool.name"
       class="tool"
       :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon && !tool.icons, 'tool-brush': tool.name === 'Brush' }"
@@ -39,16 +39,6 @@
 
 <script>
 import { globalState } from '../utilities/global-state.js'
-import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import { inputHandler } from '../utilities/input-handler.js'
-import { shortcuts } from '../concerns/shortcuts.js'
-import { Brush } from '../tools/brush.js'
-import { ShapeRectangle } from '../tools/shape-rectangle.js'
-import { ShapeCircle } from '../tools/shape-circle.js'
-import { ShapeLine } from '../tools/shape-line.js'
-import { Text } from '../tools/text.js'
-import { Select } from '../tools/select.js'
-import { Paste } from '../tools/paste.js'
 import UndoButton from './undo-button.vue'
 import RedoButton from './redo-button.vue'
 import ClearButton from './clear-button.vue'
@@ -63,59 +53,19 @@ export default {
     ClearButton,
     ToolOptions
   },
+  props: {
+    toolsDefinition: {
+      type: Array,
+      required: true
+    }
+  },
   data() {
     return {
       globalState,
-      brushSizes: [5, 10, 15, 20, 50, 100],
-      toolList: []
+      brushSizes: [5, 10, 15, 20, 50, 100]
     }
   },
-  mounted() {
-    globalCanvasManager.onContextsReady = () => this.initializeTools()
-  },
-  beforeUnmount() {
-    globalCanvasManager.onContextsReady = null
-  },
   methods: {
-    initializeTools() {
-      const drawingCtx = globalCanvasManager.getDrawingContext()
-      const overlayCtx = globalCanvasManager.getOverlayContext()
-
-      if (!drawingCtx || !overlayCtx) return
-
-      const getLineWidth = () => globalState.get('selectedSize')
-
-      this.toolList = [
-        Brush.new(drawingCtx, overlayCtx, getLineWidth),
-        ShapeRectangle.new(drawingCtx, overlayCtx, getLineWidth),
-        ShapeCircle.new(drawingCtx, overlayCtx, getLineWidth),
-        ShapeLine.new(drawingCtx, overlayCtx, getLineWidth),
-        Text.new(drawingCtx, overlayCtx),
-        Select.new(drawingCtx, overlayCtx, getLineWidth)
-      ]
-
-      // Initialize Paste tool (always listening, hidden from toolbar)
-      const pasteTool = Paste.new(drawingCtx, overlayCtx)
-      pasteTool.start({ x: 0, y: 0 })
-
-      const savedTool = globalState.get('selectedTool')
-      if (savedTool && savedTool.name) {
-        const tool = this.toolList.find(t => t.name === savedTool.name)
-        globalState.set('selectedTool', tool || this.toolList[0])
-      } else {
-        globalState.set('selectedTool', this.toolList[0])
-      }
-
-      // Register tool shortcuts and set up listeners
-      shortcuts.register(this.toolList)
-      this.toolList.forEach(tool => {
-        if (tool.shortcut) {
-          inputHandler.onCommand(`select-tool-${tool.name}`, () => {
-            this.selectToolOrToggleMode(tool);
-          });
-        }
-      });
-    },
     selectToolOrToggleMode(tool) {
       if (globalState.get('selectedTool') === tool) {
         if (tool.mode !== undefined) {

@@ -1,8 +1,9 @@
+import { globalState } from '../utilities/global-state.js'
+
 export class Shape {
-  constructor({ drawingCtx, overlayCtx, getLineWidth }) {
+  constructor({ drawingCtx, overlayCtx }) {
     this.drawingCtx = drawingCtx
     this.overlayCtx = overlayCtx
-    this.getLineWidth = getLineWidth
     this.startCoordinates = null
     this.mode = 'outline'
   }
@@ -25,9 +26,7 @@ export class Shape {
 
   process(coordinates) {
     if (!this.startCoordinates) return
-    if (this.getLineWidth) {
-      this.overlayCtx.lineWidth = this.getLineWidth()
-    }
+    this.overlayCtx.lineWidth = globalState.get('selectedSize')
     this.overlayCtx.lineCap = 'round'
     this.overlayCtx.lineJoin = 'round'
     this.drawShape(this.overlayCtx, this.startCoordinates, coordinates)
@@ -36,9 +35,7 @@ export class Shape {
   end(coordinates) {
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     if (this.startCoordinates) {
-      if (this.getLineWidth) {
-        this.drawingCtx.lineWidth = this.getLineWidth()
-      }
+      this.drawingCtx.lineWidth = globalState.get('selectedSize')
       this.drawingCtx.lineCap = 'round'
       this.drawingCtx.lineJoin = 'round'
       this.drawShape(this.drawingCtx, this.startCoordinates, coordinates)

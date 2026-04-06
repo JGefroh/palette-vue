@@ -9,7 +9,7 @@
     </div>
     <TabBar />
     <PaperCanvas />
-    <ToolBar />
+    <ToolBar :tools-definition="toolbarTools" />
     <ColorSelectBar />
   </div>
 </template>
@@ -22,6 +22,14 @@ import TabBar from './components/tab-bar.vue'
 import { globalState } from './utilities/global-state.js'
 import { globalCanvasManager } from './canvas/global-canvas-manager.js'
 import { inputHandler } from './utilities/input-handler.js'
+import { Brush } from './tools/brush.js'
+import { ShapeRectangle } from './tools/shape-rectangle.js'
+import { ShapeCircle } from './tools/shape-circle.js'
+import { ShapeLine } from './tools/shape-line.js'
+import { Text } from './tools/text.js'
+import { Select } from './tools/select.js'
+import { Paste } from './tools/paste.js'
+import { shortcuts } from './concerns/shortcuts.js'
 
 
 export default {
@@ -33,15 +41,21 @@ export default {
   },
   data() {
     return {
+      toolbarTools: []
     }
   },
   mounted() {
     inputHandler.start()
     this.initializeAutosave()
+    globalCanvasManager.onContextsReady = () => {
+      this.initializeTools()
+      this.initializeShortcuts();
+    }
   },
   beforeUnmount() {
     inputHandler.stop();
     clearTimeout(this.saveDebounceTimer)
+    globalCanvasManager.onContextsReady = null
   },
   methods: {
     initializeAutosave() {
@@ -49,6 +63,55 @@ export default {
         globalState.saveState();
       }, 500);
     },
+    initializeShortcuts() {
+      shortcuts.register()
+
+      this.toolbarTools.forEach(tool => {
+        inputHandler.onCommand(`select-tool-${tool.name}`, () => {
+          this.selectToolOrToggleMode(tool);
+        });
+      });
+    },
+    initializeTools() {
+      const drawingCtx = globalCanvasManager.getDrawingContext()
+      const overlayCtx = globalCanvasManager.getOverlayContext()
+
+      if (!drawingCtx || !overlayCtx) return
+
+      this.toolbarTools = [
+        Brush.new(drawingCtx, overlayCtx),
+        ShapeRectangle.new(drawingCtx, overlayCtx),
+        ShapeCircle.new(drawingCtx, overlayCtx),
+        ShapeLine.new(drawingCtx, overlayCtx),
+        Text.new(drawingCtx, overlayCtx),
+        Select.new(drawingCtx, overlayCtx)
+      ]
+
+      const pasteTool = Paste.new(drawingCtx, overlayCtx)
+      pasteTool.start({ x: 0, y: 0 })
+
+      this.initializeDefaultTool()
+    },
+    initializeDefaultTool() {
+      const savedTool = globalState.get('selectedTool')
+      if (savedTool && savedTool.name) {
+        const tool = this.toolbarTools.find(t => t.name === savedTool.name)
+        globalState.set('selectedTool', tool || this.toolbarTools[0])
+      } else {
+        globalState.set('selectedTool', this.toolbarTools[0])
+      }
+    },
+    selectToolOrToggleMode(tool) {
+      if (globalState.get('selectedTool') === tool) {
+        if (tool.mode !== undefined) {
+          tool.mode = tool.mode === 'fill' ? 'outline' : 'fill'
+        } else if (tool.onAlreadySelected) {
+          tool.onAlreadySelected()
+        }
+      } else {
+        globalState.set('selectedTool', tool)
+      }
+    }
   }
 }
 </script>

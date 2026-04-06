@@ -1,17 +1,22 @@
 import { Shape } from './shape.js'
-import { inputHandler } from '../utilities/input-handler.js'
 import { globalState } from '../utilities/global-state.js'
 import { reactive } from 'vue'
+import { inputHandler } from '../utilities/input-handler.js'
 
 export class ShapeLine extends Shape {
   constructor(dependencies) {
     super(dependencies)
     this.name = 'Line'
     this._icon = 'fa-minus'
-    this.shortcut = 'l'
     this.mode = undefined
     this.unsubscribeEnableSnap = null
     this.unsubscribeDisableSnap = null
+    inputHandler.onCommand('line-toggle-arrow', () => {
+      const selectedTool = globalState.get('selectedTool')
+      if (selectedTool && selectedTool.name === 'Line') {
+        selectedTool.toggleArrow()
+      }
+    })
     this.options = reactive([
       {
         key: 'arrowStyle',
@@ -33,15 +38,8 @@ export class ShapeLine extends Shape {
     ])
   }
 
-  static new(drawingCtx, overlayCtx, getLineWidth) {
-    const instance = new ShapeLine({ drawingCtx, overlayCtx, getLineWidth })
-    inputHandler.onCommand('line-toggle-arrow', () => {
-      const selectedTool = globalState.get('selectedTool')
-      if (selectedTool && selectedTool.name === 'Line') {
-        selectedTool.toggleArrow()
-      }
-    })
-    return instance
+  static new(drawingCtx, overlayCtx) {
+    return new ShapeLine({ drawingCtx, overlayCtx })
   }
 
   get label() {
@@ -122,9 +120,7 @@ export class ShapeLine extends Shape {
     const snappedCoords = this.snapToAxis(coordinates)
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     if (!this.startCoordinates) return
-    if (this.getLineWidth) {
-      this.overlayCtx.lineWidth = this.getLineWidth()
-    }
+    this.overlayCtx.lineWidth = globalState.get('selectedSize')
     this.overlayCtx.lineCap = 'round'
     this.overlayCtx.lineJoin = 'round'
     this.drawShape(this.overlayCtx, this.startCoordinates, snappedCoords)
@@ -142,9 +138,7 @@ export class ShapeLine extends Shape {
     }
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     if (this.startCoordinates) {
-      if (this.getLineWidth) {
-        this.drawingCtx.lineWidth = this.getLineWidth()
-      }
+      this.drawingCtx.lineWidth = globalState.get('selectedSize')
       this.drawingCtx.lineCap = 'round'
       this.drawingCtx.lineJoin = 'round'
       this.drawShape(this.drawingCtx, this.startCoordinates, snappedCoords)

@@ -4,7 +4,6 @@ export class Text {
     this.overlayCtx = dependencies.overlayCtx
     this.name = 'Text'
     this.icon = 'fa-font'
-    this.shortcut = 't'
   }
 
   static new(drawingCtx, overlayCtx) {

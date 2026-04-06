@@ -1,6 +1,6 @@
 import { Shape } from './shape.js'
-import { inputHandler } from '../utilities/input-handler.js'
 import { globalState } from '../utilities/global-state.js'
+import { inputHandler } from '../utilities/input-handler.js'
 
 export class ShapeRectangle extends Shape {
   constructor(dependencies) {
@@ -8,13 +8,12 @@ export class ShapeRectangle extends Shape {
     this.name = 'Rectangle'
     this.fillIcon = 'fa-square'
     this.outlineIcon = 'fa-square-o'
-    this.shortcut = 'r'
     this.unsubscribeConstrainSquare = null
     this.unsubscribeUnconstrainSquare = null
   }
 
-  static new(drawingCtx, overlayCtx, getLineWidth) {
-    return new ShapeRectangle({ drawingCtx, overlayCtx, getLineWidth })
+  static new(drawingCtx, overlayCtx) {
+    return new ShapeRectangle({ drawingCtx, overlayCtx })
   }
 
   get label() {

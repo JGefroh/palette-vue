@@ -6,7 +6,6 @@ export class Brush {
   constructor(dependencies) {
     this.drawingCtx = dependencies.drawingCtx
     this.overlayCtx = dependencies.overlayCtx
-    this.getLineWidth = dependencies.getLineWidth
     this.strokeStartCoordinates = null
     this.strokeEndCoordinates = null
     this.recentCoordinates = []
@@ -14,8 +13,13 @@ export class Brush {
     this.dotAccumulator = 0
     this.name = 'Brush'
     this.icon = 'fa-pencil'
-    this.shortcut = 'b'
     this.mode = undefined
+    inputHandler.onCommand('brush-toggle-arrow', () => {
+      const selectedTool = globalState.get('selectedTool')
+      if (selectedTool && selectedTool.name === 'Brush') {
+        selectedTool.toggleArrow()
+      }
+    })
     this.options = reactive([
       {
         key: 'arrowStyle',
@@ -37,15 +41,8 @@ export class Brush {
     ])
   }
 
-  static new(drawingCtx, overlayCtx, getLineWidth) {
-    const instance = new Brush({ drawingCtx, overlayCtx, getLineWidth })
-    inputHandler.onCommand('brush-toggle-arrow', () => {
-      const selectedTool = globalState.get('selectedTool')
-      if (selectedTool && selectedTool.name === 'Brush') {
-        selectedTool.toggleArrow()
-      }
-    })
-    return instance
+  static new(drawingCtx, overlayCtx) {
+    return new Brush({ drawingCtx, overlayCtx })
   }
 
   get label() {
@@ -139,24 +136,24 @@ export class Brush {
     const arrowPosition = last
 
     const angle = Math.atan2(last.y - first.y, last.x - first.x)
-    const arrowLength = this.getLineWidth() * 4
-    const arrowWidth = this.getLineWidth() * 2
+    const arrowLength = globalState.get('selectedSize') * 4
+    const arrowWidth = globalState.get('selectedSize') * 2
 
     this.drawingCtx.save()
     this.drawingCtx.translate(arrowPosition.x, arrowPosition.y)
     this.drawingCtx.rotate(angle)
     this.drawingCtx.fillStyle = this.drawingCtx.strokeStyle
     this.drawingCtx.beginPath()
-    this.drawingCtx.moveTo(this.getLineWidth(), 0)
-    this.drawingCtx.lineTo(-arrowLength + this.getLineWidth(), arrowWidth)
-    this.drawingCtx.lineTo(-arrowLength + this.getLineWidth(), -arrowWidth)
+    this.drawingCtx.moveTo(globalState.get('selectedSize'), 0)
+    this.drawingCtx.lineTo(-arrowLength + globalState.get('selectedSize'), arrowWidth)
+    this.drawingCtx.lineTo(-arrowLength + globalState.get('selectedSize'), -arrowWidth)
     this.drawingCtx.closePath()
     this.drawingCtx.fill()
     this.drawingCtx.restore()
   }
 
   initializeStroke(coordinates) {
-    this.drawingCtx.lineWidth = this.getLineWidth()
+    this.drawingCtx.lineWidth = globalState.get('selectedSize')
     this.drawingCtx.lineCap = 'round'
     this.drawingCtx.lineJoin = 'round'
     this.applyLineStyle(this.drawingCtx)
@@ -174,7 +171,7 @@ export class Brush {
   drawCursorPreview(coordinates) {
     this.overlayCtx.save()
     this.overlayCtx.beginPath()
-    this.overlayCtx.arc(coordinates.x, coordinates.y, this.getLineWidth() / 2, 0, 2 * Math.PI, false)
+    this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI, false)
     this.overlayCtx.fill()
     this.overlayCtx.restore()
   }
@@ -188,7 +185,7 @@ export class Brush {
     const dy = coordinates.y - lastCoords.y
     const distance = Math.sqrt(dx * dx + dy * dy)
 
-    this.drawingCtx.lineWidth = this.getLineWidth()
+    this.drawingCtx.lineWidth = globalState.get('selectedSize')
 
     if (lineStyle === 'dotted') {
       this.drawDottedLine(lastCoords, coordinates, distance)
@@ -205,8 +202,8 @@ export class Brush {
   }
 
   drawDottedLine(fromCoords, toCoords, distance) {
-    const dotSpacing = this.getLineWidth() * 2
-    const dotRadius = this.getLineWidth() / 2
+    const dotSpacing = globalState.get('selectedSize') * 2
+    const dotRadius = globalState.get('selectedSize') / 2
 
     this.dotAccumulator += distance
     const numDots = Math.floor(this.dotAccumulator / dotSpacing)
@@ -248,11 +245,11 @@ export class Brush {
     if (this.strokeStartCoordinates &&
         coordinates.x === this.strokeStartCoordinates.x &&
         coordinates.y === this.strokeStartCoordinates.y) {
-      this.drawingCtx.lineWidth = this.getLineWidth()
-      this.drawingCtx.arc(coordinates.x, coordinates.y, this.getLineWidth() / 2, 0, 2 * Math.PI)
+      this.drawingCtx.lineWidth = globalState.get('selectedSize')
+      this.drawingCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
       this.drawingCtx.fill()
     } else if (lineStyle !== 'dotted') {
-      this.drawingCtx.lineWidth = this.getLineWidth()
+      this.drawingCtx.lineWidth = globalState.get('selectedSize')
       this.drawingCtx.lineTo(coordinates.x, coordinates.y)
       this.drawingCtx.stroke()
     }
