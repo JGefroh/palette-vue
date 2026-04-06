@@ -20,7 +20,7 @@
       :key="tool.name"
       class="tool"
       :class="{ active: tool === globalState.get('selectedTool'), 'with-text': !tool.icon && !tool.fillIcon && !tool.icons, 'tool-brush': tool.name === 'Brush' }"
-      @click="selectToolOrToggleMode(tool)"
+      @click="inputHandler.dispatchCommand(`select-tool-${tool.name}`)"
       :title="tool.name"
     >
       <div v-if="tool.icons" class="icon-container" :class="{ 'icon-container-compact': tool.icons.includes('fa-arrow-right') }">
@@ -39,6 +39,7 @@
 
 <script>
 import { globalState } from '../persistence/global-state.js'
+import { inputHandler } from '../input/input-handler.js'
 import UndoButton from '../buttons-uncategorized/undo-button.vue'
 import RedoButton from '../buttons-uncategorized/redo-button.vue'
 import ClearButton from '../buttons-uncategorized/clear-button.vue'
@@ -62,20 +63,8 @@ export default {
   data() {
     return {
       globalState,
+      inputHandler,
       brushSizes: [5, 10, 15, 20, 50, 100]
-    }
-  },
-  methods: {
-    selectToolOrToggleMode(tool) {
-      if (globalState.get('selectedTool') === tool) {
-        if (tool.mode !== undefined) {
-          tool.mode = tool.mode === 'fill' ? 'outline' : 'fill'
-        } else if (tool.onAlreadySelected) {
-          tool.onAlreadySelected()
-        }
-      } else {
-        globalState.set('selectedTool', tool)
-      }
     }
   }
 }

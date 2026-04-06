@@ -21,6 +21,7 @@ import BottomBar from './toolbar/bottom-bar.vue'
 import TabBar from './tabs/tab-bar.vue'
 import { globalState } from './persistence/global-state.js'
 import { globalCanvasManager } from './canvas/global-canvas-manager.js'
+import { globalToolManager } from './tools/global-tool-manager.js'
 import { inputHandler } from './input/input-handler.js'
 import { Brush } from './tools/brush.js'
 import { ShapeRectangle } from './tools/shape-rectangle.js'
@@ -29,7 +30,6 @@ import { ShapeLine } from './tools/shape-line.js'
 import { Text } from './tools/text.js'
 import { Select } from './tools/select.js'
 import { Paste } from './tools/paste.js'
-import { ToolUse } from './tools/tool-use.js'
 import { shortcuts } from './input/shortcuts.js'
 
 
@@ -41,9 +41,11 @@ export default {
     TabBar
   },
   data() {
-    return {
-      toolbarTools: [],
-      toolUse: null
+    return {}
+  },
+  computed: {
+    toolbarTools() {
+      return globalToolManager.getTools()
     }
   },
   mounted() {
@@ -80,7 +82,7 @@ export default {
 
       if (!drawingCtx || !overlayCtx) return
 
-      this.toolbarTools = [
+      const tools = [
         Brush.new(drawingCtx, overlayCtx),
         ShapeRectangle.new(drawingCtx, overlayCtx),
         ShapeCircle.new(drawingCtx, overlayCtx),
@@ -89,6 +91,8 @@ export default {
         Select.new(drawingCtx, overlayCtx)
       ]
 
+      tools.forEach(tool => globalToolManager.registerTool(tool))
+
       const pasteTool = Paste.new(drawingCtx, overlayCtx)
       pasteTool.start({ x: 0, y: 0 })
 
@@ -96,11 +100,12 @@ export default {
     },
     initializeDefaultTool() {
       const savedTool = globalState.get('selectedTool')
+      const tools = globalToolManager.getTools()
       if (savedTool && savedTool.name) {
-        const tool = this.toolbarTools.find(t => t.name === savedTool.name)
-        globalState.set('selectedTool', tool || this.toolbarTools[0])
+        const tool = tools.find(t => t.name === savedTool.name)
+        globalToolManager.selectTool(tool || tools[0])
       } else {
-        globalState.set('selectedTool', this.toolbarTools[0])
+        globalToolManager.selectTool(tools[0])
       }
     },
     selectToolOrToggleMode(tool) {
@@ -111,22 +116,22 @@ export default {
           tool.onAlreadySelected()
         }
       } else {
-        globalState.set('selectedTool', tool)
+        globalToolManager.selectTool(tool)
       }
     },
     onPaperCanvasInitialize(cursorManager) {
-      this.toolUse = new ToolUse(cursorManager)
+      globalToolManager.initializeToolUse(cursorManager)
       this.registerToolUseCommands()
     },
     registerToolUseCommands() {
       inputHandler.onCommand('tool-start', () => {
-        this.toolUse.start()
+        globalToolManager.startTool()
       })
       inputHandler.onCommand('tool-process', () => {
-        this.toolUse.process()
+        globalToolManager.processTool()
       })
       inputHandler.onCommand('tool-end', () => {
-        this.toolUse.end()
+        globalToolManager.endTool()
       })
     }
   }
