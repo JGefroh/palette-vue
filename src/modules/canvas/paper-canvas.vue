@@ -1,24 +1,28 @@
 <template>
   <div ref="paper" class="paper">
     <div class="viewport" :style="viewportStyle">
-      <canvas ref="overlay" class="overlay"></canvas>
-      <canvas ref="drawing" class="drawing"></canvas>
+      <overlay-canvas ref="overlayCanvas"></overlay-canvas>
+      <drawing-canvas ref="drawingCanvas"></drawing-canvas>
     </div>
   </div>
 </template>
 
 <script>
+import OverlayCanvas from './overlay-canvas.vue'
+import DrawingCanvas from './drawing-canvas.vue'
 import { CursorManager } from '../input/cursor-manager.js'
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../input/input-handler.js'
 import logoImage from '../../assets/logo.png'
 export default {
+  components: {
+    OverlayCanvas,
+    DrawingCanvas
+  },
   emits: ['on-initialize', 'on-stroke-start'],
   data() {
     return {
-      overlayCtx: null,
-      drawingCtx: null,
       cursorManager: null,
       zoom: 1,
       panX: 0,
@@ -28,23 +32,12 @@ export default {
   watch: {
     canvasConfiguration() {
       this.syncTab();
-    },
-    drawingConfiguration() {
-      this.syncBrush();
-      this.syncColor();
-      this.updateCursor();
     }
   },
   computed: {
     canvasConfiguration() {
       return {
         selectedTab: globalState.get('selectedTab')
-      }
-    },
-    drawingConfiguration() {
-      return {
-        selectedColor: globalState.get('selectedColor'),
-        selectedSize: globalState.get('selectedSize')
       }
     },
     viewportStyle() {
@@ -57,25 +50,24 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.initialize()
-      this.syncColor();
     })
   },
   methods: {
     initialize() {
-      this.overlayCtx = this.$refs.overlay.getContext('2d', { willReadFrequently: true })
-      this.drawingCtx = this.$refs.drawing.getContext('2d', { willReadFrequently: true })
+      const drawingCtx = this.$refs.drawingCanvas.getContext()
+      const overlayCtx = this.$refs.overlayCanvas.getContext()
+      const drawingCanvas = this.$refs.drawingCanvas.$refs.drawing
 
-      this.resizeCanvas(this.drawingCtx)
-      this.resizeCanvas(this.overlayCtx)
-
-      this.cursorManager = new CursorManager(this.$refs.drawing)
-      globalCanvasManager.setContexts(this.drawingCtx, this.overlayCtx)
+      this.cursorManager = new CursorManager(drawingCanvas)
+      this.$refs.overlayCanvas.setCursorManager(this.cursorManager)
+      globalCanvasManager.setContexts(drawingCtx, overlayCtx)
       inputHandler.registerPaperElement(this.$refs.paper, this.cursorManager)
       this.registerCommandHandlers()
       this.$emit('on-initialize', this.cursorManager)
 
-      // Clear the overlay to make it transparent
-      this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+      const width = this.$refs.paper.offsetWidth
+      const height = this.$refs.paper.offsetHeight
+      this.$refs.overlayCanvas.resizeCanvas(width, height)
 
       if (globalState.get('isNewUser')) {
         this.fitImage(logoImage)
@@ -89,21 +81,8 @@ export default {
     },
 
     registerCommandHandlers() {
-      window.addEventListener('resize', () => {
-        this.resizeCanvas(this.overlayCtx)
-        this.resizeCanvas(this.drawingCtx)
-      })
-
       inputHandler.onCommand('image-drop', (e) => {
         this.fitDroppedImage(e)
-      })
-
-      inputHandler.onCommand('cursor-update', (e) => {
-        this.updateCursor(e)
-      })
-
-      inputHandler.onCommand('cursor-hide', () => {
-        this.hideCursor()
       })
 
       inputHandler.onCommand('zoom', (e) => {
@@ -115,39 +94,8 @@ export default {
       })
     },
 
-    updateCursor(event) {
-      if (event) {
-        this.cursorManager.updateFromMouseEvent(event)
-      }
-
-      // Only show cursor marker for Brush tool
-      if (!globalState.get('selectedTool') || globalState.get('selectedTool').constructor.name !== 'Brush') {
-        return
-      }
-
-      this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-      const coordinates = this.cursorManager.getCurrentCoordinates()
-      this.overlayCtx.save()
-      this.overlayCtx.beginPath()
-      this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
-      this.overlayCtx.fill()
-      this.overlayCtx.restore()
-    },
-
-    hideCursor() {
-      this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-    },
     fitImage(src) {
-      const img = new Image()
-      img.onload = () => {
-        const cw = this.drawingCtx.canvas.width
-        const ch = this.drawingCtx.canvas.height
-        const scale = Math.min(cw / img.width, ch / img.height)
-        const x = (cw - img.width * scale) / 2
-        const y = (ch - img.height * scale) / 2
-        this.drawingCtx.drawImage(img, x, y, img.width * scale, img.height * scale)
-      }
-      img.src = src
+      this.$refs.drawingCanvas.drawImage(src)
     },
 
     fitDroppedImage(event) {
@@ -172,41 +120,6 @@ export default {
       this.panX += event.deltaX
       this.panY += event.deltaY
     },
-    resizeCanvas(context) {
-      let drawing = null
-      if (context.canvas.width > 0 && context.canvas.height > 0) {
-        drawing = context.getImageData(0, 0, context.canvas.width, context.canvas.height)
-      }
-      context.canvas.width = this.$refs.paper.offsetWidth
-      context.canvas.height = this.$refs.paper.offsetHeight
-      if (drawing) {
-        context.putImageData(drawing, 0, 0)
-      }
-    },
-    syncColor() {
-      let color = globalState.get('selectedColor')
-      if (this.drawingCtx && this.overlayCtx) {
-        this.drawingCtx.strokeStyle = color.hex
-        this.drawingCtx.fillStyle = color.hex
-        this.overlayCtx.strokeStyle = color.hex
-        this.overlayCtx.fillStyle = color.hex
-      }
-    },
-    syncBrush() {
-      if (globalState.get('selectedTool') && globalState.get('selectedTool').constructor.name === 'Brush' && this.cursorManager) {
-        this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-        const coordinates = this.cursorManager.getCurrentCoordinates()
-        this.overlayCtx.save()
-        this.overlayCtx.beginPath()
-        this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
-        this.overlayCtx.fill()
-        this.overlayCtx.restore()
-      }
-
-      this.drawingCtx.lineWidth = globalState.get('selectedSize')
-      this.drawingCtx.lineCap = 'round'
-      this.drawingCtx.lineJoin = 'round'
-    },
     syncTab() {
       const ctx = globalCanvasManager.getDrawingContext()
       if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
@@ -230,24 +143,5 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-}
-
-canvas {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: crosshair;
-  width: 100%;
-  height: 100%;
-}
-
-.drawing {
-  z-index: 1;
-  background-color: white;
-}
-
-.overlay {
-  z-index: 2;
 }
 </style>
