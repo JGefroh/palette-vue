@@ -10,7 +10,7 @@
 <script>
 import OverlayCanvas from './overlay-canvas.vue'
 import DrawingCanvas from './drawing-canvas.vue'
-import { CursorManager } from '../input/cursor-manager.js'
+import { globalCursorManager } from '../input/global-cursor-manager.js'
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../input/input-handler.js'
@@ -23,7 +23,6 @@ export default {
   emits: ['on-initialize', 'on-stroke-start'],
   data() {
     return {
-      cursorManager: null,
       zoom: 1,
       panX: 0,
       panY: 0
@@ -54,16 +53,12 @@ export default {
   },
   methods: {
     initialize() {
-      const drawingCtx = this.$refs.drawingCanvas.getContext()
-      const overlayCtx = this.$refs.overlayCanvas.getContext()
       const drawingCanvas = this.$refs.drawingCanvas.$refs.drawing
 
-      this.cursorManager = new CursorManager(drawingCanvas)
-      this.$refs.overlayCanvas.setCursorManager(this.cursorManager)
-      globalCanvasManager.setContexts(drawingCtx, overlayCtx)
-      inputHandler.registerPaperElement(this.$refs.paper, this.cursorManager)
+      globalCursorManager.setCanvas(drawingCanvas)
+      inputHandler.registerPaperElement(this.$refs.paper, globalCursorManager)
       this.registerCommandHandlers()
-      this.$emit('on-initialize', this.cursorManager)
+      this.$emit('on-initialize', globalCursorManager)
 
       const width = this.$refs.paper.offsetWidth
       const height = this.$refs.paper.offsetHeight

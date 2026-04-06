@@ -4,9 +4,9 @@
 
 <script>
 import { globalState } from '../persistence/global-state.js'
+import { globalCursorManager } from '../input/global-cursor-manager.js'
+import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../input/input-handler.js'
-
-let cursorManager = null
 
 export default {
   data() {
@@ -37,6 +37,7 @@ export default {
   methods: {
     initialize() {
       this.overlayCtx = this.$refs.overlay.getContext('2d', { willReadFrequently: true })
+      globalCanvasManager.setOverlayContext(this.overlayCtx)
       this.syncColor()
       this.clear()
       this.registerCommandHandlers()
@@ -61,17 +62,13 @@ export default {
       return this.overlayCtx
     },
 
-    setCursorManager(cm) {
-      cursorManager = cm
-    },
-
     updateCursor(event) {
-      if (!cursorManager) {
+      if (!globalCursorManager) {
         return
       }
 
       if (event) {
-        cursorManager.updateFromMouseEvent(event)
+        globalCursorManager.updateFromMouseEvent(event)
       }
 
       if (!this.isBrushSelected()) {
@@ -90,9 +87,9 @@ export default {
     },
 
     drawCursorMarker() {
-      if (!cursorManager) return
+      if (!globalCursorManager) return
       this.clear()
-      const coordinates = cursorManager.getCurrentCoordinates()
+      const coordinates = globalCursorManager.getCurrentCoordinates()
       this.overlayCtx.save()
       this.overlayCtx.beginPath()
       this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
@@ -109,7 +106,7 @@ export default {
     },
 
     syncBrush() {
-      if (this.isBrushSelected() && cursorManager) {
+      if (this.isBrushSelected() && globalCursorManager) {
         this.drawCursorMarker()
       }
     },

@@ -4,6 +4,7 @@
 
 <script>
 import { globalState } from '../persistence/global-state.js'
+import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../input/input-handler.js'
 
 export default {
@@ -35,6 +36,7 @@ export default {
   methods: {
     initialize() {
       this.drawingCtx = this.$refs.drawing.getContext('2d', { willReadFrequently: true })
+      globalCanvasManager.setDrawingContext(this.drawingCtx)
       this.resizeCanvas()
       this.registerCommandHandlers()
     },

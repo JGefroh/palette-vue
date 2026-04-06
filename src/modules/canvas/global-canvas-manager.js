@@ -10,10 +10,26 @@ class GlobalCanvasManager {
     this.lastSavedDataUrl = null
   }
 
+  setDrawingContext(drawingCtx) {
+    this.drawingCtx = drawingCtx
+    this.checkContextsReady()
+  }
+
+  setOverlayContext(overlayCtx) {
+    this.overlayCtx = overlayCtx
+    this.checkContextsReady()
+  }
+
+  checkContextsReady() {
+    if (this.drawingCtx && this.overlayCtx) {
+      this.onContextsReady?.()
+    }
+  }
+
   setContexts(drawingCtx, overlayCtx) {
     this.drawingCtx = drawingCtx
     this.overlayCtx = overlayCtx
-    this.onContextsReady?.()
+    this.checkContextsReady()
   }
 
   getDrawingContext() {

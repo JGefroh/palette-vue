@@ -1,11 +1,15 @@
 class CursorManager {
-  constructor(canvas) {
-    this.canvas = canvas
+  constructor() {
+    this.canvas = null
     this.isMouseDown = false
     this.currentCoordinates = { x: 0, y: 0 }
     this.previousCoordinates = { x: 0, y: 0 }
     this.startCoordinates = { x: 0, y: 0 }
     this.endCoordinates = { x: 0, y: 0 }
+  }
+
+  setCanvas(canvas) {
+    this.canvas = canvas
   }
 
   updateFromMouseEvent(event) {
@@ -53,4 +57,4 @@ class CursorManager {
   }
 }
 
-export { CursorManager }
+export const globalCursorManager = new CursorManager()
