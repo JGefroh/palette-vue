@@ -24,11 +24,8 @@ export class ImageColorExtractor {
       colorFrequency[key] = (colorFrequency[key] || 0) + 1
     }
 
-    const totalPixels = Object.values(colorFrequency).reduce((sum, count) => sum + count, 0)
-    const minThreshold = totalPixels * 0.01
-
     const sortedColors = Object.entries(colorFrequency)
-      .filter(([, count]) => count >= minThreshold)
+      .filter(([, count]) => count >= 20)
       .sort((a, b) => b[1] - a[1])
       .slice(0, maxColors)
       .map(([key]) => {
