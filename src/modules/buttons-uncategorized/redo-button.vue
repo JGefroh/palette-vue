@@ -1,6 +1,6 @@
 <template>
   <button class="tool" @click="redo" title="Redo">
-    <span class="fa fa-fw fa-repeat"></span>
+    <span class="fa fa-fw fa-arrow-rotate-right"></span>
   </button>
 </template>
 

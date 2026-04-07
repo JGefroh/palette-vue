@@ -7,7 +7,7 @@
         <div class="header-title">
           <h2>Get started with Palette</h2>
           <a href="https://github.com/jgefroh/palette-vue" target="_blank" rel="noopener noreferrer" class="github-link" title="View on GitHub">
-            <span class="fa fa-fw fa-github"></span>
+            <span class="fa-brands fa-github"></span>
           </a>
         </div>
       </div>
