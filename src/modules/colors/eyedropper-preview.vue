@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isVisible" class="eyedropper-preview" :style="previewStyle">
+  <div v-if="isVisible" class="eyedropper-preview" :style="previewStyle" :class="{ shake: eyedropperPreviewState.shouldShake }">
     <div class="color-swatch" :style="{ backgroundColor: sample.hex }"></div>
     <div class="color-info">
       <div class="hex">{{ sample.hex }}</div>
@@ -94,5 +94,21 @@ export default {
   color: #34495e;
   font-family: 'Courier New', monospace;
   font-weight: 500;
+}
+
+.eyedropper-preview.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-12px); }
+  20% { transform: translateX(12px); }
+  30% { transform: translateX(-12px); }
+  40% { transform: translateX(12px); }
+  50% { transform: translateX(-8px); }
+  60% { transform: translateX(8px); }
+  70% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 </style>

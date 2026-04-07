@@ -4,7 +4,8 @@ import { globalState } from '../persistence/global-state.js'
 import { globalCursorManager } from '../input/global-cursor-manager.js'
 
 export const eyedropperPreviewState = reactive({
-  sample: null
+  sample: null,
+  shouldShake: false
 })
 
 export class Eyedropper {
@@ -13,6 +14,7 @@ export class Eyedropper {
     this.overlayCtx = overlayCtx
     this.name = 'Eyedropper'
     this.currentSample = null
+    this.lastEventCoords = null
 
     inputHandler.onCommand('cursor-update', (event) => {
       if (globalState.get('selectedTool')?.name !== 'Eyedropper') return
@@ -39,6 +41,11 @@ export class Eyedropper {
       b: pixel[2]
     }
 
+    this.lastEventCoords = {
+      screenX: event.clientX,
+      screenY: event.clientY
+    }
+
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     this.drawCrosshair(coords)
 
@@ -59,8 +66,8 @@ export class Eyedropper {
   process() {}
 
   end() {
-    if (this.currentSample) {
-      inputHandler.dispatchCommand('eyedropper-pick', this.currentSample.hex)
+    if (this.currentSample && this.lastEventCoords) {
+      inputHandler.dispatchCommand('eyedropper-pick', { hex: this.currentSample.hex, screenX: this.lastEventCoords.screenX, screenY: this.lastEventCoords.screenY })
     }
   }
 

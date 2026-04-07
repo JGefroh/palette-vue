@@ -36,6 +36,7 @@
 import { globalState } from '../persistence/global-state.js'
 import { inputHandler } from '../input/input-handler.js'
 import { particleEffect } from './particle-effect.js'
+import { eyedropperPreviewState } from '../tools/eyedropper.js'
 import ColorWheelPicker from './color-wheel-picker.vue'
 import ThemeModal from './theme-modal.vue'
 
@@ -52,8 +53,14 @@ export default {
     this.initializeDefaultColorNumbers()
     this.registerColorShortcuts()
 
-    inputHandler.onCommand('eyedropper-pick', (hex) => {
-      this.addCustomColor(hex)
+    inputHandler.onCommand('eyedropper-pick', (data) => {
+      const wasAdded = this.addCustomColorWithAnimation(data.hex, data.screenX, data.screenY)
+      if (!wasAdded) {
+        eyedropperPreviewState.shouldShake = true
+        setTimeout(() => {
+          eyedropperPreviewState.shouldShake = false
+        }, 500)
+      }
     })
 
     const canvas = document.querySelector('canvas')
@@ -184,12 +191,57 @@ export default {
     },
     addCustomColor(hex) {
       const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
-      if (!exists) {
+      if (!exists && this.colors.length < 40) {
         this.colors.push({ label: 'Custom', hex })
         this.saveColors()
         this.selectColor({ label: 'Custom', hex })
+        this.isPickerOpen = false
+        return true
       }
       this.isPickerOpen = false
+      return false
+    },
+    addCustomColorWithAnimation(hex, screenX, screenY) {
+      const wasAdded = this.addCustomColor(hex)
+      if (!wasAdded) return false
+
+      this.$nextTick(() => {
+        const colorButtons = this.$el.querySelectorAll('.color:not(.color-add):not(.color-eyedropper):not(.color-settings)')
+        const lastColorButton = colorButtons[colorButtons.length - 1]
+
+        if (lastColorButton) {
+          const targetRect = lastColorButton.getBoundingClientRect()
+          const targetX = targetRect.left + targetRect.width / 2
+          const targetY = targetRect.top + targetRect.height / 2
+
+          const animElement = document.createElement('div')
+          animElement.style.position = 'fixed'
+          animElement.style.width = '36px'
+          animElement.style.height = '36px'
+          animElement.style.backgroundColor = hex
+          animElement.style.borderRadius = '4px'
+          animElement.style.left = screenX - 18 + 'px'
+          animElement.style.top = screenY - 18 + 'px'
+          animElement.style.pointerEvents = 'none'
+          animElement.style.zIndex = '9999'
+          animElement.style.border = '1px solid rgba(185, 185, 185, 0.3)'
+          animElement.style.transition = 'all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
+
+          document.body.appendChild(animElement)
+
+          requestAnimationFrame(() => {
+            animElement.style.left = targetX - 18 + 'px'
+            animElement.style.top = targetY - 18 + 'px'
+            animElement.style.opacity = '0'
+            animElement.style.transform = 'scale(0.5)'
+          })
+
+          setTimeout(() => {
+            animElement.remove()
+          }, 1500)
+        }
+      })
+      return true
     },
     loadColors() {
       const savedColors = globalState.get('saved-colors')
