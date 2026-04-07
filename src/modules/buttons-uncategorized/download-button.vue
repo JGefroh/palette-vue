@@ -7,12 +7,26 @@
 <script>
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { globalState } from '../persistence/global-state.js'
+import { inputHandler } from '../input/input-handler.js'
 
 export default {
+  mounted() {
+    inputHandler.onCommand('download', () => {
+      this.download()
+    })
+  },
   methods: {
     download() {
       const drawingCanvas = globalCanvasManager.getDrawingContext()?.canvas
       if (!drawingCanvas) return
+
+      const bgCanvas = document.createElement('canvas')
+      bgCanvas.width = drawingCanvas.width
+      bgCanvas.height = drawingCanvas.height
+      const bgCtx = bgCanvas.getContext('2d')
+      bgCtx.fillStyle = '#FFFFFF'
+      bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height)
+      bgCtx.drawImage(drawingCanvas, 0, 0)
 
       const selectedTab = globalState.get('selectedTab')
       const tabName = selectedTab?.name || 'Canvas'
@@ -23,7 +37,7 @@ export default {
         .trim()
         .replace(/\s+/g, '-')
       link.download = `${filename}.png`
-      link.href = drawingCanvas.toDataURL()
+      link.href = bgCanvas.toDataURL()
       link.click()
     }
   }

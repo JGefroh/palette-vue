@@ -5,6 +5,7 @@ class Shortcuts {
     // Global shortcuts
     inputHandler.registerCommand('cmd+z', 'undo')
     inputHandler.registerCommand('cmd+shift+z', 'redo')
+    inputHandler.registerCommand('cmd+s', 'download')
 
     // Color shortcuts
     for (let i = 0; i <= 9; i++) {
