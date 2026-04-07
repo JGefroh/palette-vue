@@ -2,7 +2,7 @@
   <div class="palette-app">
     <div class="navigation">
       <div class="nav-left">
-        <img src="../assets/favicon.ico" alt="Palette" class="favicon" />
+        <img src="../assets/favicon.ico" alt="Palette" class="favicon" @dblclick="dispatchClearColors" />
         Palette <span class="version">v0.0.3</span>
       </div>
       <a href="https://jgefroh.com" class="nav-right">Created by Joseph Gefroh</a>
@@ -137,6 +137,9 @@ export default {
     onPaperCanvasInitialize(cursorManager) {
       globalToolManager.initializeToolUse(cursorManager)
       this.registerToolUseCommands()
+    },
+    dispatchClearColors() {
+      inputHandler.dispatchCommand('clear-colors')
     },
     registerToolUseCommands() {
       inputHandler.onCommand('tool-start', () => {

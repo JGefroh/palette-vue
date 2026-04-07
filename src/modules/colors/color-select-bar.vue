@@ -63,6 +63,10 @@ export default {
       }
     })
 
+    inputHandler.onCommand('clear-colors', () => {
+      this.clearColorsWithAnimation()
+    })
+
     const canvas = document.querySelector('canvas')
     if (canvas) {
       this._handleCanvasDragover = (e) => e.preventDefault()
@@ -242,6 +246,62 @@ export default {
         }
       })
       return true
+    },
+    clearColorsWithAnimation() {
+      if (this.colors.length === 0) return
+
+      const canvasEl = document.querySelector('canvas')
+      if (!canvasEl) return
+
+      const colorsCopy = [...this.colors]
+
+      colorsCopy.forEach((color, index) => {
+        setTimeout(() => {
+          const colorButtons = this.$el.querySelectorAll('.color:not(.color-add):not(.color-eyedropper):not(.color-settings)')
+          const button = colorButtons[0]
+
+          if (button) {
+            const rect = button.getBoundingClientRect()
+            const fromX = rect.left + rect.width / 2
+            const fromY = rect.top + rect.height / 2
+
+            const canvasRect = canvasEl.getBoundingClientRect()
+            const toX = canvasRect.left + Math.random() * canvasRect.width
+            const toY = canvasRect.top + Math.random() * canvasRect.height
+
+            const bgColor = window.getComputedStyle(button).backgroundColor
+            const animEl = document.createElement('div')
+            animEl.style.position = 'fixed'
+            animEl.style.width = '36px'
+            animEl.style.height = '36px'
+            animEl.style.backgroundColor = bgColor
+            animEl.style.borderRadius = '4px'
+            animEl.style.left = fromX - 18 + 'px'
+            animEl.style.top = fromY - 18 + 'px'
+            animEl.style.pointerEvents = 'none'
+            animEl.style.zIndex = '10000'
+            animEl.style.border = '1px solid rgba(185, 185, 185, 0.3)'
+            animEl.style.transition = 'all 0.5s ease-in'
+
+            document.body.appendChild(animEl)
+
+            requestAnimationFrame(() => {
+              animEl.style.left = toX - 18 + 'px'
+              animEl.style.top = toY - 18 + 'px'
+              animEl.style.opacity = '0'
+              animEl.style.transform = 'scale(0.3) rotate(180deg)'
+            })
+
+            setTimeout(() => {
+              particleEffect.createConfetti(toX, toY, bgColor)
+              animEl.remove()
+            }, 500)
+          }
+
+          this.colors.shift()
+          this.saveColors()
+        }, index * 50)
+      })
     },
     loadColors() {
       const savedColors = globalState.get('saved-colors')
