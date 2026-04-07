@@ -11,9 +11,8 @@ export class ImageColorExtractor {
     const data = imageData.data
 
     const colorFrequency = {}
-    const sampleStep = 4
 
-    for (let i = 0; i < data.length; i += sampleStep * 4) {
+    for (let i = 0; i < data.length; i += 4) {
       const r = data[i]
       const g = data[i + 1]
       const b = data[i + 2]
@@ -21,15 +20,15 @@ export class ImageColorExtractor {
 
       if (a < 128) continue
 
-      const quantizedR = Math.round(r / 32) * 32
-      const quantizedG = Math.round(g / 32) * 32
-      const quantizedB = Math.round(b / 32) * 32
-
-      const key = `${quantizedR},${quantizedG},${quantizedB}`
+      const key = `${r},${g},${b}`
       colorFrequency[key] = (colorFrequency[key] || 0) + 1
     }
 
+    const totalPixels = Object.values(colorFrequency).reduce((sum, count) => sum + count, 0)
+    const minThreshold = totalPixels * 0.01
+
     const sortedColors = Object.entries(colorFrequency)
+      .filter(([, count]) => count >= minThreshold)
       .sort((a, b) => b[1] - a[1])
       .slice(0, maxColors)
       .map(([key]) => {
