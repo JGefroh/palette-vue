@@ -38,6 +38,12 @@ class Shortcuts {
 
     // Brush shortcuts
     inputHandler.registerCommand('cmd+b', 'brush-toggle-arrow')
+    inputHandler.registerCommand('cmd+1', 'select-brush-size-0')
+    inputHandler.registerCommand('cmd+2', 'select-brush-size-1')
+    inputHandler.registerCommand('cmd+3', 'select-brush-size-2')
+    inputHandler.registerCommand('cmd+4', 'select-brush-size-3')
+    inputHandler.registerCommand('cmd+5', 'select-brush-size-4')
+    inputHandler.registerCommand('cmd+6', 'select-brush-size-5')
 
     // Line shortcuts
     inputHandler.registerCommand('cmd+l', 'line-toggle-arrow')

@@ -66,6 +66,13 @@ export default {
       inputHandler,
       brushSizes: [5, 10, 15, 20, 50, 100]
     }
+  },
+  mounted() {
+    for (let i = 0; i < this.brushSizes.length; i++) {
+      inputHandler.onCommand(`select-brush-size-${i}`, () => {
+        globalState.set('selectedSize', this.brushSizes[i])
+      })
+    }
   }
 }
 </script>
