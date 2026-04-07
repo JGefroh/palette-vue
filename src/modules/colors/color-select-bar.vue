@@ -1,6 +1,11 @@
 <template>
   <div>
-    <div class="colors">
+    <div class="color-bar-container" @dragover.prevent="handleImageDragOver" @dragleave="handleImageDragLeave" @drop="handleImageDrop">
+      <div v-if="isImageDragOver" class="image-drop-overlay">
+        <span class="fa fa-fw fa-image"></span>
+        <span class="overlay-label">Extract colors</span>
+      </div>
+      <div class="colors">
       <button
         v-for="(color, index) in colors"
         :key="color.hex"
@@ -27,6 +32,7 @@
       </button>
       <button class="color color-settings" @click="showThemeModal">⚙</button>
     </div>
+    </div>
     <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
     <ThemeModal v-if="isThemeModalOpen" @theme-selected="applyTheme" @close="isThemeModalOpen = false" />
   </div>
@@ -37,6 +43,7 @@ import { globalState } from '../persistence/global-state.js'
 import { inputHandler } from '../input/input-handler.js'
 import { particleEffect } from './particle-effect.js'
 import { eyedropperPreviewState } from '../tools/eyedropper.js'
+import { ImageColorExtractor } from './image-color-extractor.js'
 import ColorWheelPicker from './color-wheel-picker.vue'
 import ThemeModal from './theme-modal.vue'
 
@@ -100,6 +107,7 @@ export default {
       draggedIndex: null,
       dragOverIndex: null,
       dragOverTrash: false,
+      isImageDragOver: false,
       defaultColors: [
         { label: 'Pure Black', hex: '#000000' },
         { label: 'Pure White', hex: '#FFFFFF' },
@@ -364,12 +372,48 @@ export default {
     saveColorOrder() {
       const colorOrder = this.colors.map(c => c.hex)
       globalState.set('color-order', colorOrder)
+    },
+    handleImageDragOver(e) {
+      if (e.dataTransfer.types.includes('Files') && this.draggedIndex === null) {
+        this.isImageDragOver = true
+      }
+    },
+    handleImageDragLeave() {
+      this.isImageDragOver = false
+    },
+    handleImageDrop(e) {
+      e.preventDefault()
+      this.isImageDragOver = false
+
+      if (this.draggedIndex !== null) return
+
+      const file = e.dataTransfer.files[0]
+      if (!file || !file.type.startsWith('image/')) return
+
+      const img = new Image()
+      img.onload = () => {
+        const slots = 40 - this.colors.length
+        const extractor = new ImageColorExtractor()
+        const hexColors = extractor.extract(img, slots)
+        hexColors.forEach(hex => this.addCustomColor(hex))
+        URL.revokeObjectURL(img.src)
+      }
+      img.src = URL.createObjectURL(file)
     }
   }
 }
 </script>
 
 <style scoped>
+.color-bar-container {
+  position: absolute;
+  width: 92px;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  z-index: 99;
+}
+
 .colors {
   display: flex;
   flex-wrap: wrap;
@@ -377,13 +421,7 @@ export default {
   padding: 8px;
   background-color: #d3d3d37e;
   font-family: 'Montserrat', sans-serif;
-  position: absolute;
-  width: 92px;
-  top: 50%;
-  left: 8px;
-  transform: translateY(-50%);
   box-shadow: 1px 1px 3px #c6c6c6;
-  z-index: 99;
   backdrop-filter: blur(15px);
 }
 
@@ -550,5 +588,41 @@ export default {
   background-color: rgba(52, 73, 94, 0.2);
   border-color: rgba(52, 73, 94, 0.5);
   color: #2c3e50;
+}
+
+.image-drop-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #34495e;
+  font-family: 'Montserrat', sans-serif;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  border: 1px solid rgba(185, 185, 185, 0.3);
+}
+
+.image-drop-overlay .fa {
+  font-size: 20px;
+  color: #34495e;
+  opacity: 0.7;
+}
+
+.overlay-label {
+  text-align: center;
+  max-width: 85%;
+  line-height: 1.3;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  color: rgba(52, 73, 94, 0.8);
 }
 </style>
