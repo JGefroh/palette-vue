@@ -33,6 +33,7 @@ import { Text } from './tools/text.js'
 import { Select } from './tools/select.js'
 import { Paste } from './tools/paste.js'
 import { Eyedropper } from './tools/eyedropper.js'
+import { Fill } from './tools/fill.js'
 import { shortcuts } from './input/shortcuts.js'
 
 
@@ -101,6 +102,7 @@ export default {
         ShapeCircle.new(drawingCtx, overlayCtx),
         ShapeLine.new(drawingCtx, overlayCtx),
         Text.new(drawingCtx, overlayCtx),
+        Fill.new(drawingCtx, overlayCtx),
         Select.new(drawingCtx, overlayCtx)
       ]
 

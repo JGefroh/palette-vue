@@ -6,8 +6,8 @@ export class ShapeRectangle extends Shape {
   constructor(dependencies) {
     super(dependencies)
     this.name = 'Rectangle'
-    this.fillIcon = 'fa-square'
-    this.outlineIcon = 'fa-square-o'
+    this.fillIcon = 'fa-solid fa-square'
+    this.outlineIcon = 'fa-regular fa-square'
     this.unsubscribeConstrainSquare = null
     this.unsubscribeUnconstrainSquare = null
   }

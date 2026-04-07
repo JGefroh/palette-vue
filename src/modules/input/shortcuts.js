@@ -32,6 +32,7 @@ class Shortcuts {
     inputHandler.registerCommand('c', 'select-tool-Circle')
     inputHandler.registerCommand('l', 'select-tool-Line')
     inputHandler.registerCommand('t', 'select-tool-Text')
+    inputHandler.registerCommand('f', 'select-tool-Fill')
     inputHandler.registerCommand('s', 'select-tool-Select')
     inputHandler.registerCommand('e', 'toggle-eyedropper')
 

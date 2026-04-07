@@ -4,8 +4,8 @@ export class ShapeCircle extends Shape {
   constructor(dependencies) {
     super(dependencies)
     this.name = 'Circle'
-    this.fillIcon = 'fa-circle'
-    this.outlineIcon = 'fa-circle-o'
+    this.fillIcon = 'fa-solid fa-circle'
+    this.outlineIcon = 'fa-regular fa-circle'
   }
 
   static new(drawingCtx, overlayCtx) {
