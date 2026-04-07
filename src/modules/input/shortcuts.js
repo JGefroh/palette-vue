@@ -33,6 +33,7 @@ class Shortcuts {
     inputHandler.registerCommand('l', 'select-tool-Line')
     inputHandler.registerCommand('t', 'select-tool-Text')
     inputHandler.registerCommand('s', 'select-tool-Select')
+    inputHandler.registerCommand('e', 'toggle-eyedropper')
 
     // Brush shortcuts
     inputHandler.registerCommand('cmd+b', 'brush-toggle-arrow')

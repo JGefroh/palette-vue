@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="overlay" class="overlay"></canvas>
+  <canvas ref="overlay" class="overlay" :style="{ cursor: overlayCanvasCursor }"></canvas>
 </template>
 
 <script>
@@ -27,6 +27,10 @@ export default {
         selectedSize: globalState.get('selectedSize'),
         selectedTool: globalState.get('selectedTool')
       }
+    },
+    overlayCanvasCursor() {
+      const selectedTool = globalState.get('selectedTool')
+      return selectedTool?.name === 'Eyedropper' ? 'none' : 'crosshair'
     }
   },
   mounted() {
@@ -69,6 +73,11 @@ export default {
 
       if (event) {
         globalCursorManager.updateFromMouseEvent(event)
+      }
+
+      const selectedTool = globalState.get('selectedTool')
+      if (selectedTool?.name === 'Eyedropper') {
+        return
       }
 
       if (!this.isBrushSelected()) {
@@ -137,7 +146,6 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  cursor: crosshair;
   width: 100%;
   height: 100%;
   z-index: 2;

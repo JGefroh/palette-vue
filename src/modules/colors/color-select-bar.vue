@@ -22,6 +22,9 @@
       </button>
       <div v-if="colors.length % 2 === 1" class="color-placeholder"></div>
       <button class="color color-add" @click="showColorPicker">+</button>
+      <button class="color color-eyedropper" :class="{ active: isEyedropperActive }" @click="toggleEyedropper" title="Eyedropper">
+        <span class="fa fa-fw fa-eyedropper"></span>
+      </button>
       <button class="color color-settings" @click="showThemeModal">⚙</button>
     </div>
     <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
@@ -48,6 +51,11 @@ export default {
     this.loadColors()
     this.initializeDefaultColorNumbers()
     this.registerColorShortcuts()
+
+    inputHandler.onCommand('eyedropper-pick', (hex) => {
+      this.addCustomColor(hex)
+    })
+
     const canvas = document.querySelector('canvas')
     if (canvas) {
       this._handleCanvasDragover = (e) => e.preventDefault()
@@ -112,6 +120,9 @@ export default {
   computed: {
     selectedColor() {
       return globalState.get('selectedColor');
+    },
+    isEyedropperActive() {
+      return globalState.get('selectedTool')?.name === 'Eyedropper'
     }
   },
   methods: {
@@ -167,6 +178,9 @@ export default {
     },
     showColorPicker() {
       this.isPickerOpen = true
+    },
+    toggleEyedropper() {
+      inputHandler.dispatchCommand('toggle-eyedropper')
     },
     addCustomColor(hex) {
       const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
@@ -398,5 +412,31 @@ export default {
 .color-settings:hover {
   background-color: rgba(52, 73, 94, 0.1);
   border-color: rgba(185, 185, 185, 0.7);
+}
+
+.color-eyedropper {
+  width: 36px;
+  height: 36px;
+  background-color: transparent;
+  color: #34495e;
+  font-size: 16px;
+  border: 1px solid rgba(185, 185, 185, 0.5);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-eyedropper:hover {
+  background-color: rgba(52, 73, 94, 0.1);
+  border-color: rgba(185, 185, 185, 0.7);
+}
+
+.color-eyedropper.active {
+  background-color: rgba(52, 73, 94, 0.2);
+  border-color: rgba(52, 73, 94, 0.5);
+  color: #2c3e50;
 }
 </style>

@@ -11,6 +11,7 @@
     <PaperCanvas @on-initialize="onPaperCanvasInitialize" />
     <BottomBar :tools-definition="toolbarTools" />
     <ColorSelectBar />
+    <EyedropperPreview />
   </div>
 </template>
 
@@ -19,6 +20,7 @@ import PaperCanvas from './canvas/paper-canvas.vue'
 import ColorSelectBar from './colors/color-select-bar.vue'
 import BottomBar from './toolbar/bottom-bar.vue'
 import TabBar from './tabs/tab-bar.vue'
+import EyedropperPreview from './colors/eyedropper-preview.vue'
 import { globalState } from './persistence/global-state.js'
 import { globalCanvasManager } from './canvas/global-canvas-manager.js'
 import { globalToolManager } from './tools/global-tool-manager.js'
@@ -30,6 +32,7 @@ import { ShapeLine } from './tools/shape-line.js'
 import { Text } from './tools/text.js'
 import { Select } from './tools/select.js'
 import { Paste } from './tools/paste.js'
+import { Eyedropper } from './tools/eyedropper.js'
 import { shortcuts } from './input/shortcuts.js'
 
 
@@ -38,7 +41,8 @@ export default {
     PaperCanvas,
     ColorSelectBar,
     BottomBar,
-    TabBar
+    TabBar,
+    EyedropperPreview
   },
   data() {
     return {}
@@ -75,6 +79,15 @@ export default {
           this.selectToolOrToggleMode(tool);
         });
       });
+
+      inputHandler.onCommand('toggle-eyedropper', () => {
+        const selectedTool = globalState.get('selectedTool')
+        if (selectedTool === this.eyedropperTool) {
+          globalToolManager.deselectTool()
+        } else {
+          globalToolManager.selectTool(this.eyedropperTool)
+        }
+      });
     },
     initializeTools() {
       const drawingCtx = globalCanvasManager.getDrawingContext()
@@ -92,6 +105,8 @@ export default {
       ]
 
       tools.forEach(tool => globalToolManager.registerTool(tool))
+
+      this.eyedropperTool = Eyedropper.new(drawingCtx, overlayCtx)
 
       const pasteTool = Paste.new(drawingCtx, overlayCtx)
       pasteTool.start({ x: 0, y: 0 })
