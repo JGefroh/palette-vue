@@ -30,7 +30,22 @@ export default {
     },
     overlayCanvasCursor() {
       const selectedTool = globalState.get('selectedTool')
-      return selectedTool?.name === 'Eyedropper' ? 'none' : 'crosshair'
+      if (selectedTool?.name === 'Eyedropper') {
+        return 'none'
+      }
+      if (selectedTool?.name === 'Select') {
+        const coordinates = globalCursorManager.getCurrentCoordinates()
+        if (coordinates) {
+          if (selectedTool.shouldStartRotatingSelection(coordinates)) {
+            return 'grab'
+          } else if (selectedTool.getCornerAtCoordinates(coordinates)) {
+            return 'nwse-resize'
+          } else if (selectedTool.shouldStartMovingSelection(coordinates)) {
+            return 'move'
+          }
+        }
+      }
+      return 'crosshair'
     }
   },
   mounted() {
