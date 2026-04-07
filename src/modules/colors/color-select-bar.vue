@@ -62,6 +62,7 @@ export default {
 
     inputHandler.onCommand('eyedropper-pick', (data) => {
       const wasAdded = this.addCustomColorWithAnimation(data.hex, data.screenX, data.screenY)
+      this.selectColor({ hex: data.hex, label: 'Custom' })
       if (!wasAdded) {
         eyedropperPreviewState.shouldShake = true
         setTimeout(() => {
