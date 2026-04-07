@@ -63,9 +63,12 @@
 
         <div class="section">
           <h3>Colors</h3>
-          <p class="info-text"><strong>Assign shortcuts:</strong> Click a number repeatedly to assign shortcuts.</p>
-          <p class="info-text"><strong>Organize:</strong> Drag colors to reorder, drag out to remove.</p>
-          <p class="info-text"><strong>Add & browse:</strong> + to add new colors, ⚙ to select a theme.</p>
+          <ul class="info-list">
+            <li><strong>Assign shortcuts:</strong> Click a number repeatedly to assign shortcuts.</li>
+            <li><strong>Organize:</strong> Drag colors to reorder, drag out to remove.</li>
+            <li><strong>Add & browse:</strong> + to add new colors, ⚙ to select a theme.</li>
+            <li><strong>Extract from images:</strong> Drag an image onto the color bar to automatically extract the most common colors.</li>
+          </ul>
         </div>
 
         <div class="section">
@@ -119,11 +122,13 @@ export default {
         { title: 'Undo, Redo & Auto-Save', detail: 'Full undo/redo history and automatic saving to browser storage every 500ms. Your work persists even after closing the browser, unless your browser settings change this.\n- Cmd+Z - Undo\n- Cmd+Shift+Z - Redo\nAuto-save happens silently in the background.' },
         { title: 'Zoom & Pan', detail: 'Zoom in to see fine details or out for the full picture. Pan around the canvas while zoomed to explore different areas.\n- Ctrl+Scroll - Zoom (Cmd+Scroll on Mac)\nPan to navigate without losing focus on zoomed areas.' },
         { title: 'Image Import', detail: 'Drag images directly into your canvas for use as references, backgrounds, or tracing guides.\n- Drag any image onto canvas\nPerfect for tracing photos or layering backgrounds.' },
-        { title: 'Select, Copy & Paste', detail: 'Select elements on your canvas, copy them, and paste multiple times to duplicate and arrange.\n- S - Select\n- Cmd+C - Copy\n- Cmd+V - Paste\n- Delete - Delete selected elements\nGreat for creating patterns and symmetrical designs.' },
+        { title: 'Select, Copy & Paste', detail: 'Select elements on your canvas, copy them, and paste multiple times to duplicate and arrange. Resize by dragging corners or rotate by dragging near corners.\n- S - Select\n- Cmd+C - Copy\n- Cmd+V - Paste\n- Delete - Delete selected elements\n- Drag corners - Resize selected content\n- Shift+Drag corners - Preserve aspect ratio while resizing\n- Drag near corners - Rotate selected content\n- Shift+Rotate - Snap to 15° increments\nGreat for creating patterns and symmetrical designs.' },
         { title: 'Tabs', detail: 'Work on multiple drawings simultaneously. Each tab is independent with its own auto-save.\n- Tab - Next tab\n- Shift+Tab - Previous tab\n- Double-click tab name - Rename tab\n- Click X on tab - Delete tab\nSwitch between projects instantly.' },
         { title: 'Keyboard Shortcuts', detail: 'Every tool and command has a keyboard shortcut for efficient workflow.\n- B - Brush, R - Rectangle, C - Circle, L - Line\n- T - Text, S - Select\nAll shortcuts are listed in the Tools section of Help.' },
         { title: 'Download', detail: 'Export your drawing as a PNG file. The filename automatically matches your tab name.\n- Download button in nav bar\nSupports full transparency.' },
-        { title: 'Snap & Aspect Ratio', detail: 'Draw precisely aligned shapes and maintain proportional resizes. Snap to axes for pixel-perfect alignment.\n- Hold modifiers while dragging\nGreat for creating grids and consistent designs.' }
+        { title: 'Snap & Aspect Ratio', detail: 'Draw precisely aligned shapes and maintain proportional resizes. Snap to axes for pixel-perfect alignment.\n- Hold modifiers while dragging\nGreat for creating grids and consistent designs.' },
+        { title: 'Fill', detail: 'Quickly fill areas with the current color. Perfect for filling shapes or large regions.\n- F - Fill tool\n- Click anywhere to fill adjacent areas of similar color' },
+        { title: 'Eyedropper', detail: 'Sample colors directly from your canvas or any image. Instantly add colors to your palette.\n- E - Toggle eyedropper\n- Click to sample a color\nColors are automatically added to your palette when sampled.' }
       ],
       tools: [
         { key: 'B', name: 'Brush', brushOptions: true },
@@ -131,7 +136,9 @@ export default {
         { key: 'C', name: 'Circle', toggleMode: true },
         { key: 'L', name: 'Line', lineOptions: true },
         { key: 'T', name: 'Text' },
-        { key: 'S', name: 'Select', toggleMode: true }
+        { key: 'S', name: 'Select', toggleMode: true },
+        { key: 'F', name: 'Fill' },
+        { key: 'E', name: 'Eyedropper' }
       ],
       commands: [
         { key: 'Cmd+Z / Ctrl+Z', description: 'Undo' },
@@ -249,14 +256,41 @@ export default {
 }
 
 .modal-body {
-  padding: 16px 20px;
+  padding: 12px 16px;
   overflow-y: auto;
   flex: 1;
   background-color: transparent;
 }
 
 .section {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  margin-top: 12px;
+}
+
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.info-list {
+  list-style-type: disc;
+  padding-left: 16px;
+  margin: 0;
+}
+
+.info-list li {
+  color: #7f8c8d;
+  font-size: 10px;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.info-list li:last-child {
+  margin-bottom: 0;
+}
+
+.info-list li strong {
+  color: #34495e;
+  font-weight: 600;
 }
 
 .features-list {
@@ -318,23 +352,23 @@ export default {
 .shortcuts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 12px;
 }
 
 .shortcuts-column h3 {
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
   color: #34495e;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .section h3 {
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
   color: #34495e;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -354,39 +388,39 @@ export default {
 }
 
 .shortcuts-table td {
-  padding: 6px 0;
+  padding: 3px 0;
 }
 
 .shortcuts-table td.key {
   font-family: 'Monaco', 'Menlo', monospace;
   background-color: rgba(52, 73, 94, 0.05);
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 3px;
   color: #34495e;
   font-weight: 600;
   width: 70px;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .shortcuts-table td.description {
-  padding-left: 8px;
+  padding-left: 6px;
   color: #34495e;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .toggle-info {
   display: inline;
   color: #95a5a6;
-  font-size: 10px;
+  font-size: 9px;
   font-style: italic;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 .info-text {
   color: #7f8c8d;
-  margin: 0 0 6px 0;
-  font-size: 11px;
-  line-height: 1.4;
+  margin: 0 0 3px 0;
+  font-size: 10px;
+  line-height: 1.3;
 }
 
 .info-text strong {
