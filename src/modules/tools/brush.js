@@ -99,6 +99,10 @@ export class Brush {
     this.drawArrowIfEnabled()
   }
 
+  deselect() {
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+  }
+
   onAlreadySelected() {
     // Brush cycles through line style when selected repeatedly
     this.cycleLineStyle()

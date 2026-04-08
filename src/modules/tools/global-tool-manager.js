@@ -18,6 +18,10 @@ class ToolManager {
   }
 
   selectTool(tool) {
+    const previousTool = this.selectedTool
+    if (previousTool?.deselect) {
+      previousTool.deselect()
+    }
     this.selectedTool = tool
     globalState.set('selectedTool', tool)
   }

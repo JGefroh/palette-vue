@@ -256,4 +256,8 @@ export class Select {
 
     return null
   }
+
+  deselect() {
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+  }
 }
