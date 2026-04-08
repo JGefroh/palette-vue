@@ -107,7 +107,6 @@ export default {
       isThemeModalOpen: false,
       draggedIndex: null,
       dragOverIndex: null,
-      dragOverTrash: false,
       isImageDragOver: false,
       defaultColors: [
         { label: 'Pure Black', hex: '#000000' },
@@ -346,7 +345,6 @@ export default {
     endDragColor() {
       this.draggedIndex = null
       this.dragOverIndex = null
-      this.dragOverTrash = false
     },
     deleteColor(dropX = null, dropY = null) {
       if (this.draggedIndex !== null) {
@@ -360,7 +358,6 @@ export default {
       }
       this.draggedIndex = null
       this.dragOverIndex = null
-      this.dragOverTrash = false
     },
     showThemeModal() {
       this.isThemeModalOpen = true
@@ -405,7 +402,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .color-bar-container {
   position: absolute;
   width: 92px;
@@ -420,10 +417,11 @@ export default {
   flex-wrap: wrap;
   gap: 4px;
   padding: 8px;
-  background-color: #d3d3d37e;
-  font-family: 'Montserrat', sans-serif;
-  box-shadow: 1px 1px 3px #c6c6c6;
-  backdrop-filter: blur(15px);
+  background-color: $surface-panel;
+  font-family: $font-primary;
+  box-shadow: $shadow-panel;
+  backdrop-filter: $blur-panel;
+  border-radius: $radius-panel;
 }
 
 .color-placeholder {
@@ -435,14 +433,14 @@ export default {
   width: 36px;
   height: 36px;
   border: 1px solid #b9b9b9d9;
-  border-radius: 4px;
+  border-radius: $radius-button;
   cursor: grab;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 18px;
-  transition: all 0.2s ease;
+  transition: $transition-default;
   outline: none;
   position: relative;
 }
@@ -461,7 +459,7 @@ export default {
 }
 
 .color.selected {
-  border: 2px solid #34495e;
+  border: 2px solid $color-primary;
   background-color: rgba(52, 73, 94, 0.12);
 }
 
@@ -480,21 +478,21 @@ export default {
   top: 0;
   width: 3px;
   height: 100%;
-  background-color: #34495e;
+  background-color: $color-primary;
   border-radius: 2px;
 }
 
 .color-number {
   color: #ecf0f1;
   text-shadow:
-    -1px -1px 0 #34495e,
-    1px -1px 0 #34495e,
-    -1px 1px 0 #34495e,
-    1px 1px 0 #34495e,
-    0px -1px 0 #34495e,
-    0px 1px 0 #34495e,
-    -1px 0px 0 #34495e,
-    1px 0px 0 #34495e;
+    -1px -1px 0 $color-primary,
+    1px -1px 0 $color-primary,
+    -1px 1px 0 $color-primary,
+    1px 1px 0 $color-primary,
+    0px -1px 0 $color-primary,
+    0px 1px 0 $color-primary,
+    -1px 0px 0 $color-primary,
+    1px 0px 0 $color-primary;
   font-weight: bold;
   font-size: 16px;
 }
@@ -503,117 +501,92 @@ export default {
   width: 36px;
   height: 36px;
   background-color: transparent;
-  color: #34495e;
+  color: $color-primary;
   font-size: 20px;
   font-weight: bold;
-  border: 1px solid rgba(185, 185, 185, 0.5);
+  border: $border-default;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: $radius-button;
+  transition: $transition-default;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .color-add:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(185, 185, 185, 0.7);
-}
-
-.color-trash {
-  width: 36px;
-  height: 36px;
-  background-color: transparent;
-  color: #95a5a6;
-  font-size: 18px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.color-trash:hover {
-  background-color: rgba(52, 73, 94, 0.05);
-  border-color: rgba(185, 185, 185, 0.7);
-}
-
-.color-trash.dragOverTrash {
-  border-color: #e74c3c;
-  color: #e74c3c;
-  background-color: rgba(231, 76, 60, 0.1);
+  background-color: $btn-hover-bg;
+  border-color: $border-color-hover;
 }
 
 .color-settings {
   width: 36px;
   height: 36px;
   background-color: transparent;
-  color: #34495e;
+  color: $color-primary;
   font-size: 16px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
+  border: $border-default;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: $radius-button;
+  transition: $transition-default;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .color-settings:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(185, 185, 185, 0.7);
+  background-color: $btn-hover-bg;
+  border-color: $border-color-hover;
 }
 
 .color-eyedropper {
   width: 36px;
   height: 36px;
   background-color: transparent;
-  color: #34495e;
+  color: $color-primary;
   font-size: 16px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
+  border: $border-default;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: $radius-button;
+  transition: $transition-default;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .color-eyedropper:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(185, 185, 185, 0.7);
+  background-color: $btn-hover-bg;
+  border-color: $border-color-hover;
 }
 
 .color-eyedropper.active {
   background-color: rgba(52, 73, 94, 0.2);
-  border-color: rgba(52, 73, 94, 0.5);
+  border-color: $border-color-active;
   color: #2c3e50;
 }
 
 .image-drop-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(15px);
-  border-radius: 4px;
+  background: $surface-modal;
+  backdrop-filter: $blur-panel;
+  border-radius: $radius-button;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: #34495e;
-  font-family: 'Montserrat', sans-serif;
+  color: $color-primary;
+  font-family: $font-primary;
   pointer-events: none;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-panel;
   box-sizing: border-box;
   border: 1px solid rgba(185, 185, 185, 0.3);
 }
 
 .image-drop-overlay .fa {
   font-size: 20px;
-  color: #34495e;
+  color: $color-primary;
   opacity: 0.7;
 }
 

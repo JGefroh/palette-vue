@@ -44,27 +44,27 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .tool {
   padding: 8px 12px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
+  border: $border-default;
   background-color: transparent;
-  color: #34495e;
-  border-radius: 4px;
+  color: $color-primary;
+  border-radius: $radius-button;
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: $font-primary;
   font-size: 12px;
-  transition: all 0.2s ease;
+  transition: $transition-default;
 }
 
 .tool:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(185, 185, 185, 0.7);
+  background-color: $btn-hover-bg;
+  border-color: $border-color-hover;
 }
 
 .tool.active {
-  background-color: rgba(52, 73, 94, 0.15);
-  border-color: rgba(52, 73, 94, 0.5);
-  color: #34495e;
+  background-color: $btn-active-bg;
+  border-color: $border-color-active;
+  color: $color-primary;
 }
 </style>

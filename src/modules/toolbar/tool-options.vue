@@ -60,14 +60,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .tool-options {
   position: absolute;
   bottom: calc(100% + 8px);
   transform: translateX(-50%);
-  background: rgba(211, 211, 211, 0.49);
-  backdrop-filter: blur(15px);
-  border-radius: 8px;
+  @include glass-panel;
   padding: 8px;
   display: flex;
   gap: 4px;
@@ -84,7 +82,7 @@ export default {
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 6px solid rgba(211, 211, 211, 0.49);
+  border-top: 6px solid $surface-panel;
 }
 
 .option-group {
@@ -99,32 +97,7 @@ export default {
 }
 
 .option-button {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  background-color: transparent;
-  color: #34495e;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  transition: all 0.2s ease;
-  outline: none;
-}
-
-.option-button:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(185, 185, 185, 0.7);
-}
-
-.option-button.active {
-  background-color: rgba(52, 73, 94, 0.15);
-  border-color: rgba(52, 73, 94, 0.5);
-  color: #34495e;
+  @include tool-button;
 }
 
 .icon-small {

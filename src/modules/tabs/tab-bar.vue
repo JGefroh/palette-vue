@@ -103,14 +103,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .tab-bar {
   display: flex;
   align-items: flex-end;
   gap: 4px;
   padding: 0 8px;
-  background-color: #d3d3d37e;
-  backdrop-filter: blur(15px);
+  background-color: $surface-panel;
+  backdrop-filter: $blur-panel;
 }
 
 .tab {
@@ -118,23 +118,23 @@ export default {
   border: none;
   border-bottom: 2px solid transparent;
   background-color: transparent;
-  color: #7f8c8d;
+  color: $color-secondary;
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: $font-primary;
   font-size: 12px;
   position: relative;
-  transition: all 0.2s ease;
+  transition: $transition-default;
 }
 
 .tab.active {
   background-color: transparent;
-  color: #34495e;
-  border-bottom-color: #95a5a6;
+  color: $color-primary;
+  border-bottom-color: $color-tertiary;
   font-weight: 600;
 }
 
 .tab:hover:not(.active) {
-  color: #34495e;
+  color: $color-primary;
   border-bottom-color: rgba(52, 73, 94, 0.3);
 }
 
@@ -143,11 +143,11 @@ export default {
   font-size: 10px;
   margin-left: 6px;
   vertical-align: middle;
-  transition: color 0.2s ease;
+  transition: $transition-default;
 }
 
 .tab-delete:hover {
-  color: #95a5a6;
+  color: $color-tertiary;
 }
 
 .tab-add {

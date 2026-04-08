@@ -158,7 +158,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .palette-app {
   width: 100%;
   height: 100%;
@@ -168,9 +168,9 @@ export default {
 
 .navigation {
   background-color: rgba(211, 211, 211, 0.3);
-  color: #34495e;
+  color: $color-primary;
   padding: 10px 20px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: $font-primary;
   font-weight: 500;
   font-size: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -178,7 +178,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(185, 185, 185, 0.2);
-  backdrop-filter: blur(15px);
+  backdrop-filter: $blur-panel;
 }
 
 .nav-left {
@@ -193,18 +193,18 @@ export default {
 }
 
 .version {
-  color: #95a5a6;
+  color: $color-tertiary;
   font-weight: 400;
   font-size: 11px;
 }
 
 .nav-right {
-  color: #34495e;
+  color: $color-primary;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: $transition-default;
 }
 
 .nav-right:hover {
-  color: #7f8c8d;
+  color: $color-secondary;
 }
 </style>

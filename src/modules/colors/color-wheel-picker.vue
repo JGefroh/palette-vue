@@ -169,30 +169,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  @include modal-overlay;
 }
 
 .modal {
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  @include modal-panel;
   width: 90%;
   max-width: 500px;
-  overflow: hidden;
-  font-family: 'Montserrat', sans-serif;
-  backdrop-filter: blur(15px);
 }
 
 .modal-header {
@@ -200,14 +185,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(185, 185, 185, 0.3);
+  border-bottom: $border-default;
   background-color: transparent;
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 16px;
-  color: #34495e;
+  color: $color-primary;
   font-weight: 600;
 }
 
@@ -216,18 +201,18 @@ export default {
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #95a5a6;
+  color: $color-tertiary;
   padding: 0;
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  transition: $transition-default;
 }
 
 .close-btn:hover {
-  color: #34495e;
+  color: $color-primary;
 }
 
 .modal-content {
@@ -240,8 +225,8 @@ export default {
 }
 
 canvas {
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  border-radius: 4px;
+  border: $border-default;
+  border-radius: $radius-button;
   cursor: crosshair;
 }
 
@@ -255,64 +240,64 @@ canvas {
 .preview-color {
   width: 60px;
   height: 60px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  border-radius: 4px;
+  border: $border-default;
+  border-radius: $radius-button;
 }
 
 input[type="text"] {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  border-radius: 4px;
+  border: $border-default;
+  border-radius: $radius-button;
   font-family: monospace;
   font-size: 12px;
   background-color: transparent;
-  color: #34495e;
+  color: $color-primary;
 }
 
 input[type="text"]:focus {
   outline: none;
-  border-color: rgba(185, 185, 185, 0.7);
-  background-color: rgba(52, 73, 94, 0.05);
+  border-color: $border-color-active;
+  background-color: rgba($color-primary, 0.05);
 }
 
 .modal-footer {
   display: flex;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid rgba(185, 185, 185, 0.3);
+  border-top: $border-default;
   justify-content: flex-end;
   background-color: transparent;
 }
 
 button {
   padding: 8px 16px;
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  border-radius: 4px;
+  border: $border-default;
+  border-radius: $radius-button;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
   background-color: transparent;
-  color: #34495e;
-  transition: all 0.2s ease;
+  color: $color-primary;
+  transition: $transition-default;
 }
 
 .btn-cancel {
-  color: #7f8c8d;
+  color: $color-secondary;
 }
 
 .btn-cancel:hover {
-  background-color: rgba(52, 73, 94, 0.05);
-  border-color: rgba(185, 185, 185, 0.7);
+  background-color: rgba($color-primary, 0.05);
+  border-color: $border-color-hover;
 }
 
 .btn-confirm {
-  color: #34495e;
-  border-color: rgba(52, 73, 94, 0.3);
+  color: $color-primary;
+  border-color: rgba($color-primary, 0.3);
 }
 
 .btn-confirm:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(52, 73, 94, 0.5);
+  background-color: $btn-hover-bg;
+  border-color: $border-color-active;
 }
 </style>

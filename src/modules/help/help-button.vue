@@ -24,23 +24,23 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .tab {
   padding: 8px 20px;
   border: none;
   border-bottom: 2px solid transparent;
   background-color: transparent;
-  color: #7f8c8d;
+  color: $color-secondary;
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: $font-primary;
   font-size: 12px;
   position: relative;
-  transition: all 0.2s ease;
+  transition: $transition-default;
 }
 
 .tab:hover {
-  color: #34495e;
-  border-bottom-color: rgba(52, 73, 94, 0.3);
+  color: $color-primary;
+  border-bottom-color: rgba($color-primary, 0.3);
 }
 
 .help-wrapper {

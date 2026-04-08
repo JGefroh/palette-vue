@@ -11,4 +11,11 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/styles/variables" as *; @use "@/styles/mixins" as *;`,
+      },
+    },
+  },
 })

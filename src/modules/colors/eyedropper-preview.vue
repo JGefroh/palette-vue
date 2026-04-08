@@ -48,27 +48,23 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .eyedropper-preview {
+  @include glass-panel;
   position: fixed;
   z-index: 1000;
-  background-color: rgba(211, 211, 211, 0.49);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(185, 185, 185, 0.2);
-  border-radius: 8px;
   padding: 10px 12px;
   display: flex;
   gap: 12px;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
 
 .color-swatch {
   width: 36px;
   height: 36px;
-  border-radius: 4px;
-  border: 1px solid rgba(185, 185, 185, 0.3);
+  border-radius: $radius-button;
+  border: $border-default;
   flex-shrink: 0;
 }
 
@@ -76,9 +72,9 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: $font-primary;
   font-size: 11px;
-  color: #34495e;
+  color: $color-primary;
   min-width: 130px;
 }
 
@@ -91,7 +87,7 @@ export default {
 
 .rgb {
   font-size: 11px;
-  color: #34495e;
+  color: $color-primary;
   font-family: 'Courier New', monospace;
   font-weight: 500;
 }

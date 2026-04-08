@@ -159,38 +159,20 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  @include modal-overlay;
 }
 
 .modal-content {
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  @include modal-panel;
   width: 600px;
   height: 640px;
-  position: relative;
-  padding: 0;
-  font-family: 'Montserrat', sans-serif;
-  display: flex;
-  flex-direction: column;
-  backdrop-filter: blur(15px);
 }
 
 .modal-header {
   padding: 16px 20px 12px 20px;
-  border-bottom: 1px solid rgba(185, 185, 185, 0.3);
+  border-bottom: $border-default;
   background-color: transparent;
   flex-shrink: 0;
 }
@@ -203,56 +185,56 @@ export default {
 
 .modal-header h2 {
   margin: 0;
-  color: #34495e;
+  color: $color-primary;
   font-size: 16px;
   font-weight: 600;
 }
 
 .github-link {
-  color: #34495e;
+  color: $color-primary;
   text-decoration: none;
   font-size: 16px;
-  transition: color 0.2s ease;
+  transition: $transition-default;
   flex-shrink: 0;
 }
 
 .github-link:hover {
-  color: #7f8c8d;
+  color: $color-secondary;
 }
 
 .modal-tabs {
   display: flex;
   gap: 4px;
   padding: 8px 16px;
-  background-color: rgba(185, 185, 185, 0.1);
-  border-bottom: 1px solid rgba(185, 185, 185, 0.2);
+  background-color: rgba($border-color-default, 0.1);
+  border-bottom: $border-default;
 }
 
 .tab-button {
   padding: 8px 16px;
-  border: 1px solid rgba(185, 185, 185, 0.3);
-  border-radius: 4px;
+  border: $border-default;
+  border-radius: $radius-button;
   background-color: transparent;
-  color: #7f8c8d;
+  color: $color-secondary;
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: $font-primary;
   font-size: 11px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: $transition-default;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .tab-button:hover {
-  color: #34495e;
-  background-color: rgba(52, 73, 94, 0.05);
-  border-color: rgba(185, 185, 185, 0.5);
+  color: $color-primary;
+  background-color: rgba($color-primary, 0.05);
+  border-color: $border-color-hover;
 }
 
 .tab-button.active {
-  color: #34495e;
-  background-color: rgba(52, 73, 94, 0.15);
-  border-color: rgba(52, 73, 94, 0.5);
+  color: $color-primary;
+  background-color: $btn-active-bg;
+  border-color: $border-color-active;
 }
 
 .modal-body {
@@ -278,7 +260,7 @@ export default {
 }
 
 .info-list li {
-  color: #7f8c8d;
+  color: $color-secondary;
   font-size: 10px;
   line-height: 1.3;
   margin-bottom: 2px;
@@ -289,7 +271,7 @@ export default {
 }
 
 .info-list li strong {
-  color: #34495e;
+  color: $color-primary;
   font-weight: 600;
 }
 
@@ -301,8 +283,8 @@ export default {
 
 .features-list li {
   padding: 6px 0;
-  color: #34495e;
-  border-bottom: 1px solid rgba(185, 185, 185, 0.15);
+  color: $color-primary;
+  border-bottom: $border-default;
   font-size: 11px;
   line-height: 1.4;
   cursor: pointer;
@@ -314,7 +296,7 @@ export default {
 }
 
 .features-list li.hovered {
-  background-color: rgba(52, 73, 94, 0.05);
+  background-color: rgba($color-primary, 0.05);
 }
 
 .feature-detail {
@@ -324,12 +306,12 @@ export default {
 
 .detail-divider {
   height: 1px;
-  background-color: rgba(185, 185, 185, 0.2);
+  background-color: $border-default;
   margin-bottom: 8px;
 }
 
 .detail-text {
-  color: #7f8c8d;
+  color: $color-secondary;
   font-size: 10px;
   line-height: 1.6;
 }
@@ -340,12 +322,12 @@ export default {
 
 .detail-text > div.detail-bullet {
   margin-left: 12px;
-  color: #7f8c8d;
+  color: $color-secondary;
 }
 
 .detail-text > div.detail-bullet::before {
   content: '• ';
-  color: #95a5a6;
+  color: $color-tertiary;
   margin-right: 4px;
 }
 
@@ -358,7 +340,7 @@ export default {
 
 .shortcuts-column h3 {
   margin: 0 0 4px 0;
-  color: #34495e;
+  color: $color-primary;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -367,7 +349,7 @@ export default {
 
 .section h3 {
   margin: 0 0 4px 0;
-  color: #34495e;
+  color: $color-primary;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -380,7 +362,7 @@ export default {
 }
 
 .shortcuts-table tr {
-  border-bottom: 1px solid rgba(185, 185, 185, 0.15);
+  border-bottom: $border-default;
 }
 
 .shortcuts-table tr:last-child {
@@ -393,10 +375,10 @@ export default {
 
 .shortcuts-table td.key {
   font-family: 'Monaco', 'Menlo', monospace;
-  background-color: rgba(52, 73, 94, 0.05);
+  background-color: rgba($color-primary, 0.05);
   padding: 2px 6px;
   border-radius: 3px;
-  color: #34495e;
+  color: $color-primary;
   font-weight: 600;
   width: 70px;
   font-size: 10px;
@@ -404,27 +386,27 @@ export default {
 
 .shortcuts-table td.description {
   padding-left: 6px;
-  color: #34495e;
+  color: $color-primary;
   font-size: 10px;
 }
 
 .toggle-info {
   display: inline;
-  color: #95a5a6;
+  color: $color-tertiary;
   font-size: 9px;
   font-style: italic;
   margin-left: 2px;
 }
 
 .info-text {
-  color: #7f8c8d;
+  color: $color-secondary;
   margin: 0 0 3px 0;
   font-size: 10px;
   line-height: 1.3;
 }
 
 .info-text strong {
-  color: #34495e;
+  color: $color-primary;
   font-weight: 600;
 }
 
@@ -436,37 +418,37 @@ export default {
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #95a5a6;
+  color: $color-tertiary;
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  transition: $transition-default;
 }
 
 .close-button:hover {
-  color: #34495e;
+  color: $color-primary;
 }
 
 .footer-section {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid rgba(185, 185, 185, 0.2);
+  border-top: $border-default;
   text-align: center;
 }
 
 .footer-section a {
-  color: #34495e;
+  color: $color-primary;
   text-decoration: none;
   font-size: 11px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: color 0.2s ease;
+  transition: $transition-default;
 }
 
 .footer-section a:hover {
-  color: #7f8c8d;
+  color: $color-secondary;
 }
 </style>

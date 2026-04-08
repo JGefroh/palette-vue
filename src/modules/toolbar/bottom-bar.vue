@@ -87,9 +87,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .toolbar {
-  background-color: rgba(211, 211, 211, 0.49);
+  @include glass-panel;
   padding: 8px;
   display: flex;
   gap: 4px;
@@ -97,39 +97,11 @@ export default {
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
   z-index: 100;
-  backdrop-filter: blur(15px);
 }
 
 .tool {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 1px solid rgba(185, 185, 185, 0.5);
-  background-color: transparent;
-  color: #34495e;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  transition: all 0.2s ease;
-  outline: none;
-}
-
-.tool:hover {
-  background-color: rgba(52, 73, 94, 0.1);
-  border-color: rgba(185, 185, 185, 0.7);
-}
-
-.tool.active {
-  background-color: rgba(52, 73, 94, 0.15);
-  border-color: rgba(52, 73, 94, 0.5);
-  color: #34495e;
+  @include tool-button;
 }
 
 .tool.with-text {
