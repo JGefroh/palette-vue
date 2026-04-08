@@ -21,13 +21,7 @@ export class Brush {
         selectedTool.toggleArrow()
       }
     })
-
-    inputHandler.onCommand('cursor-update', (event) => {
-      if (globalState.get('selectedTool')?.name !== 'Brush') return
-      globalCursorManager.updateFromMouseEvent(event)
-      const coords = globalCursorManager.getCurrentCoordinates()
-      this.drawCursorPreview(coords);
-    })
+    
     this.options = reactive([
       {
         key: 'arrowStyle',
@@ -182,7 +176,6 @@ export class Brush {
 
   drawCursorPreview(coordinates) {
     this.overlayCtx.save()
-    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
     this.overlayCtx.beginPath()
     const radius = globalState.get('selectedSize') / 2
     this.overlayCtx.arc(coordinates.x, coordinates.y, radius, 0, 2 * Math.PI, false)

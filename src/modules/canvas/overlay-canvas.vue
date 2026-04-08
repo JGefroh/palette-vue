@@ -150,8 +150,7 @@ export default {
     },
 
     isBrushSelected() {
-      const tool = globalState.get('selectedTool')
-      return tool && tool.constructor.name === 'Brush'
+      return globalState.get('selectedTool')?.name === 'Brush'
     },
 
     resizeCanvas(width, height) {
