@@ -1,5 +1,6 @@
 import { inputHandler } from '../input/input-handler.js'
 import { globalState } from '../persistence/global-state.js'
+import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { SelectSizer } from './select-sizer.js'
 import { SelectResizer } from './select-resizer.js'
 import { SelectRotator } from './select-rotator.js'
@@ -176,6 +177,7 @@ export class Select {
     this.drawingCtx.clearRect(x, y, width, height)
     this.selectionBounds = null
     this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+    globalCanvasManager.persistCanvas(globalState.get('selectedTab').id)
   }
 
   cleanupAfterOperation(operationState) {
