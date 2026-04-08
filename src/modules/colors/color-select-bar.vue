@@ -548,7 +548,7 @@ export default {
   max-width: 85%;
   line-height: 1.3;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: $font-weight-normal;
   letter-spacing: 0.3px;
   color: rgba(52, 73, 94, 0.8);
 }

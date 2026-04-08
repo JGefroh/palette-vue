@@ -171,7 +171,7 @@ export default {
   color: $color-primary;
   padding: 10px 20px;
   font-family: $font-primary;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   font-size: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
@@ -194,7 +194,7 @@ export default {
 
 .version {
   color: $color-tertiary;
-  font-weight: 400;
+  font-weight: $font-weight-normal;
   font-size: 11px;
 }
 

@@ -53,7 +53,7 @@ export default {
   @include glass-panel;
   position: fixed;
   z-index: 1000;
-  padding: 10px $space-md;
+  padding: $space-sm $space-md;
   display: flex;
   gap: $space-md;
   align-items: center;
@@ -73,23 +73,23 @@ export default {
   flex-direction: column;
   gap: $space-xs;
   font-family: $font-primary;
-  font-size: 11px;
+  font-size: $font-size-subheader;
   color: $color-primary;
   min-width: 130px;
 }
 
 .hex {
-  font-weight: 600;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-weight: $font-weight-semibold;
+  font-family: $font-primary;
+  font-size: $font-size-body;
   letter-spacing: 0.5px;
 }
 
 .rgb {
-  font-size: 11px;
+  font-size: $font-size-subheader;
   color: $color-primary;
-  font-family: 'Courier New', monospace;
-  font-weight: 500;
+  font-family: $font-primary;
+  font-weight: $font-weight-medium;
 }
 
 .eyedropper-preview.shake {

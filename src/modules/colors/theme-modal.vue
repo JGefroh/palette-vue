@@ -891,7 +891,7 @@ export default {
   margin: 0;
   font-size: 16px;
   color: $color-primary;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .close-btn {
@@ -944,7 +944,7 @@ export default {
   margin: 0;
   color: $color-primary;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .reroll-btn {

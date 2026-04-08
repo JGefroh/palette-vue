@@ -130,7 +130,7 @@ export default {
   background-color: transparent;
   color: $color-primary;
   border-bottom-color: $color-tertiary;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .tab:hover:not(.active) {

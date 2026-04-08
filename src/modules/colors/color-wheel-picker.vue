@@ -191,9 +191,11 @@ export default {
 
 .modal-header h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: $font-size-subheader;
   color: $color-primary;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .close-btn {
@@ -247,8 +249,8 @@ input[type="text"] {
   padding: $space-sm $space-md;
   border: $border-default;
   border-radius: $radius-button;
-  font-family: monospace;
-  font-size: 12px;
+  font-family: $font-primary;
+  font-size: $font-size-body;
   background-color: transparent;
   color: $color-primary;
 }
@@ -273,8 +275,8 @@ button {
   border: $border-default;
   border-radius: $radius-button;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: $font-size-body;
+  font-weight: $font-weight-semibold;
   background-color: transparent;
   color: $color-primary;
   transition: $transition-default;

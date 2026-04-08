@@ -187,7 +187,7 @@ export default {
   margin: 0;
   color: $color-primary;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .github-link {
@@ -219,7 +219,7 @@ export default {
   cursor: pointer;
   font-family: $font-primary;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   transition: $transition-default;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -272,7 +272,7 @@ export default {
 
 .info-list li strong {
   color: $color-primary;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .features-list {
@@ -342,7 +342,7 @@ export default {
   margin: 0 0 $space-xs 0;
   color: $color-primary;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -351,7 +351,7 @@ export default {
   margin: 0 0 $space-xs 0;
   color: $color-primary;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -379,7 +379,7 @@ export default {
   padding: $space-xs 6px;
   border-radius: 3px;
   color: $color-primary;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   width: 70px;
   font-size: 10px;
 }
@@ -424,7 +424,7 @@ export default {
 
 .info-text strong {
   color: $color-primary;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .close-button {
