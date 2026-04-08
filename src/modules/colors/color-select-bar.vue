@@ -461,12 +461,31 @@ export default {
 }
 
 .color.selected {
-  border: 2px solid $color-primary;
-  background-color: rgba(52, 73, 94, 0.12);
+  border: $border-default;
+  box-shadow: 0 0 0 1px rgba(52, 73, 94, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.color.selected::after {
+  content: '✓';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 14px;
+  height: 14px;
+  background-color: $color-primary;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.15);
 }
 
 .color.selected:hover {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 2px rgba(52, 73, 94, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .color.dragging {
