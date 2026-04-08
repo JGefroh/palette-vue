@@ -68,11 +68,21 @@ export default {
     }
   },
   mounted() {
-    for (let i = 0; i < this.brushSizes.length; i++) {
-      inputHandler.onCommand(`select-brush-size-${i}`, () => {
-        globalState.set('selectedSize', this.brushSizes[i])
-      })
-    }
+    inputHandler.onCommand('brush-size-increase', () => {
+      const currentSize = globalState.get('selectedSize')
+      const currentIndex = this.brushSizes.indexOf(currentSize)
+      if (currentIndex < this.brushSizes.length - 1) {
+        globalState.set('selectedSize', this.brushSizes[currentIndex + 1])
+      }
+    })
+
+    inputHandler.onCommand('brush-size-decrease', () => {
+      const currentSize = globalState.get('selectedSize')
+      const currentIndex = this.brushSizes.indexOf(currentSize)
+      if (currentIndex > 0) {
+        globalState.set('selectedSize', this.brushSizes[currentIndex - 1])
+      }
+    })
   }
 }
 </script>
