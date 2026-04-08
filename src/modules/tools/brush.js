@@ -171,8 +171,19 @@ export class Brush {
   drawCursorPreview(coordinates) {
     this.overlayCtx.save()
     this.overlayCtx.beginPath()
-    this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI, false)
+    const radius = globalState.get('selectedSize') / 2
+    this.overlayCtx.arc(coordinates.x, coordinates.y, radius, 0, 2 * Math.PI, false)
     this.overlayCtx.fill()
+    this.overlayCtx.strokeStyle = 'rgba(150, 150, 150, 0.6)'
+    this.overlayCtx.lineWidth = 1
+    this.overlayCtx.stroke()
+    this.overlayCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+    this.overlayCtx.shadowBlur = 4
+    this.overlayCtx.shadowOffsetX = 0
+    this.overlayCtx.shadowOffsetY = 0
+    this.overlayCtx.beginPath()
+    this.overlayCtx.arc(coordinates.x, coordinates.y, radius, 0, 2 * Math.PI, false)
+    this.overlayCtx.stroke()
     this.overlayCtx.restore()
   }
 

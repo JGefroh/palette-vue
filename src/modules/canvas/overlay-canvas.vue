@@ -30,6 +30,9 @@ export default {
     },
     overlayCanvasCursor() {
       const selectedTool = globalState.get('selectedTool')
+      if (selectedTool?.name === 'Brush') {
+        return 'none'
+      }
       if (selectedTool?.name === 'Eyedropper') {
         return 'none'
       }
@@ -115,9 +118,20 @@ export default {
       this.clear()
       const coordinates = globalCursorManager.getCurrentCoordinates()
       this.overlayCtx.save()
+      const radius = globalState.get('selectedSize') / 2
       this.overlayCtx.beginPath()
-      this.overlayCtx.arc(coordinates.x, coordinates.y, globalState.get('selectedSize') / 2, 0, 2 * Math.PI)
+      this.overlayCtx.arc(coordinates.x, coordinates.y, radius, 0, 2 * Math.PI)
       this.overlayCtx.fill()
+      this.overlayCtx.strokeStyle = 'rgba(150, 150, 150, 0.6)'
+      this.overlayCtx.lineWidth = 1
+      this.overlayCtx.stroke()
+      this.overlayCtx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+      this.overlayCtx.shadowBlur = 4
+      this.overlayCtx.shadowOffsetX = 0
+      this.overlayCtx.shadowOffsetY = 0
+      this.overlayCtx.beginPath()
+      this.overlayCtx.arc(coordinates.x, coordinates.y, radius, 0, 2 * Math.PI)
+      this.overlayCtx.stroke()
       this.overlayCtx.restore()
     },
 
