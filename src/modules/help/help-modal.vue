@@ -171,7 +171,7 @@ export default {
 }
 
 .modal-header {
-  padding: 16px 20px 12px 20px;
+  padding: $space-lg $space-xl $space-md $space-xl;
   border-bottom: $border-default;
   background-color: transparent;
   flex-shrink: 0;
@@ -180,7 +180,7 @@ export default {
 .header-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-sm;
 }
 
 .modal-header h2 {
@@ -204,14 +204,14 @@ export default {
 
 .modal-tabs {
   display: flex;
-  gap: 4px;
-  padding: 8px 16px;
+  gap: $space-xs;
+  padding: $space-sm $space-lg;
   background-color: rgba($border-color-default, 0.1);
   border-bottom: $border-default;
 }
 
 .tab-button {
-  padding: 8px 16px;
+  padding: $space-sm $space-lg;
   border: $border-default;
   border-radius: $radius-button;
   background-color: transparent;
@@ -238,15 +238,15 @@ export default {
 }
 
 .modal-body {
-  padding: 12px 16px;
+  padding: $space-md $space-lg;
   overflow-y: auto;
   flex: 1;
   background-color: transparent;
 }
 
 .section {
-  margin-bottom: 8px;
-  margin-top: 12px;
+  margin-bottom: $space-sm;
+  margin-top: $space-md;
 }
 
 .section:first-of-type {
@@ -255,7 +255,7 @@ export default {
 
 .info-list {
   list-style-type: disc;
-  padding-left: 16px;
+  padding-left: $space-lg;
   margin: 0;
 }
 
@@ -263,7 +263,7 @@ export default {
   color: $color-secondary;
   font-size: 10px;
   line-height: 1.3;
-  margin-bottom: 2px;
+  margin-bottom: $space-xs;
 }
 
 .info-list li:last-child {
@@ -300,14 +300,14 @@ export default {
 }
 
 .feature-detail {
-  margin-top: 12px;
-  padding-top: 8px;
+  margin-top: $space-md;
+  padding-top: $space-sm;
 }
 
 .detail-divider {
   height: 1px;
   background-color: $border-default;
-  margin-bottom: 8px;
+  margin-bottom: $space-sm;
 }
 
 .detail-text {
@@ -317,29 +317,29 @@ export default {
 }
 
 .detail-text > div {
-  margin: 4px 0;
+  margin: $space-xs 0;
 }
 
 .detail-text > div.detail-bullet {
-  margin-left: 12px;
+  margin-left: $space-md;
   color: $color-secondary;
 }
 
 .detail-text > div.detail-bullet::before {
   content: '• ';
   color: $color-tertiary;
-  margin-right: 4px;
+  margin-right: $space-xs;
 }
 
 .shortcuts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: $space-md;
+  margin-bottom: $space-md;
 }
 
 .shortcuts-column h3 {
-  margin: 0 0 4px 0;
+  margin: 0 0 $space-xs 0;
   color: $color-primary;
   font-size: 11px;
   font-weight: 600;
@@ -348,7 +348,7 @@ export default {
 }
 
 .section h3 {
-  margin: 0 0 4px 0;
+  margin: 0 0 $space-xs 0;
   color: $color-primary;
   font-size: 11px;
   font-weight: 600;
@@ -370,13 +370,13 @@ export default {
 }
 
 .shortcuts-table td {
-  padding: 3px 0;
+  padding: $space-xs 0;
 }
 
 .shortcuts-table td.key {
   font-family: 'Monaco', 'Menlo', monospace;
   background-color: rgba($color-primary, 0.05);
-  padding: 2px 6px;
+  padding: $space-xs 6px;
   border-radius: 3px;
   color: $color-primary;
   font-weight: 600;
@@ -388,6 +388,23 @@ export default {
   padding-left: 6px;
   color: $color-primary;
   font-size: 10px;
+}
+
+.footer-section {
+  margin-top: $space-md;
+  padding-top: $space-md;
+  border-top: $border-default;
+  text-align: center;
+}
+
+.footer-section a {
+  color: $color-primary;
+  text-decoration: none;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  transition: $transition-default;
 }
 
 .toggle-info {
@@ -412,18 +429,16 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: $space-md;
+  right: $space-md;
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
   color: $color-tertiary;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: $size-close;
+  height: $size-close;
+  @include flex-center;
   transition: $transition-default;
 }
 
@@ -431,24 +446,4 @@ export default {
   color: $color-primary;
 }
 
-.footer-section {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: $border-default;
-  text-align: center;
-}
-
-.footer-section a {
-  color: $color-primary;
-  text-decoration: none;
-  font-size: 11px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: $transition-default;
-}
-
-.footer-section a:hover {
-  color: $color-secondary;
-}
 </style>

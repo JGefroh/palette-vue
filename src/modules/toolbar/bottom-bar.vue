@@ -90,11 +90,11 @@ export default {
 <style scoped lang="scss">
 .toolbar {
   @include glass-panel;
-  padding: 8px;
+  padding: $space-sm;
   display: flex;
-  gap: 4px;
+  gap: $space-xs;
   position: absolute;
-  bottom: 8px;
+  bottom: $space-sm;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
@@ -106,20 +106,20 @@ export default {
 
 .tool.with-text {
   width: auto;
-  padding: 8px 12px;
+  padding: $space-sm $space-md;
 }
 
 .divider {
   width: 1px;
   background-color: #c6c6c6;
-  margin: 2px 4px;
+  margin: 2px $space-xs;
 }
 
 .icon-container {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: $space-xs;
 }
 
 .icon-container-compact {

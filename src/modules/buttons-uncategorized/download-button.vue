@@ -46,7 +46,7 @@ export default {
 
 <style scoped lang="scss">
 .tool {
-  padding: 8px 12px;
+  padding: $space-sm $space-md;
   border: $border-default;
   background-color: transparent;
   color: $color-primary;

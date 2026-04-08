@@ -53,16 +53,16 @@ export default {
   @include glass-panel;
   position: fixed;
   z-index: 1000;
-  padding: 10px 12px;
+  padding: 10px $space-md;
   display: flex;
-  gap: 12px;
+  gap: $space-md;
   align-items: center;
   pointer-events: none;
 }
 
 .color-swatch {
-  width: 36px;
-  height: 36px;
+  width: $size-button;
+  height: $size-button;
   border-radius: $radius-button;
   border: $border-default;
   flex-shrink: 0;
@@ -71,7 +71,7 @@ export default {
 .color-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: $space-xs;
   font-family: $font-primary;
   font-size: 11px;
   color: $color-primary;

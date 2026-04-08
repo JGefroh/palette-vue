@@ -107,14 +107,14 @@ export default {
 .tab-bar {
   display: flex;
   align-items: flex-end;
-  gap: 4px;
-  padding: 0 8px;
+  gap: $space-xs;
+  padding: 0 $space-sm;
   background-color: $surface-panel;
   backdrop-filter: $blur-panel;
 }
 
 .tab {
-  padding: 8px 20px;
+  padding: $space-sm $space-xl;
   border: none;
   border-bottom: 2px solid transparent;
   background-color: transparent;
@@ -141,7 +141,7 @@ export default {
 .tab-delete {
   color: rgba(185, 185, 185, 0.6);
   font-size: 10px;
-  margin-left: 6px;
+  margin-left: $space-xs;
   vertical-align: middle;
   transition: $transition-default;
 }
@@ -152,6 +152,6 @@ export default {
 
 .tab-add {
   font-size: 16px;
-  padding: 4px 10px;
+  padding: $space-xs 10px;
 }
 </style>

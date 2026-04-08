@@ -63,12 +63,12 @@ export default {
 <style scoped lang="scss">
 .tool-options {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + $space-sm);
   transform: translateX(-50%);
   @include glass-panel;
-  padding: 8px;
+  padding: $space-sm;
   display: flex;
-  gap: 4px;
+  gap: $space-xs;
   z-index: 101;
 }
 
@@ -87,13 +87,13 @@ export default {
 
 .option-group {
   display: flex;
-  gap: 4px;
+  gap: $space-xs;
 }
 
 .divider {
   width: 1px;
   background-color: #c6c6c6;
-  margin: 0 4px;
+  margin: 0 $space-xs;
 }
 
 .option-button {
@@ -102,6 +102,6 @@ export default {
 
 .icon-small {
   font-size: 0.6em;
-  margin: 0 2px;
+  margin: 0 $space-xs;
 }
 </style>

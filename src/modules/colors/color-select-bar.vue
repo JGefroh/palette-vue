@@ -415,8 +415,8 @@ export default {
 .colors {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 8px;
+  gap: $space-xs;
+  padding: $space-sm;
   background-color: $surface-panel;
   font-family: $font-primary;
   box-shadow: $shadow-panel;
@@ -425,19 +425,17 @@ export default {
 }
 
 .color-placeholder {
-  width: 36px;
-  height: 36px;
+  width: $size-button;
+  height: $size-button;
 }
 
 .color {
-  width: 36px;
-  height: 36px;
+  width: $size-button;
+  height: $size-button;
   border: 1px solid #b9b9b9d9;
   border-radius: $radius-button;
   cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   font-weight: bold;
   font-size: 18px;
   transition: $transition-default;
@@ -498,64 +496,15 @@ export default {
 }
 
 .color-add {
-  width: 36px;
-  height: 36px;
-  background-color: transparent;
-  color: $color-primary;
-  font-size: 20px;
-  font-weight: bold;
-  border: $border-default;
-  cursor: pointer;
-  border-radius: $radius-button;
-  transition: $transition-default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.color-add:hover {
-  background-color: $btn-hover-bg;
-  border-color: $border-color-hover;
+  @include tool-button;
 }
 
 .color-settings {
-  width: 36px;
-  height: 36px;
-  background-color: transparent;
-  color: $color-primary;
-  font-size: 16px;
-  border: $border-default;
-  cursor: pointer;
-  border-radius: $radius-button;
-  transition: $transition-default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.color-settings:hover {
-  background-color: $btn-hover-bg;
-  border-color: $border-color-hover;
+  @include tool-button;
 }
 
 .color-eyedropper {
-  width: 36px;
-  height: 36px;
-  background-color: transparent;
-  color: $color-primary;
-  font-size: 16px;
-  border: $border-default;
-  cursor: pointer;
-  border-radius: $radius-button;
-  transition: $transition-default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.color-eyedropper:hover {
-  background-color: $btn-hover-bg;
-  border-color: $border-color-hover;
+  @include tool-button;
 }
 
 .color-eyedropper.active {

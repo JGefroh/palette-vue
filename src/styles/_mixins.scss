@@ -32,8 +32,15 @@
   font-family: $font-primary;
 }
 
+// Flex center container
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 // Standard icon/tool button (36×36 or text variant)
-@mixin tool-button($size: 36px) {
+@mixin tool-button($size: $size-button) {
   width: $size;
   height: $size;
   display: flex;

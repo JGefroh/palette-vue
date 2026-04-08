@@ -881,7 +881,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: $space-lg $space-xl;
   border-bottom: $border-default;
   flex-shrink: 0;
   background-color: transparent;
@@ -901,11 +901,9 @@ export default {
   cursor: pointer;
   color: $color-tertiary;
   padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: $size-close;
+  height: $size-close;
+  @include flex-center;
   transition: $transition-default;
 }
 
@@ -914,15 +912,15 @@ export default {
 }
 
 .modal-content {
-  padding: 16px 20px;
+  padding: $space-lg $space-xl;
   overflow-y: auto;
   flex: 1;
   background-color: transparent;
 }
 
 .theme-option {
-  padding: 12px;
-  margin-bottom: 12px;
+  padding: $space-md;
+  margin-bottom: $space-md;
   border: $border-default;
   border-radius: $radius-button;
   cursor: pointer;
@@ -930,7 +928,7 @@ export default {
 }
 
 .theme-option:hover {
-  background-color: rgba($color-primary, 0.05);
+  background-color: $btn-hover-bg;
   border-color: $border-color-hover;
 }
 
@@ -938,7 +936,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: $space-sm;
   font-family: $font-primary;
 }
 
@@ -955,7 +953,7 @@ export default {
   font-size: 14px;
   cursor: pointer;
   color: $color-tertiary;
-  padding: 2px 6px;
+  padding: $space-xs 6px;
   transition: transform 0.2s ease;
 }
 
@@ -967,7 +965,7 @@ export default {
 .primary-label {
   font-size: 11px;
   color: $color-tertiary;
-  margin-left: 6px;
+  margin-left: $space-xs;
   font-weight: normal;
 }
 

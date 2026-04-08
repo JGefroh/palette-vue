@@ -26,7 +26,7 @@ export default {
 
 <style scoped lang="scss">
 .tab {
-  padding: 8px 20px;
+  padding: $space-sm $space-xl;
   border: none;
   border-bottom: 2px solid transparent;
   background-color: transparent;

@@ -184,7 +184,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: $space-lg $space-xl;
   border-bottom: $border-default;
   background-color: transparent;
 }
@@ -203,11 +203,9 @@ export default {
   cursor: pointer;
   color: $color-tertiary;
   padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: $size-close;
+  height: $size-close;
+  @include flex-center;
   transition: $transition-default;
 }
 
@@ -216,11 +214,11 @@ export default {
 }
 
 .modal-content {
-  padding: 20px;
+  padding: $space-xl;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: $space-lg;
   background-color: transparent;
 }
 
@@ -232,7 +230,7 @@ canvas {
 
 .color-preview {
   display: flex;
-  gap: 12px;
+  gap: $space-md;
   align-items: center;
   width: 100%;
 }
@@ -246,7 +244,7 @@ canvas {
 
 input[type="text"] {
   flex: 1;
-  padding: 8px 12px;
+  padding: $space-sm $space-md;
   border: $border-default;
   border-radius: $radius-button;
   font-family: monospace;
@@ -263,15 +261,15 @@ input[type="text"]:focus {
 
 .modal-footer {
   display: flex;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: $space-md;
+  padding: $space-lg $space-xl;
   border-top: $border-default;
   justify-content: flex-end;
   background-color: transparent;
 }
 
 button {
-  padding: 8px 16px;
+  padding: $space-sm $space-lg;
   border: $border-default;
   border-radius: $radius-button;
   cursor: pointer;
@@ -282,22 +280,13 @@ button {
   transition: $transition-default;
 }
 
-.btn-cancel {
-  color: $color-secondary;
-}
-
-.btn-cancel:hover {
-  background-color: rgba($color-primary, 0.05);
+button:hover {
+  background-color: $btn-hover-bg;
   border-color: $border-color-hover;
 }
 
-.btn-confirm {
-  color: $color-primary;
-  border-color: rgba($color-primary, 0.3);
-}
-
-.btn-confirm:hover {
-  background-color: $btn-hover-bg;
+button:active {
+  background-color: $btn-active-bg;
   border-color: $border-color-active;
 }
 </style>
