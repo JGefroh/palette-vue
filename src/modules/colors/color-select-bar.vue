@@ -26,11 +26,15 @@
         <span v-else>&nbsp;</span>
       </button>
       <div v-if="colors.length % 2 === 1" class="color-placeholder"></div>
-      <button class="color color-add" @click="showColorPicker">+</button>
+      <button class="color color-add" @click="showColorPicker">
+        <span class="fa fa-fw fa-plus"></span>
+      </button>
       <button class="color color-eyedropper" :class="{ active: isEyedropperActive }" @click="toggleEyedropper" title="Eyedropper">
         <span class="fa fa-fw fa-eyedropper"></span>
       </button>
-      <button class="color color-settings" @click="showThemeModal">⚙</button>
+      <button class="color color-settings" @click="showThemeModal">
+        <span class="fa fa-fw fa-cog"></span>
+      </button>
     </div>
     </div>
     <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
