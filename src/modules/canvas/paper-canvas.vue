@@ -3,6 +3,7 @@
     <div class="viewport" :style="viewportStyle">
       <overlay-canvas ref="overlayCanvas"></overlay-canvas>
       <drawing-canvas ref="drawingCanvas"></drawing-canvas>
+      <text-options-panel ref="textOptionsPanel"></text-options-panel>
     </div>
   </div>
 </template>
@@ -10,6 +11,7 @@
 <script>
 import OverlayCanvas from './overlay-canvas.vue'
 import DrawingCanvas from './drawing-canvas.vue'
+import TextOptionsPanel from './text-options-panel.vue'
 import { globalCursorManager } from '../input/global-cursor-manager.js'
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
@@ -18,7 +20,8 @@ import logoImage from '../../assets/logo.png'
 export default {
   components: {
     OverlayCanvas,
-    DrawingCanvas
+    DrawingCanvas,
+    TextOptionsPanel
   },
   emits: ['on-initialize', 'on-stroke-start'],
   data() {

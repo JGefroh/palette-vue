@@ -36,6 +36,13 @@ export default {
       if (selectedTool?.name === 'Eyedropper') {
         return 'none'
       }
+      if (selectedTool?.name === 'Text') {
+        const coordinates = globalCursorManager.getCurrentCoordinates()
+        if (coordinates && selectedTool.isOnEdge(coordinates)) {
+          return 'grab'
+        }
+        return 'text'
+      }
       if (selectedTool?.name === 'Select') {
         const coordinates = globalCursorManager.getCurrentCoordinates()
         if (coordinates) {
@@ -95,6 +102,16 @@ export default {
 
       const selectedTool = globalState.get('selectedTool')
       if (selectedTool?.name === 'Eyedropper') {
+        return
+      }
+
+      if (selectedTool?.name === 'Text') {
+        const coordinates = globalCursorManager.getCurrentCoordinates()
+        if (coordinates && selectedTool.isOnEdge(coordinates)) {
+          this.$refs.overlay.style.cursor = 'grab'
+        } else {
+          this.$refs.overlay.style.cursor = 'text'
+        }
         return
       }
 
