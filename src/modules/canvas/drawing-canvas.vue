@@ -64,6 +64,18 @@ export default {
       img.src = src
     },
 
+    drawImageOriginalSize(src) {
+      const img = new Image()
+      img.onload = () => {
+        const cw = this.drawingCtx.canvas.width
+        const ch = this.drawingCtx.canvas.height
+        const x = (cw - img.width) / 2
+        const y = (ch - img.height) / 2
+        this.drawingCtx.drawImage(img, x, y)
+      }
+      img.src = src
+    },
+
     resizeCanvas() {
       let drawing = null
       if (this.drawingCtx.canvas.width > 0 && this.drawingCtx.canvas.height > 0) {

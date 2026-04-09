@@ -171,6 +171,13 @@ export class Select {
     this.idleHandler.restore()
   }
 
+  setSelectionBounds(bounds) {
+    globalState.set('selectedTool', this)
+    this.selectionBounds = bounds
+    this.overlayCtx.clearRect(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
+    this.idleHandler.restore()
+  }
+
   deleteSelection() {
     if (!this.selectionBounds) return
     const { x, y, width, height } = this.selectionBounds

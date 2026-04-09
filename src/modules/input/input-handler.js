@@ -44,6 +44,17 @@ class InputHandler {
   initializeMouseListeners() {
     if (!this.paperElement) return;
 
+    this.paperElement.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      this.dispatchCommand('image-drag-enter', e);
+    });
+
+    this.paperElement.addEventListener('dragleave', (e) => {
+      if (!this.paperElement.contains(e.relatedTarget)) {
+        this.dispatchCommand('image-drag-leave', e);
+      }
+    });
+
     this.paperElement.addEventListener('dragover', (e) => {
       e.preventDefault();
     });
