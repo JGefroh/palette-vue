@@ -45,12 +45,14 @@ class InputHandler {
     if (!this.paperElement) return;
 
     this.paperElement.addEventListener('dragenter', (e) => {
-      e.preventDefault();
-      this.dispatchCommand('image-drag-enter', e);
+      if (e.dataTransfer.types.includes('Files')) {
+        e.preventDefault();
+        this.dispatchCommand('image-drag-enter', e);
+      }
     });
 
     this.paperElement.addEventListener('dragleave', (e) => {
-      if (!this.paperElement.contains(e.relatedTarget)) {
+      if (!this.paperElement.contains(e.relatedTarget) && e.dataTransfer.types.includes('Files')) {
         this.dispatchCommand('image-drag-leave', e);
       }
     });
