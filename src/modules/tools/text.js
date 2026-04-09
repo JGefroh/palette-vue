@@ -27,7 +27,7 @@ export class Text {
     this.selectionStart = null
     this.selectionEnd = null
 
-    this.currentStyles = { bold: false, italic: false, underline: false }
+    this.currentStyles = { bold: false, italic: false, underline: false, color: null }
 
     this.blinkInterval = null
     this.blinkVisible = true
@@ -50,6 +50,18 @@ export class Text {
         this.renderOverlay()
       }
     })
+
+    watch(() => globalState.get('selectedColor'), (newColor) => {
+      if (textToolState.isTyping && newColor) {
+        const hexColor = newColor.hex
+        if (this.selectionStart !== null && this.selectionEnd !== null) {
+          this.applyColorToSelection(hexColor)
+        } else {
+          this.currentStyles.color = hexColor
+          this.renderOverlay()
+        }
+      }
+    }, { deep: true })
   }
 
   static new(drawingCtx, overlayCtx) {
@@ -410,12 +422,14 @@ export class Text {
   }
 
   insertChar(char) {
+    const color = this.currentStyles.color || globalState.get('selectedColor').hex
     if (this.selectionStart !== null) {
       this.chars.splice(this.selectionStart, this.selectionEnd - this.selectionStart, {
         char,
         bold: this.currentStyles.bold,
         italic: this.currentStyles.italic,
-        underline: this.currentStyles.underline
+        underline: this.currentStyles.underline,
+        color: color
       })
       this.cursor = this.selectionStart + 1
       this.selectionStart = null
@@ -425,7 +439,8 @@ export class Text {
         char,
         bold: this.currentStyles.bold,
         italic: this.currentStyles.italic,
-        underline: this.currentStyles.underline
+        underline: this.currentStyles.underline,
+        color: color
       })
       this.cursor++
     }
@@ -676,6 +691,16 @@ export class Text {
     this.renderOverlay()
   }
 
+  applyColorToSelection(color) {
+    if (this.selectionStart !== null && this.selectionEnd !== null) {
+      for (let i = this.selectionStart; i < this.selectionEnd; i++) {
+        this.chars[i].color = color
+      }
+    }
+    this.syncPanelState()
+    this.renderOverlay()
+  }
+
   syncPanelState() {
     if (this.selectionStart !== null && this.selectionEnd !== null && this.selectionStart < this.selectionEnd) {
       const selectedChars = this.chars.slice(this.selectionStart, this.selectionEnd)
@@ -746,6 +771,8 @@ export class Text {
   renderRun(ctx, run, x, y, fontSize) {
     const runText = run.map(c => c.char).join('')
     ctx.font = this.buildFont(run[0], fontSize)
+    const runColor = run[0].color || globalState.get('selectedColor').hex
+    ctx.fillStyle = runColor
     ctx.fillText(runText, x, y)
 
     if (run[0].underline) {
@@ -761,10 +788,12 @@ export class Text {
     let i = 0
     while (i < lineChars.length) {
       let runEnd = i + 1
+      const runColor = lineChars[i].color || globalState.get('selectedColor').hex
       while (runEnd < lineChars.length &&
              lineChars[runEnd].bold === lineChars[i].bold &&
              lineChars[runEnd].italic === lineChars[i].italic &&
-             lineChars[runEnd].underline === lineChars[i].underline) {
+             lineChars[runEnd].underline === lineChars[i].underline &&
+             (lineChars[runEnd].color || globalState.get('selectedColor').hex) === runColor) {
         runEnd++
       }
       const run = lineChars.slice(i, runEnd)
@@ -918,7 +947,7 @@ export class Text {
     this.cursor = 0
     this.selectionStart = null
     this.selectionEnd = null
-    this.currentStyles = { bold: false, italic: false, underline: false }
+    this.currentStyles = { bold: false, italic: false, underline: false, color: null }
     textToolState.bold = false
     textToolState.italic = false
     textToolState.underline = false
