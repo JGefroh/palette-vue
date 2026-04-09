@@ -6,6 +6,8 @@ export const textToolState = reactive({
   isTyping: false,
   anchorX: 0,
   anchorY: 0,
+  panelAnchorX: 0,
+  panelAnchorY: 0,
   fontSize: 15,
   alignment: 'left',
   bold: false,
@@ -67,6 +69,8 @@ export class Text {
       textToolState.isTyping = true
       textToolState.anchorX = coordinates.x
       textToolState.anchorY = coordinates.y
+      textToolState.panelAnchorX = coordinates.x
+      textToolState.panelAnchorY = coordinates.y
 
       this.chars = []
       this.cursor = 0
@@ -95,6 +99,8 @@ export class Text {
         textToolState.isTyping = true
         textToolState.anchorX = coordinates.x
         textToolState.anchorY = coordinates.y
+        textToolState.panelAnchorX = coordinates.x
+        textToolState.panelAnchorY = coordinates.y
         this.chars = []
         this.cursor = 0
         this.selectionStart = null
@@ -111,8 +117,18 @@ export class Text {
     const { lineChars } = this.getLineInfo()
     const maxLineWidth = Math.max(...lineChars.map(lc => this.measureStyledChars(this.overlayCtx, lc, textToolState.fontSize)), 0)
 
-    const minX = textToolState.anchorX - 4
-    const maxX = textToolState.anchorX + maxLineWidth + 4
+    let minX, maxX
+    if (textToolState.alignment === 'center') {
+      minX = textToolState.anchorX - maxLineWidth / 2 - 4
+      maxX = textToolState.anchorX + maxLineWidth / 2 + 4
+    } else if (textToolState.alignment === 'right') {
+      minX = textToolState.anchorX - maxLineWidth - 4
+      maxX = textToolState.anchorX + 4
+    } else {
+      minX = textToolState.anchorX - 4
+      maxX = textToolState.anchorX + maxLineWidth + 4
+    }
+
     const minY = textToolState.anchorY - textToolState.fontSize - 4
     const maxY = textToolState.anchorY + (lineChars.length - 1) * textToolState.fontSize * 1.3 + textToolState.fontSize * 0.3 + 4
 
@@ -136,8 +152,18 @@ export class Text {
 
     const maxLineWidth = Math.max(...lineChars.map(lc => this.measureStyledChars(this.overlayCtx, lc, textToolState.fontSize)), 0)
 
-    const minX = textToolState.anchorX - 4
-    const maxX = textToolState.anchorX + maxLineWidth + 4
+    let minX, maxX
+    if (textToolState.alignment === 'center') {
+      minX = textToolState.anchorX - maxLineWidth / 2 - 4
+      maxX = textToolState.anchorX + maxLineWidth / 2 + 4
+    } else if (textToolState.alignment === 'right') {
+      minX = textToolState.anchorX - maxLineWidth - 4
+      maxX = textToolState.anchorX + 4
+    } else {
+      minX = textToolState.anchorX - 4
+      maxX = textToolState.anchorX + maxLineWidth + 4
+    }
+
     const minY = textToolState.anchorY - textToolState.fontSize - 4
     const maxY = textToolState.anchorY + (lineChars.length - 1) * textToolState.fontSize * 1.3 + textToolState.fontSize * 0.3 + 4
 
@@ -203,6 +229,8 @@ export class Text {
       const dy = coordinates.y - this.dragStartY
       textToolState.anchorX += dx
       textToolState.anchorY += dy
+      textToolState.panelAnchorX += dx
+      textToolState.panelAnchorY += dy
       this.dragStartX = coordinates.x
       this.dragStartY = coordinates.y
       this.renderOverlay()
@@ -816,8 +844,18 @@ export class Text {
   drawTextBoundingBox(ctx, lineChars, maxLineWidth) {
     if (lineChars.length === 0 || lineChars.every(lc => lc.length === 0)) return
 
-    const minX = textToolState.anchorX
-    const maxX = textToolState.anchorX + maxLineWidth
+    let minX, maxX
+    if (textToolState.alignment === 'center') {
+      minX = textToolState.anchorX - maxLineWidth / 2
+      maxX = textToolState.anchorX + maxLineWidth / 2
+    } else if (textToolState.alignment === 'right') {
+      minX = textToolState.anchorX - maxLineWidth
+      maxX = textToolState.anchorX
+    } else {
+      minX = textToolState.anchorX
+      maxX = textToolState.anchorX + maxLineWidth
+    }
+
     const minY = textToolState.anchorY - textToolState.fontSize
     const maxY = textToolState.anchorY + (lineChars.length - 1) * textToolState.fontSize * 1.3 + textToolState.fontSize * 0.3
 
@@ -833,9 +871,9 @@ export class Text {
     const lineWidth = this.measureStyledChars(ctx, lineChars, textToolState.fontSize)
 
     if (textToolState.alignment === 'center') {
-      return textToolState.anchorX + (maxWidth - lineWidth) / 2
+      return textToolState.anchorX - lineWidth / 2
     } else if (textToolState.alignment === 'right') {
-      return textToolState.anchorX + (maxWidth - lineWidth)
+      return textToolState.anchorX - lineWidth
     }
     return textToolState.anchorX
   }
@@ -884,6 +922,8 @@ export class Text {
     textToolState.bold = false
     textToolState.italic = false
     textToolState.underline = false
+    textToolState.panelAnchorX = 0
+    textToolState.panelAnchorY = 0
   }
 
   copySelection() {

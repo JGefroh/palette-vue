@@ -25,7 +25,7 @@
         class="alignment-button"
         :class="{ active: textToolState.alignment === 'left' }"
         title="Align left"
-        @click.stop="textToolState.alignment = 'left'"
+        @click.stop="changeAlignment('left')"
       >
         <span class="fa fa-align-left"></span>
       </button>
@@ -33,7 +33,7 @@
         class="alignment-button"
         :class="{ active: textToolState.alignment === 'center' }"
         title="Align center"
-        @click.stop="textToolState.alignment = 'center'"
+        @click.stop="changeAlignment('center')"
       >
         <span class="fa fa-align-center"></span>
       </button>
@@ -41,7 +41,7 @@
         class="alignment-button"
         :class="{ active: textToolState.alignment === 'right' }"
         title="Align right"
-        @click.stop="textToolState.alignment = 'right'"
+        @click.stop="changeAlignment('right')"
       >
         <span class="fa fa-align-right"></span>
       </button>
@@ -95,8 +95,8 @@ export default {
     },
     panelStyle() {
       return {
-        left: `${textToolState.anchorX}px`,
-        top: `${textToolState.anchorY - 120}px`,
+        left: `${textToolState.panelAnchorX}px`,
+        top: `${textToolState.panelAnchorY - 120}px`,
         transform: 'translateX(-50%)'
       }
     }
@@ -113,6 +113,38 @@ export default {
       if (selectedTool && selectedTool.name === 'Text') {
         selectedTool.applyStyleToSelection(style)
       }
+    },
+    changeAlignment(alignment) {
+      const selectedTool = globalState.get('selectedTool')
+      if (!selectedTool || selectedTool.name !== 'Text') return
+
+      const oldAlignment = textToolState.alignment
+      textToolState.alignment = alignment
+
+      if (selectedTool.chars.length > 0) {
+        const { lineChars } = selectedTool.getLineInfo()
+        const maxLineWidth = Math.max(...lineChars.map(lc => selectedTool.measureStyledChars(selectedTool.overlayCtx, lc, textToolState.fontSize)), 0)
+
+        let adjustX = 0
+        if (oldAlignment === 'left' && alignment === 'center') {
+          adjustX = maxLineWidth / 2
+        } else if (oldAlignment === 'left' && alignment === 'right') {
+          adjustX = maxLineWidth
+        } else if (oldAlignment === 'center' && alignment === 'left') {
+          adjustX = -maxLineWidth / 2
+        } else if (oldAlignment === 'center' && alignment === 'right') {
+          adjustX = maxLineWidth / 2
+        } else if (oldAlignment === 'right' && alignment === 'left') {
+          adjustX = -maxLineWidth
+        } else if (oldAlignment === 'right' && alignment === 'center') {
+          adjustX = -maxLineWidth / 2
+        }
+
+        textToolState.anchorX += adjustX
+      }
+
+      selectedTool.syncPanelState()
+      selectedTool.renderOverlay()
     }
   }
 }
@@ -147,7 +179,6 @@ export default {
 
 .font-size-button {
   @include tool-button;
-  font-weight: $font-weight-semibold;
 }
 
 .alignment-button {
