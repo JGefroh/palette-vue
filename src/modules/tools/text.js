@@ -748,7 +748,7 @@ export class Text {
 
     ctx.save()
     ctx.fillStyle = globalState.get('selectedColor').hex
-    ctx.textBaseline = 'baseline'
+    ctx.textBaseline = 'alphabetic'
 
     const { lineChars, cursorLine, cursorCol } = this.getLineInfo()
     const lineHeight = textToolState.fontSize * 1.3
@@ -840,7 +840,7 @@ export class Text {
 
     this.drawingCtx.save()
     this.drawingCtx.fillStyle = globalState.get('selectedColor').hex
-    this.drawingCtx.textBaseline = 'baseline'
+    this.drawingCtx.textBaseline = 'alphabetic'
 
     const { lineChars } = this.getLineInfo()
     const lineHeight = textToolState.fontSize * 1.3
