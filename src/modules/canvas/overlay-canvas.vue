@@ -83,6 +83,10 @@ export default {
       })
 
       inputHandler.onCommand('cursor-hide', () => {
+        const selectedTool = globalState.get('selectedTool')
+        if (selectedTool?.name === 'Text' && selectedTool.chars && selectedTool.chars.length > 0) {
+          return
+        }
         this.hideCursor()
       })
     },
