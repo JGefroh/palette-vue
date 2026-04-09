@@ -8,8 +8,8 @@ export const textToolState = reactive({
   anchorY: 0,
   panelAnchorX: 0,
   panelAnchorY: 0,
-  fontSize: 15,
-  alignment: 'left',
+  fontSize: 20,
+  alignment: 'center',
   bold: false,
   italic: false,
   underline: false
@@ -108,17 +108,6 @@ export class Text {
         this.renderOverlay()
       } else {
         this.commit()
-        textToolState.isTyping = true
-        textToolState.anchorX = coordinates.x
-        textToolState.anchorY = coordinates.y
-        textToolState.panelAnchorX = coordinates.x
-        textToolState.panelAnchorY = coordinates.y
-        this.chars = []
-        this.cursor = 0
-        this.selectionStart = null
-        this.selectionEnd = null
-        this.currentStyles = { bold: false, italic: false, underline: false }
-        this.renderOverlay()
       }
     }
   }
