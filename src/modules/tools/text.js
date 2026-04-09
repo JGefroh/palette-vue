@@ -308,6 +308,14 @@ export class Text {
       return
     }
 
+    if ((event.metaKey || event.ctrlKey) && key === 'x') {
+      event.preventDefault()
+      event.stopPropagation()
+      this.copySelection()
+      this.deleteSelection()
+      return
+    }
+
     if ((event.metaKey || event.ctrlKey) && key === 'v') {
       event.preventDefault()
       event.stopPropagation()
