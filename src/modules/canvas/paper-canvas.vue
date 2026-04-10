@@ -52,9 +52,9 @@ export default {
       panY: 0,
       isDragging: false,
       hoveredZone: null,
-      // Edge detection config
-      edgeThreshold: 30,           // gradient magnitude threshold (higher = thinner, sharper lines)
-      edgeAlphaMode: 'gradient'    // 'gradient' (magnitude-based), 'binary' (all-or-nothing), or 'amplified' (2x magnitude)
+      // Canny edge detection config
+      cannyLowThreshold: 50,
+      cannyHighThreshold: 70
     }
   },
   watch: {
@@ -133,45 +133,136 @@ export default {
     },
 
     applyEdgeDetection(imageData) {
+      // Canny edge detection
       const { data, width, height } = imageData
       const output = new Uint8ClampedArray(data.length)
 
-      const gray = (i) => {
-        return 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+      // Convert to grayscale
+      const gray = new Float32Array(width * height)
+      for (let i = 0; i < data.length; i += 4) {
+        const idx = i / 4
+        gray[idx] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
       }
-      const idx = (x, y) => (y * width + x) * 4
+
+      // Gaussian blur (3x3 kernel)
+      const blurred = new Float32Array(width * height)
+      const kernel = [1/16, 2/16, 1/16, 2/16, 4/16, 2/16, 1/16, 2/16, 1/16]
+      for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+          let sum = 0
+          let ki = 0
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              sum += gray[(y + dy) * width + (x + dx)] * kernel[ki++]
+            }
+          }
+          blurred[y * width + x] = sum
+        }
+      }
+
+      // Sobel operator: compute gradients
+      const gx = new Float32Array(width * height)
+      const gy = new Float32Array(width * height)
+      const magnitude = new Float32Array(width * height)
+      const angle = new Float32Array(width * height)
 
       for (let y = 1; y < height - 1; y++) {
         for (let x = 1; x < width - 1; x++) {
-          const gx =
-            -gray(idx(x-1, y-1)) + gray(idx(x+1, y-1)) +
-            -2*gray(idx(x-1, y)) + 2*gray(idx(x+1, y)) +
-            -gray(idx(x-1, y+1)) + gray(idx(x+1, y+1))
+          const idx = y * width + x
+          const sobelGx =
+            -blurred[(y-1)*width+(x-1)] + blurred[(y-1)*width+(x+1)] +
+            -2*blurred[y*width+(x-1)] + 2*blurred[y*width+(x+1)] +
+            -blurred[(y+1)*width+(x-1)] + blurred[(y+1)*width+(x+1)]
 
-          const gy =
-            -gray(idx(x-1, y-1)) - 2*gray(idx(x, y-1)) - gray(idx(x+1, y-1)) +
-            gray(idx(x-1, y+1)) + 2*gray(idx(x, y+1)) + gray(idx(x+1, y+1))
+          const sobelGy =
+            -blurred[(y-1)*width+(x-1)] - 2*blurred[(y-1)*width+x] - blurred[(y-1)*width+(x+1)] +
+            blurred[(y+1)*width+(x-1)] + 2*blurred[(y+1)*width+x] + blurred[(y+1)*width+(x+1)]
 
-          const magnitude = Math.sqrt(gx*gx + gy*gy)
-          const i = idx(x, y)
+          gx[idx] = sobelGx
+          gy[idx] = sobelGy
+          magnitude[idx] = Math.sqrt(sobelGx * sobelGx + sobelGy * sobelGy)
+          angle[idx] = Math.atan2(sobelGy, sobelGx)
+        }
+      }
 
-          if (magnitude > this.edgeThreshold) {
-            output[i] = 0
-            output[i+1] = 0
-            output[i+2] = 0
+      // Non-maximum suppression
+      const suppressed = new Float32Array(width * height)
+      for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+          const idx = y * width + x
+          const mag = magnitude[idx]
+          const ang = angle[idx]
 
-            // Determine alpha based on selected mode
-            let alpha
-            if (this.edgeAlphaMode === 'binary') {
-              alpha = 255
-            } else if (this.edgeAlphaMode === 'amplified') {
-              alpha = Math.min(255, magnitude * 2)
-            } else {
-              // 'gradient' (default)
-              alpha = Math.min(255, magnitude)
-            }
-            output[i+3] = alpha
+          let mag1 = mag
+          let mag2 = mag
+          const normalizedAngle = ((ang + Math.PI) * 180 / Math.PI + 360) % 360
+
+          if ((normalizedAngle >= 0 && normalizedAngle < 22.5) || (normalizedAngle >= 157.5 && normalizedAngle < 202.5) || (normalizedAngle >= 337.5)) {
+            mag1 = magnitude[y * width + (x + 1)]
+            mag2 = magnitude[y * width + (x - 1)]
+          } else if ((normalizedAngle >= 22.5 && normalizedAngle < 67.5) || (normalizedAngle >= 202.5 && normalizedAngle < 247.5)) {
+            mag1 = magnitude[(y + 1) * width + (x - 1)]
+            mag2 = magnitude[(y - 1) * width + (x + 1)]
+          } else if ((normalizedAngle >= 67.5 && normalizedAngle < 112.5) || (normalizedAngle >= 247.5 && normalizedAngle < 292.5)) {
+            mag1 = magnitude[(y + 1) * width + x]
+            mag2 = magnitude[(y - 1) * width + x]
+          } else if ((normalizedAngle >= 112.5 && normalizedAngle < 157.5) || (normalizedAngle >= 292.5 && normalizedAngle < 337.5)) {
+            mag1 = magnitude[(y + 1) * width + (x + 1)]
+            mag2 = magnitude[(y - 1) * width + (x - 1)]
           }
+
+          suppressed[idx] = (mag >= mag1 && mag >= mag2) ? mag : 0
+        }
+      }
+
+      // Double thresholding + hysteresis
+      const edges = new Uint8Array(width * height)
+      const STRONG = 255
+      const WEAK = 127
+      const lowThresh = this.cannyLowThreshold
+      const highThresh = this.cannyHighThreshold
+
+      for (let i = 0; i < suppressed.length; i++) {
+        const mag = suppressed[i]
+        if (mag >= highThresh) edges[i] = STRONG
+        else if (mag >= lowThresh) edges[i] = WEAK
+      }
+
+      // Edge tracking by hysteresis (flood fill from strong edges)
+      const stack = []
+      for (let i = 0; i < edges.length; i++) {
+        if (edges[i] === STRONG) stack.push(i)
+      }
+
+      while (stack.length > 0) {
+        const idx = stack.pop()
+        const y = Math.floor(idx / width)
+        const x = idx % width
+
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dy === 0 && dx === 0) continue
+            const ny = y + dy
+            const nx = x + dx
+            if (nx >= 1 && nx < width - 1 && ny >= 1 && ny < height - 1) {
+              const nidx = ny * width + nx
+              if (edges[nidx] === WEAK) {
+                edges[nidx] = STRONG
+                stack.push(nidx)
+              }
+            }
+          }
+        }
+      }
+
+      // Convert to output (black edges on transparent)
+      for (let i = 0; i < width * height; i++) {
+        const oi = i * 4
+        if (edges[i] === STRONG) {
+          output[oi] = 0
+          output[oi + 1] = 0
+          output[oi + 2] = 0
+          output[oi + 3] = 255
         }
       }
 
