@@ -1,5 +1,6 @@
 <template>
-  <div v-if="shouldShow" class="tool-options" :class="{ 'fade-out': !isVisible }" :style="{ left: calculatedLeft }">
+  <Teleport to="body">
+    <div v-if="shouldShow" class="tool-options" :class="{ 'fade-out': !isVisible }" :style="{ left: calculatedLeft }">
     <template v-for="(option, index) in tool.options" :key="option.key">
       <div v-if="index > 0" class="divider"></div>
       <div class="option-group">
@@ -18,7 +19,8 @@
         </button>
       </div>
     </template>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <script>
@@ -42,26 +44,21 @@ export default {
       return this.tool && this.tool.options && this.tool.options.length > 0
     },
     calculatedLeft() {
-      if (!this.shouldShow) return '0'
+      if (!this.shouldShow) return '50%'
 
-      const toolbar = this.$el.parentElement
-      if (!toolbar) return '0'
-
-      const toolButtons = toolbar.querySelectorAll('.tool')
-      let toolButtonIndex = 0
+      const toolButtons = document.querySelectorAll('.tool')
 
       for (let i = 0; i < toolButtons.length; i++) {
         const btn = toolButtons[i]
         const btnText = btn.textContent.trim()
         if (btnText === this.tool.name || btn.title === this.tool.name) {
           const rect = btn.getBoundingClientRect()
-          const toolbarRect = toolbar.getBoundingClientRect()
-          const centerX = rect.left - toolbarRect.left + rect.width / 2
+          const centerX = rect.left + rect.width / 2
           return `${centerX}px`
         }
       }
 
-      return '0'
+      return '50%'
     }
   },
   watch: {
@@ -103,8 +100,8 @@ export default {
 
 <style scoped lang="scss">
 .tool-options {
-  position: absolute;
-  bottom: calc(100% + $space-sm);
+  position: fixed;
+  bottom: calc(#{$space-sm} + #{$size-button} + #{$space-sm} * 3);
   transform: translateX(-50%);
   @include glass-panel;
   padding: $space-sm;
