@@ -78,6 +78,18 @@ class InputHandler {
 
     this.paperElement.addEventListener('mouseleave', () => {
       this.dispatchCommand('cursor-hide');
+      if (this.cursorManager && this.cursorManager.getIsMouseDown()) {
+        this.dispatchCommand('tool-end');
+      }
+    });
+
+    this.paperElement.addEventListener('mouseenter', (e) => {
+      if (this.cursorManager && this.cursorManager.getIsMouseDown()) {
+        if (this.cursorManager) {
+          this.cursorManager.updateFromMouseEvent(e);
+        }
+        this.dispatchCommand('tool-start', e);
+      }
     });
 
     this.paperElement.addEventListener('mousedown', (e) => {
