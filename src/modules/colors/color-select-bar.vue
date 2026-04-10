@@ -26,18 +26,18 @@
         <span v-else>&nbsp;</span>
       </button>
       <div v-if="colors.length % 2 === 1" class="color-placeholder"></div>
-      <button class="color color-add" @click="showColorPicker">
+      <button class="color color-add" :class="{ disabled: isPickerOpen }" @click="showColorPicker" :disabled="isPickerOpen">
         <span class="fa fa-fw fa-plus"></span>
       </button>
-      <button class="color color-eyedropper" :class="{ active: isEyedropperActive }" @click="toggleEyedropper" title="Eyedropper">
+      <button class="color color-eyedropper" :class="{ active: isEyedropperActive, disabled: isPickerOpen }" @click="toggleEyedropper" title="Eyedropper" :disabled="isPickerOpen">
         <span class="fa fa-fw fa-eyedropper"></span>
       </button>
-      <button class="color color-settings" @click="showThemeModal">
+      <button class="color color-settings" :class="{ disabled: isPickerOpen }" @click="showThemeModal" :disabled="isPickerOpen">
         <span class="fa fa-fw fa-cog"></span>
       </button>
     </div>
     </div>
-    <ColorWheelPicker v-if="isPickerOpen" @color-picked="addCustomColor" @close="isPickerOpen = false" />
+    <ColorWheelPicker v-if="isPickerOpen" :initial-color="selectedColor.hex" :selected-color="selectedColor.hex" @color-picked="handleColorPicked" @close="isPickerOpen = false" />
     <ThemeModal v-if="isThemeModalOpen" @theme-selected="applyTheme" @close="isThemeModalOpen = false" />
   </div>
 </template>
@@ -217,16 +217,24 @@ export default {
     toggleEyedropper() {
       inputHandler.dispatchCommand('toggle-eyedropper')
     },
+    handleColorPicked(colorData) {
+      const hex = typeof colorData === 'string' ? colorData : colorData.hex
+      const screenX = colorData.screenX
+      const screenY = colorData.screenY
+
+      if (screenX !== undefined && screenY !== undefined) {
+        this.addCustomColorWithAnimation(hex, screenX, screenY)
+      } else {
+        this.addCustomColor(hex)
+      }
+    },
     addCustomColor(hex) {
       const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
       if (!exists && this.colors.length < 40) {
         this.colors.push({ label: 'Custom', hex })
         this.saveColors()
-        this.selectColor({ label: 'Custom', hex })
-        this.isPickerOpen = false
         return true
       }
-      this.isPickerOpen = false
       return false
     },
     addCustomColorWithAnimation(hex, screenX, screenY) {
@@ -426,7 +434,7 @@ export default {
   top: 50%;
   left: 8px;
   transform: translateY(-50%);
-  z-index: 99;
+  z-index: 101;
 }
 
 .colors {
@@ -547,6 +555,10 @@ export default {
   background-color: rgba(52, 73, 94, 0.2);
   border-color: $border-color-active;
   color: #2c3e50;
+}
+
+.color.disabled {
+  visibility: hidden;
 }
 
 .image-drop-overlay {
