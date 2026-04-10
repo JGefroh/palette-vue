@@ -67,7 +67,8 @@ export class ShapeRectangle extends Shape {
 
     ctx.save()
     ctx.beginPath()
-    ctx.rect(x, y, width, height)
+    const radius = this.mode === 'fill' ? globalState.get('selectedSize') / 2 : 0
+    ctx.roundRect(x, y, width, height, radius)
     this.mode === 'fill' ? ctx.fill() : ctx.stroke()
     ctx.restore()
   }
