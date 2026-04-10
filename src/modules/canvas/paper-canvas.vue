@@ -6,16 +6,22 @@
       <text-options-panel ref="textOptionsPanel"></text-options-panel>
     </div>
     <div v-if="isDragging" class="drop-overlay">
-      <div class="drop-zone drop-zone--left" @dragover.prevent="hoveredZone = 'left'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'left' }">
+      <div class="drop-zone drop-zone--left" @dragover.prevent="hoveredZone = 'left'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'left' }" style="flex: 2">
         <div class="drop-zone__content">
           <div class="drop-zone__icon">⊟</div>
           <div class="drop-zone__label">Fit to Canvas</div>
         </div>
       </div>
-      <div class="drop-zone drop-zone--right" @dragover.prevent="hoveredZone = 'right'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'right' }">
+      <div class="drop-zone drop-zone--middle" @dragover.prevent="hoveredZone = 'original'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'original' }" style="flex: 2">
         <div class="drop-zone__content">
           <div class="drop-zone__icon">⊕</div>
           <div class="drop-zone__label">Original Size</div>
+        </div>
+      </div>
+      <div class="drop-zone drop-zone--right" @dragover.prevent="hoveredZone = 'edge'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'edge' }" style="flex: 1">
+        <div class="drop-zone__content">
+          <div class="drop-zone__icon">⊞</div>
+          <div class="drop-zone__label">Edge Only</div>
         </div>
       </div>
     </div>
@@ -45,7 +51,10 @@ export default {
       panX: 0,
       panY: 0,
       isDragging: false,
-      hoveredZone: null
+      hoveredZone: null,
+      // Edge detection config
+      edgeThreshold: 30,           // gradient magnitude threshold (higher = thinner, sharper lines)
+      edgeAlphaMode: 'gradient'    // 'gradient' (magnitude-based), 'binary' (all-or-nothing), or 'amplified' (2x magnitude)
     }
   },
   watch: {
@@ -123,16 +132,59 @@ export default {
       this.$refs.drawingCanvas.drawImage(src)
     },
 
+    applyEdgeDetection(imageData) {
+      const { data, width, height } = imageData
+      const output = new Uint8ClampedArray(data.length)
+
+      const gray = (i) => {
+        return 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+      }
+      const idx = (x, y) => (y * width + x) * 4
+
+      for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+          const gx =
+            -gray(idx(x-1, y-1)) + gray(idx(x+1, y-1)) +
+            -2*gray(idx(x-1, y)) + 2*gray(idx(x+1, y)) +
+            -gray(idx(x-1, y+1)) + gray(idx(x+1, y+1))
+
+          const gy =
+            -gray(idx(x-1, y-1)) - 2*gray(idx(x, y-1)) - gray(idx(x+1, y-1)) +
+            gray(idx(x-1, y+1)) + 2*gray(idx(x, y+1)) + gray(idx(x+1, y+1))
+
+          const magnitude = Math.sqrt(gx*gx + gy*gy)
+          const i = idx(x, y)
+
+          if (magnitude > this.edgeThreshold) {
+            output[i] = 0
+            output[i+1] = 0
+            output[i+2] = 0
+
+            // Determine alpha based on selected mode
+            let alpha
+            if (this.edgeAlphaMode === 'binary') {
+              alpha = 255
+            } else if (this.edgeAlphaMode === 'amplified') {
+              alpha = Math.min(255, magnitude * 2)
+            } else {
+              // 'gradient' (default)
+              alpha = Math.min(255, magnitude)
+            }
+            output[i+3] = alpha
+          }
+        }
+      }
+
+      return new ImageData(output, width, height)
+    },
+
     fitDroppedImage(event) {
       event.preventDefault()
       const file = event.dataTransfer.files[0]
       if (!file || !file.type.startsWith('image/')) return
 
       const src = URL.createObjectURL(file)
-      const rect = this.$refs.paper.getBoundingClientRect()
-      const dropX = event.clientX - rect.left
-      const midpoint = rect.width / 2
-      const isFitMode = dropX < midpoint
+      const zone = this.hoveredZone
 
       const img = new Image()
       img.onload = () => {
@@ -141,17 +193,42 @@ export default {
         const ch = drawingCtx.canvas.height
         let bounds
 
-        if (isFitMode) {
+        if (zone === 'left') {
+          // Fit to canvas
           const scale = Math.min(cw / img.width, ch / img.height)
           const x = (cw - img.width * scale) / 2
           const y = (ch - img.height * scale) / 2
           drawingCtx.drawImage(img, x, y, img.width * scale, img.height * scale)
           bounds = { x, y, width: img.width * scale, height: img.height * scale }
-        } else {
+        } else if (zone === 'original') {
+          // Original size
           const x = (cw - img.width) / 2
           const y = (ch - img.height) / 2
           drawingCtx.drawImage(img, x, y)
           bounds = { x, y, width: img.width, height: img.height }
+        } else if (zone === 'edge') {
+          // Edge detection with fit to canvas
+          const scale = Math.min(cw / img.width, ch / img.height)
+          const scaledWidth = Math.floor(img.width * scale)
+          const scaledHeight = Math.floor(img.height * scale)
+          const x = (cw - scaledWidth) / 2
+          const y = (ch - scaledHeight) / 2
+
+          // Create temp canvas for image and edge detection
+          const tempCanvas = document.createElement('canvas')
+          tempCanvas.width = scaledWidth
+          tempCanvas.height = scaledHeight
+          const tempCtx = tempCanvas.getContext('2d')
+          tempCtx.drawImage(img, 0, 0, scaledWidth, scaledHeight)
+
+          // Apply edge detection
+          const imageData = tempCtx.getImageData(0, 0, scaledWidth, scaledHeight)
+          const edgeData = this.applyEdgeDetection(imageData)
+          tempCtx.putImageData(edgeData, 0, 0)
+
+          // Draw result to main canvas
+          drawingCtx.drawImage(tempCanvas, x, y)
+          bounds = { x, y, width: scaledWidth, height: scaledHeight }
         }
 
         const selectedTool = globalState.get('selectedTool')
@@ -245,6 +322,10 @@ export default {
   }
 
   &--left {
+    border-right: 1px solid rgba(185, 185, 185, 0.3);
+  }
+
+  &--middle {
     border-right: 1px solid rgba(185, 185, 185, 0.3);
   }
 
