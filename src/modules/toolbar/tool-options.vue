@@ -1,5 +1,5 @@
 <template>
-  <div v-if="shouldShow" class="tool-options" :style="{ left: calculatedLeft }">
+  <div v-if="shouldShow" class="tool-options" :class="{ 'fade-out': !isVisible }" :style="{ left: calculatedLeft }">
     <template v-for="(option, index) in tool.options" :key="option.key">
       <div v-if="index > 0" class="divider"></div>
       <div class="option-group">
@@ -8,7 +8,7 @@
           :key="choice.value"
           class="option-button"
           :class="{ active: option.selected === choice.value }"
-          @click="option.selected = choice.value"
+          @click="handleOptionClick(option, choice.value)"
           :title="choice.label"
         >
           <template v-if="choice.icons">
@@ -28,6 +28,13 @@ export default {
     tool: {
       type: Object,
       default: null
+    }
+  },
+  data() {
+    return {
+      isVisible: false,
+      fadeOutTimer: null,
+      previousToolName: null
     }
   },
   computed: {
@@ -56,6 +63,40 @@ export default {
 
       return '0'
     }
+  },
+  watch: {
+    'tool.name'(newVal) {
+      if (newVal && newVal !== this.previousToolName) {
+        this.resetFadeOut()
+      }
+      this.previousToolName = newVal
+    },
+    'tool.options': {
+      handler() {
+        this.resetFadeOut()
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    if (this.tool) {
+      this.previousToolName = this.tool.name
+    }
+  },
+  methods: {
+    resetFadeOut() {
+      clearTimeout(this.fadeOutTimer)
+      this.isVisible = true
+      this.fadeOutTimer = setTimeout(() => {
+        this.isVisible = false
+      }, 2000)
+    },
+    handleOptionClick(option, value) {
+      option.selected = value
+    }
+  },
+  beforeUnmount() {
+    clearTimeout(this.fadeOutTimer)
   }
 }
 </script>
@@ -70,6 +111,13 @@ export default {
   display: flex;
   gap: $space-xs;
   z-index: 101;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.tool-options.fade-out {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .tool-options::after {
