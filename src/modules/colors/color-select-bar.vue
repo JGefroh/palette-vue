@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="color-bar-container" @dragover.prevent="handleImageDragOver" @dragleave="handleImageDragLeave" @drop="handleImageDrop">
+    <div class="color-bar-container" @dragover.prevent="handleImageDragOver" @drop="handleImageDrop">
       <div v-if="isImageDragOver" class="image-drop-overlay">
         <span class="fa fa-fw fa-image"></span>
         <span class="overlay-label">Extract colors</span>
@@ -77,6 +77,18 @@ export default {
 
     inputHandler.onCommand('clear-colors', () => {
       this.clearColorsWithAnimation()
+    })
+
+    inputHandler.onCommand('image-drag-enter', () => {
+      this.isImageDragOver = true
+    })
+
+    inputHandler.onCommand('image-drag-leave', () => {
+      this.isImageDragOver = false
+    })
+
+    inputHandler.onCommand('image-drop', () => {
+      this.isImageDragOver = false
     })
 
     const canvas = document.querySelector('canvas')
@@ -386,6 +398,7 @@ export default {
     handleImageDrop(e) {
       e.preventDefault()
       this.isImageDragOver = false
+      inputHandler.dispatchCommand('image-drag-leave', e)
 
       if (this.draggedIndex !== null) return
 

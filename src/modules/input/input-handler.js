@@ -65,7 +65,7 @@ class InputHandler {
     });
 
     this.paperElement.addEventListener('dragleave', (e) => {
-      if (!this.paperElement.contains(e.relatedTarget) && e.dataTransfer.types.includes('Files')) {
+      if (e.relatedTarget === null && e.dataTransfer.types.includes('Files')) {
         this.dispatchCommand('image-drag-leave', e);
       }
     });
@@ -77,6 +77,7 @@ class InputHandler {
     this.paperElement.addEventListener('drop', (e) => {
       e.preventDefault();
       this.dispatchCommand('image-drop', e);
+      this.dispatchCommand('image-drag-leave', e);
     });
 
     this.paperElement.addEventListener('mousemove', (e) => {
