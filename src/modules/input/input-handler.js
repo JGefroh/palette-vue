@@ -1,3 +1,5 @@
+import { globalState } from '../persistence/global-state.js'
+
 class InputHandler {
   constructor() {
     this.commands = new Map(); // Map<commandType, Set<callbacks>>
@@ -77,9 +79,14 @@ class InputHandler {
     });
 
     this.paperElement.addEventListener('mouseleave', () => {
-      this.dispatchCommand('cursor-hide');
+      const selectedTool = globalState.get('selectedTool');
+      if (!selectedTool || selectedTool.name !== 'Select') {
+        this.dispatchCommand('cursor-hide');
+      }
       if (this.cursorManager && this.cursorManager.getIsMouseDown()) {
-        this.dispatchCommand('tool-end');
+        if (!selectedTool || selectedTool.name !== 'Select') {
+          this.dispatchCommand('tool-end');
+        }
       }
     });
 
