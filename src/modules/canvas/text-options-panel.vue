@@ -8,6 +8,19 @@
     @mouseup.stop=""
   >
     <div class="option-group">
+      <select
+        class="font-select"
+        :value="textToolState.font"
+        @change="setFont"
+        @click.stop=""
+      >
+        <option v-for="font in fonts" :key="font" :value="font" :style="{ fontFamily: font }">
+          {{ fontLabel(font) }}
+        </option>
+      </select>
+    </div>
+    <div class="divider"></div>
+    <div class="option-group">
       <button
         v-for="size in fontSizes"
         :key="size"
@@ -83,9 +96,131 @@ import { textToolState } from '../tools/text.js'
 export default {
   name: 'TextOptionsPanel',
   data() {
+    const commonFonts = [
+      'Montserrat',
+      'sans-serif',
+      'serif',
+      'monospace',
+      'Arial',
+      'Arial Black',
+      'Arial Narrow',
+      'Book Antiqua',
+      'Bookman',
+      'Comic Sans MS',
+      'Courier New',
+      'Courier',
+      'Garamond',
+      'Georgia',
+      'Impact',
+      'Trebuchet MS',
+      'Verdana'
+    ]
+
+    const windowsFonts = [
+      ...commonFonts,
+      'Calibri',
+      'Cambria',
+      'Candara',
+      'Century Gothic',
+      'Century Schoolbook',
+      'Consolas',
+      'Constantia',
+      'Corbel',
+      'Copperplate',
+      'Curlz MT',
+      'Franklin Gothic Medium',
+      'Gill Sans MT',
+      'Gloucester MT Extra Condensed',
+      'Goudy Old Style',
+      'Goudy Stout',
+      'Haettenschweiler',
+      'Harrington',
+      'High Tower Text',
+      'Informal Roman',
+      'Jokerman',
+      'Juice ITC',
+      'Kristen ITC',
+      'Kunstler Script',
+      'Lucida Console',
+      'Lucida Handwriting',
+      'Lucida Sans',
+      'Lucida Sans Typewriter',
+      'Maiandra GD',
+      'Matura MT Script Capitals',
+      'Microsoft Sans Serif',
+      'Mistral',
+      'Modern No. 20',
+      'Monotype Corsiva',
+      'MS PGothic',
+      'MS Serif',
+      'Niagara Engraved',
+      'Niagara Solid',
+      'Onyx',
+      'Palatino',
+      'Palatino Linotype',
+      'Papyrus',
+      'Perpetua',
+      'Perpetua Titling MT',
+      'Playbill',
+      'Rage Italic',
+      'Rockwell',
+      'Rockwell Extra Bold',
+      'Script MT Bold',
+      'Segoe Print',
+      'Segoe Script',
+      'Segoe UI',
+      'Segoe UI Symbol',
+      'Showcard Gothic',
+      'Snap ITC',
+      'Stencil',
+      'Sylfaen',
+      'Symbol',
+      'Tahoma',
+      'Tempus Sans ITC',
+      'Terminal',
+      'Times New Roman',
+      'Tw Cen MT',
+      'Tw Cen MT Condensed',
+      'Tw Cen MT Condensed Extra Bold',
+      'Utsaah',
+      'Viner Hand ITC',
+      'Vivaldi Italic',
+      'Vladimir Script',
+      'Vrinda',
+      'Webdings',
+      'Wingdings',
+      'Wingdings 2',
+      'Wingdings 3'
+    ]
+
+    const macFonts = [
+      ...commonFonts,
+      'Copperplate',
+      'Didot',
+      'Gill Sans',
+      'Gill Sans MT',
+      'Helvetica',
+      'Helvetica Neue',
+      'Hoefler Text',
+      'Lucida Console',
+      'Lucida Grande',
+      'Lucida Handwriting',
+      'Lucida Sans',
+      'Palatino',
+      'Palatino Linotype',
+      'Papyrus',
+      'Thonburi',
+      'Times',
+      'Times New Roman'
+    ]
+
+    const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+    const fonts = isMac ? macFonts : windowsFonts
+
     return {
       textToolState,
-      fontSizes: [5, 10, 15, 20, 50]
+      fontSizes: [5, 10, 15, 20, 50],
+      fonts
     }
   },
   computed: {
@@ -102,6 +237,16 @@ export default {
     }
   },
   methods: {
+    setFont(event) {
+      const font = event.target.value
+      const selectedTool = globalState.get('selectedTool')
+      if (selectedTool && selectedTool.name === 'Text') {
+        selectedTool.applyFontToSelection(font)
+      }
+    },
+    fontLabel(font) {
+      return font
+    },
     setFontSize(size) {
       textToolState.fontSize = size
     },
@@ -175,6 +320,31 @@ export default {
   height: $size-button;
   background-color: #c6c6c6;
   margin: 0 $space-xs;
+}
+
+.font-select {
+  @include tool-button;
+  padding: 0 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #34495e;
+  min-width: 120px;
+
+  &:hover {
+    background-color: rgba(52, 73, 94, 0.1);
+  }
+
+  &:active {
+    background-color: rgba(52, 73, 94, 0.15);
+  }
+
+  option {
+    background-color: white;
+    color: #34495e;
+    padding: 4px 8px;
+  }
 }
 
 .font-size-button {

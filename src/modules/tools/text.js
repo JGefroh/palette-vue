@@ -12,7 +12,8 @@ export const textToolState = reactive({
   alignment: 'center',
   bold: false,
   italic: false,
-  underline: false
+  underline: false,
+  font: 'Montserrat'
 })
 
 export class Text {
@@ -27,7 +28,7 @@ export class Text {
     this.selectionStart = null
     this.selectionEnd = null
 
-    this.currentStyles = { bold: false, italic: false, underline: false, color: null }
+    this.currentStyles = { bold: false, italic: false, underline: false, font: 'Montserrat', color: null }
 
     this.blinkInterval = null
     this.blinkVisible = true
@@ -46,6 +47,12 @@ export class Text {
     })
 
     watch(() => textToolState.fontSize, () => {
+      if (textToolState.isTyping) {
+        this.renderOverlay()
+      }
+    })
+
+    watch(() => textToolState.font, () => {
       if (textToolState.isTyping) {
         this.renderOverlay()
       }
@@ -88,8 +95,9 @@ export class Text {
       this.cursor = 0
       this.selectionStart = null
       this.selectionEnd = null
-      this.currentStyles = { bold: false, italic: false, underline: false }
+      this.currentStyles = { bold: false, italic: false, underline: false, font: 'Montserrat', color: null }
 
+      this.syncPanelState()
       this.startKeyCapture()
       this.startBlinking()
       this.renderOverlay()
@@ -418,6 +426,7 @@ export class Text {
         bold: this.currentStyles.bold,
         italic: this.currentStyles.italic,
         underline: this.currentStyles.underline,
+        font: this.currentStyles.font,
         color: color
       })
       this.cursor = this.selectionStart + 1
@@ -429,6 +438,7 @@ export class Text {
         bold: this.currentStyles.bold,
         italic: this.currentStyles.italic,
         underline: this.currentStyles.underline,
+        font: this.currentStyles.font,
         color: color
       })
       this.cursor++
@@ -690,6 +700,17 @@ export class Text {
     this.renderOverlay()
   }
 
+  applyFontToSelection(font) {
+    if (this.selectionStart !== null && this.selectionEnd !== null) {
+      for (let i = this.selectionStart; i < this.selectionEnd; i++) {
+        this.chars[i].font = font
+      }
+    }
+    this.currentStyles.font = font
+    this.syncPanelState()
+    this.renderOverlay()
+  }
+
   syncPanelState() {
     if (this.selectionStart !== null && this.selectionEnd !== null && this.selectionStart < this.selectionEnd) {
       const selectedChars = this.chars.slice(this.selectionStart, this.selectionEnd)
@@ -701,6 +722,7 @@ export class Text {
       textToolState.italic = this.currentStyles.italic
       textToolState.underline = this.currentStyles.underline
     }
+    textToolState.font = this.currentStyles.font
   }
 
   getLineInfo() {
@@ -733,7 +755,8 @@ export class Text {
     let font = ''
     if (charObj.italic) font += 'italic '
     if (charObj.bold) font += 'bold '
-    font += `${fontSize}px sans-serif`
+    const fontFamily = charObj.font || 'Montserrat'
+    font += `${fontSize}px ${fontFamily}`
     return font
   }
 
@@ -742,10 +765,12 @@ export class Text {
     let i = 0
     while (i < chars.length) {
       let runEnd = i + 1
+      const currentFont = chars[i].font || 'Montserrat'
       while (runEnd < chars.length &&
              chars[runEnd].bold === chars[i].bold &&
              chars[runEnd].italic === chars[i].italic &&
-             chars[runEnd].underline === chars[i].underline) {
+             chars[runEnd].underline === chars[i].underline &&
+             (chars[runEnd].font || 'Montserrat') === currentFont) {
         runEnd++
       }
       const run = chars.slice(i, runEnd)
@@ -778,11 +803,13 @@ export class Text {
     while (i < lineChars.length) {
       let runEnd = i + 1
       const runColor = lineChars[i].color || globalState.get('selectedColor').hex
+      const currentFont = lineChars[i].font || 'Montserrat'
       while (runEnd < lineChars.length &&
              lineChars[runEnd].bold === lineChars[i].bold &&
              lineChars[runEnd].italic === lineChars[i].italic &&
              lineChars[runEnd].underline === lineChars[i].underline &&
-             (lineChars[runEnd].color || globalState.get('selectedColor').hex) === runColor) {
+             (lineChars[runEnd].color || globalState.get('selectedColor').hex) === runColor &&
+             (lineChars[runEnd].font || 'Montserrat') === currentFont) {
         runEnd++
       }
       const run = lineChars.slice(i, runEnd)
@@ -936,7 +963,7 @@ export class Text {
     this.cursor = 0
     this.selectionStart = null
     this.selectionEnd = null
-    this.currentStyles = { bold: false, italic: false, underline: false, color: null }
+    this.currentStyles = { bold: false, italic: false, underline: false, font: 'Montserrat', color: null }
     textToolState.bold = false
     textToolState.italic = false
     textToolState.underline = false
