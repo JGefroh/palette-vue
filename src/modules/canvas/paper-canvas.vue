@@ -5,6 +5,13 @@
       <drawing-canvas ref="drawingCanvas"></drawing-canvas>
       <text-options-panel ref="textOptionsPanel"></text-options-panel>
     </div>
+    <minimap
+      :zoom="zoom"
+      :pan-x="panX"
+      :pan-y="panY"
+      :paper-width="paperWidth"
+      :paper-height="paperHeight"
+    ></minimap>
     <div v-if="isDragging" class="drop-overlay">
       <div class="drop-zone drop-zone--left" @dragover.prevent="hoveredZone = 'left'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'left' }" style="flex: 2">
         <div class="drop-zone__content">
@@ -32,6 +39,7 @@
 import OverlayCanvas from './overlay-canvas.vue'
 import DrawingCanvas from './drawing-canvas.vue'
 import TextOptionsPanel from './text-options-panel.vue'
+import Minimap from './minimap.vue'
 import { globalCursorManager } from '../input/global-cursor-manager.js'
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
@@ -42,7 +50,8 @@ export default {
   components: {
     OverlayCanvas,
     DrawingCanvas,
-    TextOptionsPanel
+    TextOptionsPanel,
+    Minimap
   },
   emits: ['on-initialize', 'on-stroke-start'],
   data() {
@@ -52,6 +61,8 @@ export default {
       panY: 0,
       isDragging: false,
       hoveredZone: null,
+      paperWidth: 0,
+      paperHeight: 0,
       // Canny edge detection config
       cannyLowThreshold: 50,
       cannyHighThreshold: 70
@@ -78,7 +89,12 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.initialize()
+      window.addEventListener('resize', this.updatePaperDimensions)
     })
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updatePaperDimensions)
   },
   methods: {
     initialize() {
@@ -87,6 +103,7 @@ export default {
       globalCursorManager.setCanvas(drawingCanvas)
       inputHandler.registerPaperElement(this.$refs.paper, globalCursorManager)
       this.registerCommandHandlers()
+      this.updatePaperDimensions()
       this.$emit('on-initialize', globalCursorManager)
 
       const selectedTab = globalState.get('selectedTab')
@@ -383,6 +400,14 @@ export default {
       this.panX += event.deltaX
       this.panY += event.deltaY
     },
+
+    updatePaperDimensions() {
+      if (this.$refs.paper) {
+        this.paperWidth = this.$refs.paper.offsetWidth
+        this.paperHeight = this.$refs.paper.offsetHeight
+      }
+    },
+
     syncTab() {
       const ctx = globalCanvasManager.getDrawingContext()
       if (!ctx) return
