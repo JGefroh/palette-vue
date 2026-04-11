@@ -46,7 +46,10 @@ export default {
       if (!this.canvasWidth || !this.canvasHeight) return '—'
       const gcd = (a, b) => b === 0 ? a : gcd(b, a % b)
       const divisor = gcd(this.canvasWidth, this.canvasHeight)
-      return `${this.canvasWidth / divisor}:${this.canvasHeight / divisor}`
+      const ratioWidth = this.canvasWidth / divisor
+      const ratioHeight = this.canvasHeight / divisor
+      const decimal = (this.canvasWidth / this.canvasHeight).toFixed(2)
+      return `${ratioWidth}:${ratioHeight} (${decimal})`
     },
     extendCanvasBtnStyle() {
       return {
