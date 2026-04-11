@@ -78,15 +78,29 @@ class GlobalCanvasManager {
   persistCanvas(tabId) {
     const dataUrl = this.drawingCtx.canvas.toDataURL()
     globalState.set(`${tabId}`, dataUrl)
+    globalState.set(`${tabId}-width`, this.drawingCtx.canvas.width)
+    globalState.set(`${tabId}-height`, this.drawingCtx.canvas.height)
     this.lastSavedDataUrl = dataUrl
   }
 
   deleteCanvas(tabId) {
     globalState.delete(`${tabId}`)
+    globalState.delete(`${tabId}-width`)
+    globalState.delete(`${tabId}-height`)
   }
 
   loadCanvas(tabId) {
+    if (!this.drawingCtx) return
+
     const dataUrl = globalState.get(`${tabId}`)
+    const width = globalState.get(`${tabId}-width`)
+    const height = globalState.get(`${tabId}-height`)
+
+    if (width && height) {
+      this.drawingCtx.canvas.width = width
+      this.drawingCtx.canvas.height = height
+    }
+
     if (dataUrl) {
       const img = new Image()
       img.onload = () => {

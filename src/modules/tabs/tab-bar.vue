@@ -45,6 +45,7 @@ export default {
       const tab = this.tabs.find(t => t.id === id)
       if (tab) {
         globalState.set('selectedTab', tab)
+        globalState.set('lastSelectedTabId', id)
       }
     },
     addTab(isWelcomeTab) {
@@ -57,6 +58,9 @@ export default {
       const index = globalState.get('palette-tabs').indexOf(tab);
       globalState.get('palette-tabs').splice(index, 1)
       globalState.delete(tab.id)
+      if (globalState.get('lastSelectedTabId') === tab.id) {
+        globalState.delete('lastSelectedTabId')
+      }
       if (!globalState.get('palette-tabs').length) {
         this.addTab();
       }
@@ -75,7 +79,9 @@ export default {
     },
     loadSavedTabs() {
       if (globalState.get('palette-tabs', []).length) {
-        globalState.set('selectedTab', this.tabs[0])
+        const lastSelectedTabId = globalState.get('lastSelectedTabId')
+        const lastTab = lastSelectedTabId ? this.tabs.find(t => t.id === lastSelectedTabId) : null
+        globalState.set('selectedTab', lastTab || this.tabs[0])
         globalState.set('isNewUser', false);
       }
       else {

@@ -89,18 +89,30 @@ export default {
       this.registerCommandHandlers()
       this.$emit('on-initialize', globalCursorManager)
 
-      const width = this.$refs.paper.offsetWidth
-      const height = this.$refs.paper.offsetHeight
-      this.$refs.overlayCanvas.resizeCanvas(width, height)
+      const selectedTab = globalState.get('selectedTab')
+      const tabId = selectedTab?.id
+      const savedWidth = globalState.get(`${tabId}-width`)
+      const savedHeight = globalState.get(`${tabId}-height`)
+
+      // If no saved dimensions, use default parent size
+      if (!savedWidth || !savedHeight) {
+        const width = this.$refs.paper.offsetWidth
+        const height = this.$refs.paper.offsetHeight
+        this.$refs.overlayCanvas.resizeCanvas(width, height)
+      }
 
       if (globalState.get('isNewUser')) {
         this.fitImage(logoImage)
       }
-      else {
-        const selectedTab = globalState.get('selectedTab')
-        if (selectedTab) {
-          globalCanvasManager.loadCanvas(selectedTab.id)
-        }
+      else if (tabId) {
+        globalCanvasManager.loadCanvas(tabId)
+        this.$nextTick(() => {
+          this.$refs.drawingCanvas.updateCanvasDisplay()
+          const ctx = globalCanvasManager.getDrawingContext()
+          if (ctx) {
+            this.$refs.overlayCanvas.resizeCanvas(ctx.canvas.width, ctx.canvas.height)
+          }
+        })
       }
     },
 
@@ -349,8 +361,27 @@ export default {
     },
     syncTab() {
       const ctx = globalCanvasManager.getDrawingContext()
-      if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-      globalCanvasManager.loadCanvas(globalState.get('selectedTab').id)
+      if (!ctx) return
+
+      const selectedTab = globalState.get('selectedTab')
+      const tabId = selectedTab?.id
+      const savedWidth = globalState.get(`${tabId}-width`)
+      const savedHeight = globalState.get(`${tabId}-height`)
+
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+      // If no saved dimensions, reset to default
+      if (!savedWidth || !savedHeight) {
+        this.$refs.drawingCanvas.resizeCanvas()
+      }
+
+      globalCanvasManager.loadCanvas(tabId)
+      this.$nextTick(() => {
+        this.$refs.drawingCanvas.updateCanvasDisplay()
+        const width = ctx.canvas.width
+        const height = ctx.canvas.height
+        this.$refs.overlayCanvas.resizeCanvas(width, height)
+      })
     }
   }
 }

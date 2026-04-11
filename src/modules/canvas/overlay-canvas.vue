@@ -73,11 +73,6 @@ export default {
     },
 
     registerCommandHandlers() {
-      window.addEventListener('resize', () => {
-        const parentEl = this.$refs.overlay.parentElement.parentElement
-        this.resizeCanvas(parentEl.offsetWidth, parentEl.offsetHeight)
-      })
-
       inputHandler.onCommand('cursor-update', (e) => {
         this.updateCursor(e)
       })
@@ -88,6 +83,10 @@ export default {
           return
         }
         this.hideCursor()
+      })
+
+      inputHandler.onCommand('canvas-resize', (dimensions) => {
+        this.resizeCanvas(dimensions.width, dimensions.height)
       })
     },
 
@@ -175,15 +174,10 @@ export default {
     },
 
     resizeCanvas(width, height) {
-      let drawing = null
-      if (this.overlayCtx.canvas.width > 0 && this.overlayCtx.canvas.height > 0) {
-        drawing = this.overlayCtx.getImageData(0, 0, this.overlayCtx.canvas.width, this.overlayCtx.canvas.height)
-      }
       this.overlayCtx.canvas.width = width
       this.overlayCtx.canvas.height = height
-      if (drawing) {
-        this.overlayCtx.putImageData(drawing, 0, 0)
-      }
+      this.$refs.overlay.style.width = width + 'px'
+      this.$refs.overlay.style.height = height + 'px'
     }
   }
 }
