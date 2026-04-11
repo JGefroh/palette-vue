@@ -35,24 +35,50 @@ export default {
   data() {
     return {
       canvasWidth: 0,
-      canvasHeight: 0
+      canvasHeight: 0,
+      debounceTimeout: null
     }
+  },
+  watch: {
+    canvasWidth() {
+      // Force recomputation of indicator dimensions
+    },
+    canvasHeight() {
+      // Force recomputation of indicator dimensions
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      const drawingCtx = globalCanvasManager.getDrawingContext()
+      if (drawingCtx) {
+        this.canvasWidth = drawingCtx.canvas.width
+        this.canvasHeight = drawingCtx.canvas.height
+      }
+    })
+
+    setInterval(() => {
+      const drawingCtx = globalCanvasManager.getDrawingContext()
+      if (drawingCtx) {
+        this.canvasWidth = drawingCtx.canvas.width
+        this.canvasHeight = drawingCtx.canvas.height
+      }
+    }, 500)
   },
   computed: {
     isHovered() {
       return this.indicatorHovered || this.minimapHovered
     },
-    canvasAspectRatio() {
-      if (this.canvasHeight === 0) return 1
-      return this.canvasWidth / this.canvasHeight
-    },
     indicatorWidth() {
-      if (this.canvasAspectRatio >= 1) return 32
-      return 32 * this.canvasAspectRatio
+      if (this.canvasWidth >= this.canvasHeight) {
+        return 32
+      }
+      return 32 * (this.canvasWidth / this.canvasHeight)
     },
     indicatorHeight() {
-      if (this.canvasAspectRatio >= 1) return 32 / this.canvasAspectRatio
-      return 32
+      if (this.canvasHeight >= this.canvasWidth) {
+        return 32
+      }
+      return 32 * (this.canvasHeight / this.canvasWidth)
     },
     indicatorDotPercentX() {
       if (this.canvasWidth === 0 || !this.canvasWidth) return 50
@@ -73,20 +99,15 @@ export default {
              (this.canvasHeight * this.zoom <= this.paperHeight)
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.initialize()
-    })
-  },
   methods: {
-    initialize() {
+    updateCanvasDimensions() {
       const drawingCtx = globalCanvasManager.getDrawingContext()
       if (drawingCtx) {
         this.canvasWidth = drawingCtx.canvas.width
         this.canvasHeight = drawingCtx.canvas.height
       }
     }
-  }
+  },
 }
 </script>
 
