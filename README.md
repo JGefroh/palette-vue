@@ -82,3 +82,11 @@ open http://localhost:5173/
 
 ## History
 This is a port of my original AngularJS repository [Palette](https://github.com/jgefroh/palette) into Vue 3 I wrote as a weekend project in 2016. It's been developed, with implementation support from Claude LLM, and a lot of non-AI elbow grease, engineering, hand-tweaking, design, and product sense from yours truly.
+
+## Fun metrics
+Up to v0.1.0 release:
+* Haiku 4.5 | In: 287.9k · Out: 5.4m
+* Work time estimate: ~64+ hours
+    * 14 calendar days start to finish (not counting initial AngularJS version)
+    * 4 weekend days, 4 hours / day (~16 hours)
+    * 12 weekday days × 4 hours (~48 hours)
