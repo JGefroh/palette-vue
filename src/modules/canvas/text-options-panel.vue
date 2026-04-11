@@ -233,7 +233,7 @@ export default {
 
     return {
       textToolState,
-      fontSizes: [5, 10, 15, 20, 50],
+      fontSizes: [15, 20, 50, 75, 100],
       fonts
     }
   },

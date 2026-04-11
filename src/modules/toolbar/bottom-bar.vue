@@ -70,7 +70,7 @@ export default {
     return {
       globalState,
       inputHandler,
-      brushSizes: [5, 10, 15, 20, 50, 100]
+      brushSizes: [1, 5, 15, 50, 100]
     }
   },
   mounted() {

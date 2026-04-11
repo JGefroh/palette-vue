@@ -6,7 +6,7 @@ class GlobalState {
     this.store = reactive(
       this.loadState() || {
       selectedColor: { label: 'Turquoise', hex: '#1abc9c' },
-      selectedSize: 10,
+      selectedSize: 15,
       selectedTab: null,
       selectedTool: null
     })
