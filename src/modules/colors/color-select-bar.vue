@@ -32,6 +32,10 @@
       <button class="color color-add" :class="{ active: isPickerOpen }" @click="showColorPicker">
         <span class="fa fa-fw fa-plus"></span>
       </button>
+      <button class="color color-sort" @click="cycleSortMode" :title="`Sort: ${currentSortMode}`">
+        <span class="fa fa-fw fa-sort"></span>
+        <span class="fa fa-fw" :class="sortModeIcon"></span>
+      </button>
       <button class="color color-settings" @click="showThemeModal">
         <span class="fa fa-fw fa-cog"></span>
       </button>
@@ -125,6 +129,8 @@ export default {
       draggedIndex: null,
       dragOverIndex: null,
       isImageDragOver: false,
+      currentSortMode: 'User Order',
+      originalColorOrder: [],
       defaultColors: [
         { label: 'Pure Black', hex: '#000000' },
         { label: 'Pure White', hex: '#FFFFFF' },
@@ -162,6 +168,16 @@ export default {
     },
     currentSelectedTool() {
       return globalState.get('selectedTool')
+    },
+    sortModeIcon() {
+      switch (this.currentSortMode) {
+        case 'By Number':
+          return 'fa-hashtag'
+        case 'By Hue':
+          return 'fa-palette'
+        default:
+          return 'fa-hand'
+      }
     }
   },
   watch: {
@@ -248,8 +264,11 @@ export default {
     addCustomColor(hex) {
       const exists = this.colors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
       if (!exists && this.colors.length < 40) {
-        this.colors.push({ label: 'Custom', hex })
+        const newColor = { label: 'Custom', hex }
+        this.colors.push(newColor)
+        this.originalColorOrder.push(newColor)
         this.saveColors()
+        this.saveUserOrder()
         return true
       }
       return false
@@ -360,9 +379,17 @@ export default {
         this.colors = JSON.parse(JSON.stringify(this.defaultColors))
         this.saveColors()
       }
+      const savedUserOrder = globalState.get('user-color-order')
+      this.originalColorOrder = savedUserOrder && savedUserOrder.length > 0
+        ? savedUserOrder
+        : JSON.parse(JSON.stringify(this.colors))
     },
     saveColors() {
       globalState.set('saved-colors', this.colors)
+    },
+    saveUserOrder() {
+      this.originalColorOrder = JSON.parse(JSON.stringify(this.colors))
+      globalState.set('user-color-order', this.originalColorOrder)
     },
     startDragColor(event, index) {
       this.draggedIndex = index
@@ -379,6 +406,7 @@ export default {
           this.colors.splice(targetIndex, 0, draggedColor)
         }
         this.saveColors()
+        this.saveUserOrder()
       }
       this.draggedIndex = null
       this.dragOverIndex = null
@@ -391,7 +419,14 @@ export default {
       if (this.draggedIndex !== null) {
         const deletedColor = this.colors[this.draggedIndex]
         this.colors.splice(this.draggedIndex, 1)
+
+        const userOrderIndex = this.originalColorOrder.findIndex(c => c.hex === deletedColor.hex)
+        if (userOrderIndex !== -1) {
+          this.originalColorOrder.splice(userOrderIndex, 1)
+        }
+
         this.saveColors()
+        this.saveUserOrder()
 
         if (dropX !== null && dropY !== null) {
           particleEffect.createConfetti(dropX, dropY, deletedColor.hex)
@@ -405,7 +440,10 @@ export default {
     },
     applyTheme(themeColors) {
       this.colors = JSON.parse(JSON.stringify(themeColors))
+      this.originalColorOrder = JSON.parse(JSON.stringify(this.colors))
+      this.currentSortMode = 'User Order'
       this.saveColors()
+      this.saveUserOrder()
       this.isThemeModalOpen = false
     },
     saveColorOrder() {
@@ -439,6 +477,90 @@ export default {
         URL.revokeObjectURL(img.src)
       }
       img.src = URL.createObjectURL(file)
+    },
+    cycleSortMode() {
+      const modes = ['User Order', 'By Number', 'By Hue']
+      const currentIndex = modes.indexOf(this.currentSortMode)
+      const nextIndex = (currentIndex + 1) % modes.length
+      this.currentSortMode = modes[nextIndex]
+
+      if (this.currentSortMode === 'User Order') {
+        this.restoreUserOrder()
+      } else if (this.currentSortMode === 'By Number') {
+        this.sortByNumber()
+      } else if (this.currentSortMode === 'By Hue') {
+        this.sortByHue()
+      }
+
+      this.saveColors()
+    },
+    restoreUserOrder() {
+      const currentHexes = new Set(this.colors.map(c => c.hex.toUpperCase()))
+      const userOrderHexes = new Set(this.originalColorOrder.map(c => c.hex.toUpperCase()))
+
+      const ordered = []
+      const newColors = []
+
+      this.originalColorOrder.forEach(color => {
+        if (currentHexes.has(color.hex.toUpperCase())) {
+          const current = this.colors.find(c => c.hex.toUpperCase() === color.hex.toUpperCase())
+          if (current) {
+            ordered.push(current)
+          }
+        }
+      })
+
+      this.colors.forEach(color => {
+        if (!userOrderHexes.has(color.hex.toUpperCase())) {
+          newColors.push(color)
+        }
+      })
+
+      this.colors = [...ordered, ...newColors]
+    },
+    sortByNumber() {
+      const sorted = [...this.colors].sort((a, b) => {
+        const numA = this.colorNumbers[a.hex]
+        const numB = this.colorNumbers[b.hex]
+
+        if (numA !== undefined && numB !== undefined) {
+          return parseInt(numA) - parseInt(numB)
+        }
+        if (numA !== undefined) return -1
+        if (numB !== undefined) return 1
+        return 0
+      })
+
+      this.colors = sorted
+    },
+    sortByHue() {
+      const sorted = [...this.colors].sort((a, b) => {
+        const hslA = this.hexToHsl(a.hex)
+        const hslB = this.hexToHsl(b.hex)
+        return hslA.h - hslB.h
+      })
+
+      this.colors = sorted
+    },
+    hexToHsl(hex) {
+      const r = parseInt(hex.slice(1, 3), 16) / 255
+      const g = parseInt(hex.slice(3, 5), 16) / 255
+      const b = parseInt(hex.slice(5, 7), 16) / 255
+      const max = Math.max(r, g, b)
+      const min = Math.min(r, g, b)
+      let h = 0, s = 0
+      const l = (max + min) / 2
+
+      if (max !== min) {
+        const d = max - min
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
+          case g: h = ((b - r) / d + 2) / 6; break
+          case b: h = ((r - g) / d + 4) / 6; break
+        }
+      }
+      return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) }
     }
   }
 }
@@ -564,6 +686,10 @@ export default {
   background-color: rgba(52, 73, 94, 0.2);
   border-color: $border-color-active;
   color: #2c3e50;
+}
+
+.color-sort {
+  @include tool-button;
 }
 
 .color-settings {
