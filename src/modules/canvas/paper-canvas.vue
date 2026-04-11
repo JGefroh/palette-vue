@@ -3,8 +3,8 @@
     <div class="viewport" :style="viewportStyle">
       <overlay-canvas ref="overlayCanvas"></overlay-canvas>
       <drawing-canvas ref="drawingCanvas"></drawing-canvas>
-      <text-options-panel ref="textOptionsPanel"></text-options-panel>
     </div>
+    <text-options-panel ref="textOptionsPanel" :zoom="zoom" :pan-x="panX" :pan-y="panY"></text-options-panel>
     <minimap
       :zoom="zoom"
       :pan-x="panX"

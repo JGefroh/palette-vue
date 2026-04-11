@@ -95,6 +95,20 @@ import { textToolState } from '../tools/text.js'
 
 export default {
   name: 'TextOptionsPanel',
+  props: {
+    zoom: {
+      type: Number,
+      default: 1
+    },
+    panX: {
+      type: Number,
+      default: 0
+    },
+    panY: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     const commonFonts = [
       'Montserrat',
@@ -229,10 +243,14 @@ export default {
       return selectedTool?.name === 'Text' && textToolState.isTyping
     },
     panelStyle() {
+      const baseX = textToolState.panelAnchorX * this.zoom + this.panX
+      const baseY = (textToolState.panelAnchorY - 60) * this.zoom + this.panY
       return {
-        left: `${textToolState.panelAnchorX}px`,
-        top: `${textToolState.panelAnchorY - 120}px`,
-        transform: 'translateX(-50%)'
+        left: `${baseX}px`,
+        top: `${baseY}px`,
+        transform: 'translateX(-50%)',
+        position: 'fixed',
+        pointerEvents: 'all'
       }
     }
   },
