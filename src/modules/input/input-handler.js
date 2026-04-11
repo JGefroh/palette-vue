@@ -16,6 +16,7 @@ class InputHandler {
     this.boundKeyDown = this.handleKeyDown.bind(this);
     this.boundKeyUp = this.handleKeyUp.bind(this);
     this.boundBlur = this.resetModifierKeys.bind(this);
+    this.boundDocumentMouseUp = this.handleDocumentMouseUp.bind(this);
     this.paperElement = null;
     this.cursorManager = null;
   }
@@ -27,6 +28,7 @@ class InputHandler {
     window.addEventListener('keydown', this.boundKeyDown);
     window.addEventListener('keyup', this.boundKeyUp);
     window.addEventListener('blur', this.boundBlur);
+    document.addEventListener('mouseup', this.boundDocumentMouseUp);
     this.isListening = true;
   }
 
@@ -37,6 +39,7 @@ class InputHandler {
     window.removeEventListener('keydown', this.boundKeyDown);
     window.removeEventListener('keyup', this.boundKeyUp);
     window.removeEventListener('blur', this.boundBlur);
+    document.removeEventListener('mouseup', this.boundDocumentMouseUp);
     this.isListening = false;
   }
 
@@ -290,6 +293,12 @@ class InputHandler {
       if (commands) {
         commands.forEach(commandType => this.dispatchCommand(commandType));
       }
+    }
+  }
+
+  handleDocumentMouseUp(e) {
+    if (this.cursorManager) {
+      this.cursorManager.setMouseDown(false);
     }
   }
 
