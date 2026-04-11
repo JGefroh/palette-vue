@@ -1,25 +1,26 @@
 <template>
-  <div class="modal-overlay" @click.self="$emit('close')">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Pick a Color</h2>
-        <button class="close-btn" @click="$emit('close')">✕</button>
+  <Teleport to="body">
+    <div v-if="isVisible" class="color-wheel-panel" :class="{ 'fade-out': !isVisible }">
+      <div class="panel-header">
+        <h3>Pick a Color</h3>
       </div>
-      <div class="modal-content">
-        <canvas
-          ref="colorWheel"
-          width="250"
-          height="250"
-          @mousedown="startDrag"
-          @mousemove="handleMouseMove"
-          @mouseup="endDrag"
-          @mouseleave="endDrag"
-        ></canvas>
-        <div class="color-preview" @click="confirmColor" ref="colorPreview">
-          <div class="preview-color" :style="{ backgroundColor: previewColor || currentColor }"></div>
-          <div class="color-info">
-            <div class="hex">{{ previewColor || currentColor }}</div>
-            <div class="rgb">{{ previewColorRGB }}</div>
+      <div class="panel-content">
+        <div class="wheel-section">
+          <canvas
+            ref="colorWheel"
+            width="250"
+            height="250"
+            @mousedown="startDrag"
+            @mousemove="handleMouseMove"
+            @mouseup="endDrag"
+            @mouseleave="endDrag"
+          ></canvas>
+          <div class="color-preview" @click="confirmColor" ref="colorPreview">
+            <div class="preview-color" :style="{ backgroundColor: previewColor || currentColor }"></div>
+            <div class="color-info">
+              <div class="hex">{{ previewColor || currentColor }}</div>
+              <div class="rgb">{{ previewColorRGB }}</div>
+            </div>
           </div>
         </div>
         <div class="generated-colors">
@@ -40,11 +41,8 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-cancel" @click="$emit('close')">Close</button>
-      </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script>
@@ -54,7 +52,6 @@ export default {
   components: {
     ColorItem
   },
-  emits: ['color-picked', 'close'],
   props: {
     initialColor: {
       type: String,
@@ -71,6 +68,7 @@ export default {
       hexInput: this.initialColor,
       isDragging: false,
       previewColor: null,
+      isVisible: true,
       generatedColors: {
         palette: ['#ff0000', '#00ffff', '#ff00ff', '#ffff00'],
         dark: ['#800000', '#400000'],
@@ -119,11 +117,65 @@ export default {
       }
     }
   },
+  emits: ['color-picked', 'close'],
   mounted() {
     this.drawColorWheel()
     this.generateColorVariants()
+    this.$nextTick(() => {
+      document.addEventListener('click', this.handleOutsideClick)
+      this.alignPaneWithColorBar()
+    })
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleOutsideClick)
   },
   methods: {
+    alignPaneWithColorBar() {
+      const colorBar = document.querySelector('.color-bar-container')
+      const wheelPane = document.querySelector('.color-wheel-panel')
+
+      if (colorBar && wheelPane) {
+        const colorBarRect = colorBar.getBoundingClientRect()
+        const colorBarBottom = colorBarRect.bottom
+        const panelHeight = wheelPane.offsetHeight
+
+        const topPosition = colorBarBottom - panelHeight
+        wheelPane.style.top = topPosition + 'px'
+        wheelPane.style.transform = 'none'
+
+        this.$nextTick(() => {
+          this.positionTriangle()
+        })
+      }
+    },
+    positionTriangle() {
+      const colorBar = document.querySelector('.color-bar-container')
+      const wheelPane = document.querySelector('.color-wheel-panel')
+      const addButton = colorBar?.querySelector('.color-add')
+
+      if (colorBar && wheelPane && addButton) {
+        const addButtonRect = addButton.getBoundingClientRect()
+        const panelRect = wheelPane.getBoundingClientRect()
+
+        const addButtonCenterY = addButtonRect.top + addButtonRect.height / 2
+        const relativeCenterY = addButtonCenterY - panelRect.top
+
+        wheelPane.style.setProperty('--triangle-offset', relativeCenterY + 'px')
+      }
+    },
+    handleOutsideClick(event) {
+      const panelEl = document.querySelector('.color-wheel-panel')
+      const colorBarEl = document.querySelector('.color-bar-container')
+
+      if (panelEl && colorBarEl) {
+        const isClickInPanel = panelEl.contains(event.target)
+        const isClickInColorBar = colorBarEl.contains(event.target)
+
+        if (!isClickInPanel && !isClickInColorBar) {
+          this.$emit('close')
+        }
+      }
+    },
     drawColorWheel() {
       const canvas = this.$refs.colorWheel
       const ctx = canvas.getContext('2d')
@@ -332,67 +384,71 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.modal-overlay {
-  @include modal-overlay;
-  z-index: 100;
-}
-
-.modal {
-  @include modal-panel;
-  width: 90%;
-  max-width: 550px;
-  max-height: 90vh;
+.color-wheel-panel {
+  position: fixed;
+  left: 110px;
+  @include glass-panel;
   display: flex;
   flex-direction: column;
+  gap: 0;
+  z-index: 101;
+  max-height: 90vh;
+  overflow-y: auto;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+  overflow: visible;
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $space-lg $space-xl;
+.color-wheel-panel::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: var(--triangle-offset, 50px);
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 8px solid rgba(52, 73, 94, 0.15);
+}
+
+.color-wheel-panel.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel-header {
+  padding: $space-lg;
   border-bottom: $border-default;
-  background-color: transparent;
+  flex-shrink: 0;
 }
 
-.modal-header h2 {
+.panel-header h3 {
   margin: 0;
-  font-size: $font-size-subheader;
+  font-size: $font-size-body;
   color: $color-primary;
   font-weight: $font-weight-semibold;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: $color-tertiary;
-  padding: 0;
-  width: $size-close;
-  height: $size-close;
-  @include flex-center;
-  transition: $transition-default;
+.panel-content {
+  padding: $space-lg;
+  display: flex;
+  flex-direction: row;
+  gap: $space-xl;
 }
 
-.close-btn:hover {
-  color: $color-primary;
-}
-
-.modal-content {
-  padding: $space-xl;
+.wheel-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $space-xl;
-  background-color: transparent;
-  overflow-y: auto;
+  gap: $space-lg;
+  flex-shrink: 0;
+  margin-right: $space-lg;
 }
 
 canvas {
-  border: $border-default;
   border-radius: $radius-button;
   cursor: crosshair;
 }
@@ -443,13 +499,13 @@ canvas {
 }
 
 .generated-colors {
-  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: $space-xl * 2.5;
   row-gap: $space-xl;
-  max-width: fit-content;
-  margin: 0 auto;
+  overflow-y: auto;
+  max-height: calc(90vh - 200px);
+  padding-right: $space-sm;
 }
 
 .generated-section {
@@ -476,37 +532,5 @@ canvas {
 
 .colors-grid.single {
   grid-template-columns: $size-button;
-}
-
-
-.modal-footer {
-  display: flex;
-  gap: $space-md;
-  padding: $space-lg $space-xl;
-  border-top: $border-default;
-  justify-content: flex-end;
-  background-color: transparent;
-}
-
-button {
-  padding: $space-sm $space-lg;
-  border: $border-default;
-  border-radius: $radius-button;
-  cursor: pointer;
-  font-size: $font-size-body;
-  font-weight: $font-weight-semibold;
-  background-color: transparent;
-  color: $color-primary;
-  transition: $transition-default;
-}
-
-button:hover {
-  background-color: $btn-hover-bg;
-  border-color: $border-color-hover;
-}
-
-button:active {
-  background-color: $btn-active-bg;
-  border-color: $border-color-active;
 }
 </style>

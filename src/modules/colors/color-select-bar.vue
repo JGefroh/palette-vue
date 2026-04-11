@@ -26,13 +26,13 @@
         <span v-else>&nbsp;</span>
       </button>
       <div v-if="colors.length % 2 === 1" class="color-placeholder"></div>
-      <button class="color color-add" :class="{ disabled: isPickerOpen }" @click="showColorPicker" :disabled="isPickerOpen">
-        <span class="fa fa-fw fa-plus"></span>
-      </button>
-      <button class="color color-eyedropper" :class="{ active: isEyedropperActive, disabled: isPickerOpen }" @click="toggleEyedropper" title="Eyedropper" :disabled="isPickerOpen">
+      <button class="color color-eyedropper" :class="{ active: isEyedropperActive }" @click="toggleEyedropper" title="Eyedropper">
         <span class="fa fa-fw fa-eyedropper"></span>
       </button>
-      <button class="color color-settings" :class="{ disabled: isPickerOpen }" @click="showThemeModal" :disabled="isPickerOpen">
+      <button class="color color-add" :class="{ hidden: isPickerOpen }" @click="showColorPicker">
+        <span class="fa fa-fw fa-plus"></span>
+      </button>
+      <button class="color color-settings" @click="showThemeModal">
         <span class="fa fa-fw fa-cog"></span>
       </button>
     </div>
@@ -559,6 +559,11 @@ export default {
 
 .color.disabled {
   visibility: hidden;
+}
+
+.color-add.hidden {
+  visibility: hidden;
+  transition: none;
 }
 
 .image-drop-overlay {
