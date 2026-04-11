@@ -346,11 +346,12 @@ export default {
         this.hslToHex(hsl.h, Math.max(hsl.s - 50, 5), hsl.l),
         this.hslToHex(hsl.h, Math.max(hsl.s - 65, 0), hsl.l)
       ]
+      const grayscaleLight = 20 + (hsl.s * 0.6)
       this.generatedColors.grayscale = [
-        this.hslToHex(0, 0, hsl.l),
-        this.hslToHex(0, 0, Math.max(hsl.l - 20, 5)),
-        this.hslToHex(0, 0, Math.max(hsl.l - 40, 5)),
-        this.hslToHex(0, 0, Math.min(hsl.l + 25, 95))
+        this.hslToHex(0, 0, grayscaleLight),
+        this.hslToHex(0, 0, Math.max(grayscaleLight - 10, 5)),
+        this.hslToHex(0, 0, Math.max(grayscaleLight - 20, 5)),
+        this.hslToHex(0, 0, Math.min(grayscaleLight + 15, 95))
       ]
     },
     invertColor(hex) {
