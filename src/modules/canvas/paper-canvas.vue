@@ -99,6 +99,7 @@ export default {
         const width = this.$refs.paper.offsetWidth
         const height = this.$refs.paper.offsetHeight
         this.$refs.overlayCanvas.resizeCanvas(width, height)
+        this.$refs.overlayCanvas.syncColor()
       }
 
       if (globalState.get('isNewUser')) {
@@ -108,9 +109,12 @@ export default {
         globalCanvasManager.loadCanvas(tabId)
         this.$nextTick(() => {
           this.$refs.drawingCanvas.updateCanvasDisplay()
+          this.$refs.drawingCanvas.syncColor()
+          this.$refs.drawingCanvas.syncBrush()
           const ctx = globalCanvasManager.getDrawingContext()
           if (ctx) {
             this.$refs.overlayCanvas.resizeCanvas(ctx.canvas.width, ctx.canvas.height)
+            this.$refs.overlayCanvas.syncColor()
           }
         })
       }
@@ -398,9 +402,12 @@ export default {
       globalCanvasManager.loadCanvas(tabId)
       this.$nextTick(() => {
         this.$refs.drawingCanvas.updateCanvasDisplay()
+        this.$refs.drawingCanvas.syncColor()
+        this.$refs.drawingCanvas.syncBrush()
         const width = ctx.canvas.width
         const height = ctx.canvas.height
         this.$refs.overlayCanvas.resizeCanvas(width, height)
+        this.$refs.overlayCanvas.syncColor()
       })
     }
   }

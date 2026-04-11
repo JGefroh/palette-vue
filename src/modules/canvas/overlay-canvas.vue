@@ -87,6 +87,7 @@ export default {
 
       inputHandler.onCommand('canvas-resize', (dimensions) => {
         this.resizeCanvas(dimensions.width, dimensions.height)
+        this.syncColor()
       })
     },
 

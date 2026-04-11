@@ -64,7 +64,6 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.initialize()
-      this.syncColor()
     })
   },
   methods: {
@@ -73,6 +72,8 @@ export default {
       globalCanvasManager.setDrawingContext(this.drawingCtx)
       this.resizeCanvas()
       this.updateCanvasDisplay()
+      this.syncColor()
+      this.syncBrush()
     },
 
     getContext() {
