@@ -46,6 +46,7 @@ export default {
       if (tab) {
         globalState.set('selectedTab', tab)
         globalState.set('lastSelectedTabId', id)
+        document.activeElement?.blur()
       }
     },
     addTab(isWelcomeTab) {
@@ -117,6 +118,7 @@ export default {
   padding: 0 $space-sm;
   background-color: $surface-panel;
   backdrop-filter: $blur-panel;
+  user-select: none;
 }
 
 .tab {

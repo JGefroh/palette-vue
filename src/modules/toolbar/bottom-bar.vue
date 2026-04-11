@@ -106,6 +106,7 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
+  user-select: none;
 }
 
 .tool {

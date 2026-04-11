@@ -574,6 +574,7 @@ export default {
   left: 8px;
   transform: translateY(-50%);
   z-index: 101;
+  user-select: none;
 }
 
 .colors {
@@ -586,6 +587,7 @@ export default {
   box-shadow: $shadow-panel;
   backdrop-filter: $blur-panel;
   border-radius: $radius-panel;
+  user-select: none;
 }
 
 .color-placeholder {

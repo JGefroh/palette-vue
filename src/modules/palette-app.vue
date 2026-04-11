@@ -179,6 +179,7 @@ export default {
   align-items: center;
   border-bottom: 1px solid rgba(185, 185, 185, 0.2);
   backdrop-filter: $blur-panel;
+  user-select: none;
 }
 
 .nav-left {
