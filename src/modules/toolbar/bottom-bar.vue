@@ -4,6 +4,9 @@
     <button class="tool" @click="zoomToFit" title="Zoom to Fit (Shift+1)">
       <span class="fa fa-fw fa-maximize"></span>
     </button>
+    <button class="tool" @click="zoomReset" title="Zoom Reset (Shift+2)">
+      <span class="fa fa-fw fa-compress"></span>
+    </button>
     <div class="divider"></div>
     <UndoButton />
     <RedoButton />
@@ -90,6 +93,9 @@ export default {
   methods: {
     zoomToFit() {
       inputHandler.dispatchCommand('zoom-to-fit')
+    },
+    zoomReset() {
+      inputHandler.dispatchCommand('zoom-reset')
     }
   }
 }

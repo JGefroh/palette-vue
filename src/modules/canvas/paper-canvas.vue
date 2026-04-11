@@ -164,6 +164,10 @@ export default {
       inputHandler.onCommand('zoom-to-fit', () => {
         this.zoomToFit()
       })
+
+      inputHandler.onCommand('zoom-reset', () => {
+        this.zoomReset()
+      })
     },
 
     zoomToFit() {
@@ -180,6 +184,20 @@ export default {
       this.zoom = Math.min(zoomX, zoomY, 8)
       this.panX = (viewportWidth - canvasWidth * this.zoom) / 2
       this.panY = (viewportHeight - canvasHeight * this.zoom) / 2
+    },
+
+    zoomReset() {
+      const ctx = globalCanvasManager.getDrawingContext()
+      if (!ctx) return
+
+      const canvasWidth = ctx.canvas.width
+      const canvasHeight = ctx.canvas.height
+      const viewportWidth = this.$refs.paper.offsetWidth
+      const viewportHeight = this.$refs.paper.offsetHeight
+
+      this.zoom = 1
+      this.panX = (viewportWidth - canvasWidth) / 2
+      this.panY = (viewportHeight - canvasHeight) / 2
     },
 
     fitImage(src) {

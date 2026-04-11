@@ -50,6 +50,7 @@ class Shortcuts {
 
     // Zoom shortcuts
     inputHandler.registerCommand('shift+!', 'zoom-to-fit')
+    inputHandler.registerCommand('shift+@', 'zoom-reset')
 
     // Help shortcuts
     inputHandler.registerCommand('f1', 'open-help')
