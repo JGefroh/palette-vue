@@ -4,6 +4,7 @@
       <div class="nav-left">
         <img src="../assets/favicon.ico" alt="Palette" class="favicon" @dblclick="dispatchClearColors" />
         Palette <span class="version">v0.1.0</span>
+        <AutosaveStatusBadge />
       </div>
       <a href="https://jgefroh.com" class="nav-right">Created by Joseph Gefroh</a>
     </div>
@@ -21,6 +22,7 @@ import ColorSelectBar from './colors/color-select-bar.vue'
 import BottomBar from './toolbar/bottom-bar.vue'
 import TabBar from './tabs/tab-bar.vue'
 import EyedropperPreview from './colors/eyedropper-preview.vue'
+import AutosaveStatusBadge from './autosave-status/autosave-status-badge.vue'
 import { globalState } from './persistence/global-state.js'
 import { globalCanvasManager } from './canvas/global-canvas-manager.js'
 import { globalToolManager } from './tools/global-tool-manager.js'
@@ -35,6 +37,7 @@ import { Paste } from './tools/paste.js'
 import { Eyedropper } from './tools/eyedropper.js'
 import { Fill } from './tools/fill.js'
 import { shortcuts } from './input/shortcuts.js'
+import { autosaveMonitor } from './autosave-status/autosave-monitor.js'
 
 
 export default {
@@ -43,7 +46,8 @@ export default {
     ColorSelectBar,
     BottomBar,
     TabBar,
-    EyedropperPreview
+    EyedropperPreview,
+    AutosaveStatusBadge
   },
   data() {
     return {}
@@ -69,7 +73,11 @@ export default {
   methods: {
     initializeAutosave() {
       setInterval(() => {
-        globalState.saveState();
+        try {
+          globalState.saveState();
+        } catch (error) {
+          autosaveMonitor.reportSaveFailure(error);
+        }
       }, 500);
     },
     initializeShortcuts() {
