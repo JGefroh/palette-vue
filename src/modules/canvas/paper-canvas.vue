@@ -13,16 +13,22 @@
       :paper-height="paperHeight"
     ></minimap>
     <div v-if="isDragging" class="drop-overlay">
-      <div class="drop-zone drop-zone--left" @dragover.prevent="hoveredZone = 'left'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'left' }" style="flex: 2">
+      <div class="drop-zone drop-zone--left" @dragover.prevent="hoveredZone = 'left'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'left' }" style="flex: 1">
         <div class="drop-zone__content">
           <div class="drop-zone__icon">⊟</div>
           <div class="drop-zone__label">Fit to Canvas</div>
         </div>
       </div>
-      <div class="drop-zone drop-zone--middle" @dragover.prevent="hoveredZone = 'original'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'original' }" style="flex: 2">
+      <div class="drop-zone drop-zone--middle" @dragover.prevent="hoveredZone = 'original'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'original' }" style="flex: 1">
         <div class="drop-zone__content">
           <div class="drop-zone__icon">⊕</div>
           <div class="drop-zone__label">Original Size</div>
+        </div>
+      </div>
+      <div class="drop-zone drop-zone--middle" @dragover.prevent="hoveredZone = 'fill'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'fill' }" style="flex: 1">
+        <div class="drop-zone__content">
+          <div class="drop-zone__icon">⬚</div>
+          <div class="drop-zone__label">Fill Canvas</div>
         </div>
       </div>
       <div class="drop-zone drop-zone--right" @dragover.prevent="hoveredZone = 'edge'" @dragleave="hoveredZone = null" :class="{ 'drop-zone--active': hoveredZone === 'edge' }" style="flex: 1">
@@ -369,6 +375,13 @@ export default {
           const y = (ch - img.height) / 2
           drawingCtx.drawImage(img, x, y)
           bounds = { x, y, width: img.width, height: img.height }
+        } else if (zone === 'fill') {
+          // Fill canvas
+          const scale = Math.max(cw / img.width, ch / img.height)
+          const x = (cw - img.width * scale) / 2
+          const y = (ch - img.height * scale) / 2
+          drawingCtx.drawImage(img, x, y, img.width * scale, img.height * scale)
+          bounds = { x, y, width: img.width * scale, height: img.height * scale }
         } else if (zone === 'edge') {
           // Edge detection with fit to canvas
           const scale = Math.min(cw / img.width, ch / img.height)
@@ -520,6 +533,10 @@ export default {
 
   &--middle {
     border-right: 1px solid rgba(185, 185, 185, 0.3);
+  }
+
+  &--right {
+    border-right: none;
   }
 
   &__content {
