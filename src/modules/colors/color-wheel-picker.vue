@@ -32,6 +32,7 @@
                   v-for="hex in generatedColors[key]"
                   :key="hex"
                   :hex="hex"
+                  :is-duplicate="isDuplicateColor(hex)"
                   @add-color="addColorToBar(hex, $event)"
                   @hover="previewColor = $event"
                   @unhover="previewColor = null"
@@ -60,6 +61,10 @@ export default {
     selectedColor: {
       type: String,
       default: null
+    },
+    existingColors: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -359,6 +364,9 @@ export default {
       const g = 255 - parseInt(hex.slice(3, 5), 16)
       const b = 255 - parseInt(hex.slice(5, 7), 16)
       return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase()
+    },
+    isDuplicateColor(hex) {
+      return this.existingColors.some(c => c.hex.toUpperCase() === hex.toUpperCase())
     },
     hexToHsl(hex) {
       const r = parseInt(hex.slice(1, 3), 16) / 255

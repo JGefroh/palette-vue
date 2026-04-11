@@ -37,7 +37,7 @@
       </button>
     </div>
     </div>
-    <ColorWheelPicker v-if="isPickerOpen" :initial-color="selectedColor.hex" :selected-color="selectedColor.hex" @color-picked="handleColorPicked" @close="isPickerOpen = false" />
+    <ColorWheelPicker v-if="isPickerOpen" :initial-color="selectedColor.hex" :selected-color="selectedColor.hex" :existing-colors="colors" @color-picked="handleColorPicked" @close="isPickerOpen = false" />
     <ThemeModal v-if="isThemeModalOpen" @theme-selected="applyTheme" @close="isThemeModalOpen = false" />
   </div>
 </template>
