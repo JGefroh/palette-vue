@@ -1,6 +1,9 @@
 <template>
   <div class="toolbar">
     <DownloadButton />
+    <button class="tool" @click="zoomToFit" title="Zoom to Fit (Shift+1)">
+      <span class="fa fa-fw fa-maximize"></span>
+    </button>
     <div class="divider"></div>
     <UndoButton />
     <RedoButton />
@@ -83,6 +86,11 @@ export default {
         globalState.set('selectedSize', this.brushSizes[currentIndex - 1])
       }
     })
+  },
+  methods: {
+    zoomToFit() {
+      inputHandler.dispatchCommand('zoom-to-fit')
+    }
   }
 }
 </script>

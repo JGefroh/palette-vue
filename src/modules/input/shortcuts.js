@@ -29,6 +29,7 @@ class Shortcuts {
 
     // Tool shortcuts
     inputHandler.registerCommand('b', 'select-tool-Brush')
+    inputHandler.registerCommand('esc', 'select-tool-Brush')
     inputHandler.registerCommand('r', 'select-tool-Rectangle')
     inputHandler.registerCommand('c', 'select-tool-Circle')
     inputHandler.registerCommand('l', 'select-tool-Line')

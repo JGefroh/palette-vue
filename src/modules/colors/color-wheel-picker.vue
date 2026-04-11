@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div v-if="isVisible" class="color-wheel-panel" :class="{ 'fade-out': !isVisible }">
       <div class="panel-header">
-        <h3>Pick a Color</h3>
+        <h3>Add colors</h3>
       </div>
       <div class="panel-content">
         <div class="wheel-section">
@@ -437,7 +437,6 @@ export default {
   font-size: $font-size-body;
   color: $color-primary;
   font-weight: $font-weight-semibold;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -526,9 +525,8 @@ canvas {
 
 .section-label {
   font-size: $font-size-body;
-  color: $color-tertiary;
-  font-weight: $font-weight-semibold;
-  text-transform: uppercase;
+  color: $color-secondary;
+  font-weight: $font-weight-medium;
   letter-spacing: 0.5px;
   text-align: center;
 }
