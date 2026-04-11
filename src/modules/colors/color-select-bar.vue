@@ -8,7 +8,7 @@
       <div class="colors">
       <button
         v-for="(color, index) in colors"
-        :key="color.hex"
+        :key="`${color.hex}-${index}`"
         class="color"
         :class="{ selected: color.hex === selectedColor.hex, dragging: draggedIndex === index, dragOver: dragOverIndex === index }"
         :style="{
@@ -29,15 +29,15 @@
       <button class="color color-eyedropper" :class="{ active: isEyedropperActive }" @click="toggleEyedropper" title="Eyedropper">
         <span class="fa fa-fw fa-eyedropper"></span>
       </button>
-      <button class="color color-add" :class="{ active: isPickerOpen }" @click="showColorPicker">
-        <span class="fa fa-fw fa-plus"></span>
-      </button>
       <button class="color color-sort" @click="cycleSortMode" :title="`Sort: ${currentSortMode}`">
         <span class="fa fa-fw fa-sort"></span>
         <span class="fa fa-fw" :class="sortModeIcon"></span>
       </button>
       <button class="color color-settings" @click="showThemeModal">
         <span class="fa fa-fw fa-cog"></span>
+      </button>
+      <button class="color color-add" :class="{ active: isPickerOpen }" @click="showColorPicker">
+        <span class="fa fa-fw fa-plus"></span>
       </button>
     </div>
     </div>
