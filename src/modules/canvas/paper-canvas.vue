@@ -138,6 +138,26 @@ export default {
       inputHandler.onCommand('pan', (e) => {
         this.adjustPan(e)
       })
+
+      inputHandler.onCommand('zoom-to-fit', () => {
+        this.zoomToFit()
+      })
+    },
+
+    zoomToFit() {
+      const ctx = globalCanvasManager.getDrawingContext()
+      if (!ctx) return
+
+      const canvasWidth = ctx.canvas.width
+      const canvasHeight = ctx.canvas.height
+      const viewportWidth = this.$refs.paper.offsetWidth
+      const viewportHeight = this.$refs.paper.offsetHeight
+
+      const zoomX = viewportWidth / canvasWidth
+      const zoomY = viewportHeight / canvasHeight
+      this.zoom = Math.min(zoomX, zoomY, 8)
+      this.panX = (viewportWidth - canvasWidth * this.zoom) / 2
+      this.panY = (viewportHeight - canvasHeight * this.zoom) / 2
     },
 
     fitImage(src) {
@@ -345,7 +365,7 @@ export default {
     },
 
     adjustZoom(event) {
-      const factor = event.deltaY < 0 ? 1.1 : 0.9
+      const factor = event.deltaY < 0 ? 1.05 : 0.95
       const newZoom = Math.max(0.1, Math.min(8, this.zoom * factor))
       const rect = this.$refs.paper.getBoundingClientRect()
       const relX = event.clientX - rect.left

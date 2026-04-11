@@ -47,6 +47,9 @@ class Shortcuts {
     inputHandler.registerKeyCombo('shift_press', 'enableSnap')
     inputHandler.registerKeyCombo('shift_release', 'disableSnap')
 
+    // Zoom shortcuts
+    inputHandler.registerCommand('shift+!', 'zoom-to-fit')
+
     // Rectangle shortcuts
     inputHandler.registerKeyCombo('shift_press', 'constrainSquare')
     inputHandler.registerKeyCombo('shift_release', 'unconstrainSquare')
