@@ -1,7 +1,7 @@
 <template>
   <div class="drawing-container">
     <canvas ref="drawing" class="drawing"></canvas>
-    <div class="canvas-dimensions">{{ canvasWidth }}px × {{ canvasHeight }}px</div>
+    <div class="canvas-dimensions">{{ canvasWidth }}px × {{ canvasHeight }}px • AR {{ aspectRatio }} • DPR {{ devicePixelRatio }}</div>
   </div>
 </template>
 
@@ -30,6 +30,15 @@ export default {
         selectedColor: globalState.get('selectedColor'),
         selectedSize: globalState.get('selectedSize')
       }
+    },
+    devicePixelRatio() {
+      return window.devicePixelRatio?.toFixed(1) || '1.0'
+    },
+    aspectRatio() {
+      if (!this.canvasWidth || !this.canvasHeight) return '—'
+      const gcd = (a, b) => b === 0 ? a : gcd(b, a % b)
+      const divisor = gcd(this.canvasWidth, this.canvasHeight)
+      return `${this.canvasWidth / divisor}:${this.canvasHeight / divisor}`
     }
   },
   mounted() {
