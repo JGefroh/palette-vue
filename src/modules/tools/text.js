@@ -29,6 +29,7 @@ export class Text {
     this.selectionEnd = null
 
     this.currentStyles = { bold: false, italic: false, underline: false, font: 'Montserrat', color: null }
+    this.lastFont = 'Montserrat'
 
     this.blinkInterval = null
     this.blinkVisible = true
@@ -95,7 +96,7 @@ export class Text {
       this.cursor = 0
       this.selectionStart = null
       this.selectionEnd = null
-      this.currentStyles = { bold: false, italic: false, underline: false, font: 'Montserrat', color: null }
+      this.currentStyles = { bold: false, italic: false, underline: false, font: this.lastFont, color: null }
 
       this.syncPanelState()
       this.startKeyCapture()
@@ -707,6 +708,7 @@ export class Text {
       }
     }
     this.currentStyles.font = font
+    this.lastFont = font
     this.syncPanelState()
     this.renderOverlay()
   }
