@@ -11,6 +11,7 @@
 
 <script>
 import HelpModal from './help-modal.vue'
+import { inputHandler } from '../input/input-handler.js'
 
 export default {
   components: {
@@ -20,6 +21,11 @@ export default {
     return {
       showModal: false
     }
+  },
+  mounted() {
+    inputHandler.onCommand('open-help', () => {
+      this.showModal = true
+    })
   }
 }
 </script>

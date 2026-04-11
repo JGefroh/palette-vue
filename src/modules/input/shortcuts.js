@@ -51,6 +51,10 @@ class Shortcuts {
     // Zoom shortcuts
     inputHandler.registerCommand('shift+!', 'zoom-to-fit')
 
+    // Help shortcuts
+    inputHandler.registerCommand('f1', 'open-help')
+    inputHandler.registerCommand('h', 'open-help')
+
     // Rectangle shortcuts
     inputHandler.registerKeyCombo('shift_press', 'constrainSquare')
     inputHandler.registerKeyCombo('shift_release', 'unconstrainSquare')
