@@ -29,7 +29,7 @@
       <button class="color color-eyedropper" :class="{ active: isEyedropperActive }" @click="toggleEyedropper" title="Eyedropper">
         <span class="fa fa-fw fa-eyedropper"></span>
       </button>
-      <button class="color color-add" :class="{ hidden: isPickerOpen }" @click="showColorPicker">
+      <button class="color color-add" :class="{ active: isPickerOpen }" @click="showColorPicker">
         <span class="fa fa-fw fa-plus"></span>
       </button>
       <button class="color color-settings" @click="showThemeModal">
@@ -45,6 +45,7 @@
 <script>
 import { globalState } from '../persistence/global-state.js'
 import { inputHandler } from '../input/input-handler.js'
+import { globalToolManager } from '../tools/global-tool-manager.js'
 import { particleEffect } from './particle-effect.js'
 import { eyedropperPreviewState } from '../tools/eyedropper.js'
 import { ImageColorExtractor } from './image-color-extractor.js'
@@ -158,6 +159,16 @@ export default {
     },
     isEyedropperActive() {
       return globalState.get('selectedTool')?.name === 'Eyedropper'
+    },
+    currentSelectedTool() {
+      return globalState.get('selectedTool')
+    }
+  },
+  watch: {
+    currentSelectedTool(newTool) {
+      if (newTool && newTool.name !== 'ColorPicker' && this.isPickerOpen) {
+        this.isPickerOpen = false
+      }
     }
   },
   methods: {
@@ -212,7 +223,13 @@ export default {
       globalState.set('color-numbers', this.colorNumbers);
     },
     showColorPicker() {
-      this.isPickerOpen = true
+      if (this.isPickerOpen) {
+        this.isPickerOpen = false
+        globalToolManager.deselectTool()
+      } else {
+        this.isPickerOpen = true
+        globalToolManager.deselectTool()
+      }
     },
     toggleEyedropper() {
       inputHandler.dispatchCommand('toggle-eyedropper')
@@ -543,6 +560,12 @@ export default {
   @include tool-button;
 }
 
+.color-add.active {
+  background-color: rgba(52, 73, 94, 0.2);
+  border-color: $border-color-active;
+  color: #2c3e50;
+}
+
 .color-settings {
   @include tool-button;
 }
@@ -559,11 +582,6 @@ export default {
 
 .color.disabled {
   visibility: hidden;
-}
-
-.color-add.hidden {
-  visibility: hidden;
-  transition: none;
 }
 
 .image-drop-overlay {
