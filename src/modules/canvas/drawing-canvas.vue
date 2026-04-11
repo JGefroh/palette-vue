@@ -1,5 +1,8 @@
 <template>
-  <canvas ref="drawing" class="drawing"></canvas>
+  <div class="drawing-container">
+    <canvas ref="drawing" class="drawing"></canvas>
+    <div class="canvas-dimensions">{{ canvasWidth }}px × {{ canvasHeight }}px</div>
+  </div>
 </template>
 
 <script>
@@ -10,7 +13,9 @@ import { inputHandler } from '../input/input-handler.js'
 export default {
   data() {
     return {
-      drawingCtx: null
+      drawingCtx: null,
+      canvasWidth: 0,
+      canvasHeight: 0
     }
   },
   watch: {
@@ -84,6 +89,8 @@ export default {
       const parentEl = this.$refs.drawing.parentElement.parentElement
       this.drawingCtx.canvas.width = parentEl.offsetWidth
       this.drawingCtx.canvas.height = parentEl.offsetHeight
+      this.canvasWidth = this.drawingCtx.canvas.width
+      this.canvasHeight = this.drawingCtx.canvas.height
       if (drawing) {
         this.drawingCtx.putImageData(drawing, 0, 0)
       }
@@ -109,15 +116,31 @@ export default {
 </script>
 
 <style scoped>
-.drawing {
-  display: block;
+.drawing-container {
   position: absolute;
   top: 0;
   left: 0;
-  cursor: crosshair;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawing {
+  display: block;
+  flex: 1;
+  cursor: crosshair;
   z-index: 1;
   background-color: white;
+}
+
+.canvas-dimensions {
+  font-family: monospace;
+  font-size: 16px;
+  color: #888;
+  font-weight: 500;
+  padding: 4px 8px;
+  background-color: #c8c8c8;
+  text-align: left;
 }
 </style>
