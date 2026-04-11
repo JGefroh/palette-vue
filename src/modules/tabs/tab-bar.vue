@@ -47,6 +47,11 @@ export default {
         globalState.set('selectedTab', tab)
         globalState.set('lastSelectedTabId', id)
         document.activeElement?.blur()
+        this.$nextTick(() => {
+          setTimeout(() => {
+            inputHandler.dispatchCommand('zoom-to-fit')
+          }, 50)
+        })
       }
     },
     addTab(isWelcomeTab) {
