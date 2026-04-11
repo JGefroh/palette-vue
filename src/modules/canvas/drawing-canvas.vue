@@ -215,7 +215,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 6px solid rgba(185, 185, 185, 0.9);
+  border: none;
   background-color: transparent;
   color: $color-primary;
   border-radius: $radius-button;
@@ -224,16 +224,23 @@ export default {
   font-size: 30px;
   outline: none;
   z-index: 3;
+  transition: opacity 0.3s ease;
 }
 
 .extend-canvas-btn:hover {
-  background-color: $btn-hover-bg;
-  border-color: $border-color-hover;
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .extend-canvas-icon {
   font-size: 60px;
   line-height: 1;
+  color: rgba(185, 185, 185, 0.8);
+  transition: color 0.3s ease;
+}
+
+.extend-canvas-btn:hover .extend-canvas-icon {
+  color: rgba(185, 185, 185, 0.95);
 }
 
 </style>
