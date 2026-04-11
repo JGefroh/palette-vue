@@ -47,10 +47,6 @@
 </template>
 
 <script>
-import { globalState } from '../persistence/global-state.js'
-import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
-import { inputHandler } from '../input/input-handler.js'
-
 export default {
   props: {
     isOpen: {
@@ -60,30 +56,17 @@ export default {
     drawingCtx: {
       type: Object,
       default: null
+    },
+    setCanvasDimensions: {
+      type: Function,
+      default: null
     }
   },
   emits: ['close'],
   methods: {
     selectPreset(width, height, presetName) {
-      if (!this.drawingCtx) return
-
-      const drawing = this.drawingCtx.getImageData(0, 0, this.drawingCtx.canvas.width, this.drawingCtx.canvas.height)
-      this.drawingCtx.canvas.width = width
-      this.drawingCtx.canvas.height = height
-      this.drawingCtx.putImageData(drawing, 0, 0)
-
-      // Sync canvas state
-      const color = globalState.get('selectedColor')
-      this.drawingCtx.strokeStyle = color.hex
-      this.drawingCtx.fillStyle = color.hex
-      const size = globalState.get('selectedSize')
-      this.drawingCtx.lineWidth = size
-      this.drawingCtx.lineCap = 'round'
-      this.drawingCtx.lineJoin = 'round'
-
-      globalCanvasManager.persistCanvas(globalState.get('selectedTab').id)
-      inputHandler.dispatchCommand('canvas-resize', { width, height })
-      inputHandler.dispatchCommand('zoom-to-fit')
+      if (!this.setCanvasDimensions) return
+      this.setCanvasDimensions(width, height)
       this.$emit('close')
     }
   }

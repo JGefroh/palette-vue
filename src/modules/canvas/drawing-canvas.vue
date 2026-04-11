@@ -12,7 +12,7 @@
         <span class="fa fa-fw fa-images"></span>
       </button>
       <div class="dimensions-text">{{ canvasWidth }}px × {{ canvasHeight }}px • AR {{ aspectRatio }} • DPR {{ devicePixelRatio }}</div>
-      <social-media-preset-menu :is-open="showPresetMenu" :drawing-ctx="drawingCtx" @close="showPresetMenu = false" />
+      <social-media-preset-menu :is-open="showPresetMenu" :drawing-ctx="drawingCtx" :set-canvas-dimensions="setCanvasDimensions" @close="showPresetMenu = false" />
     </div>
   </div>
 </template>
@@ -157,6 +157,22 @@ export default {
       this.canvasHeight = this.drawingCtx.canvas.height
       this.$refs.drawing.style.width = this.canvasWidth + 'px'
       this.$refs.drawing.style.height = this.canvasHeight + 'px'
+    },
+
+    setCanvasDimensions(width, height) {
+      const drawing = this.drawingCtx.getImageData(0, 0, this.drawingCtx.canvas.width, this.drawingCtx.canvas.height)
+      this.drawingCtx.canvas.width = width
+      this.drawingCtx.canvas.height = height
+      this.canvasWidth = width
+      this.canvasHeight = height
+      this.$refs.drawing.style.width = this.canvasWidth + 'px'
+      this.$refs.drawing.style.height = this.canvasHeight + 'px'
+      this.drawingCtx.putImageData(drawing, 0, 0)
+      this.syncColor()
+      this.syncBrush()
+      globalCanvasManager.persistCanvas(globalState.get('selectedTab').id)
+      inputHandler.dispatchCommand('canvas-resize', { width: this.canvasWidth, height: this.canvasHeight })
+      inputHandler.dispatchCommand('zoom-to-fit')
     },
 
     doubleWidth() {
