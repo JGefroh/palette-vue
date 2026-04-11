@@ -8,7 +8,11 @@
       <div class="extend-canvas-icon">▶</div>
     </button>
     <div class="canvas-dimensions">
+      <button class="social-preset-btn" @click="showPresetMenu = !showPresetMenu" title="Social media presets">
+        <span class="fa fa-fw fa-images"></span>
+      </button>
       <div class="dimensions-text">{{ canvasWidth }}px × {{ canvasHeight }}px • AR {{ aspectRatio }} • DPR {{ devicePixelRatio }}</div>
+      <social-media-preset-menu :is-open="showPresetMenu" :drawing-ctx="drawingCtx" @close="showPresetMenu = false" />
     </div>
   </div>
 </template>
@@ -17,13 +21,18 @@
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../input/input-handler.js'
+import SocialMediaPresetMenu from './social-media-preset-menu.vue'
 
 export default {
+  components: {
+    SocialMediaPresetMenu
+  },
   data() {
     return {
       drawingCtx: null,
       canvasWidth: 0,
-      canvasHeight: 0
+      canvasHeight: 0,
+      showPresetMenu: false
     }
   },
   watch: {
@@ -68,6 +77,10 @@ export default {
     this.$nextTick(() => {
       this.initialize()
     })
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
     initialize() {
@@ -168,6 +181,12 @@ export default {
       this.syncBrush()
       globalCanvasManager.persistCanvas(globalState.get('selectedTab').id)
       inputHandler.dispatchCommand('canvas-resize', { width: this.canvasWidth, height: this.canvasHeight })
+    },
+
+    handleClickOutside(e) {
+      if (this.showPresetMenu && !e.target.closest('.canvas-dimensions')) {
+        this.showPresetMenu = false
+      }
     }
   }
 }
@@ -175,6 +194,7 @@ export default {
 
 <style scoped lang="scss">
 @import '../../styles/variables';
+@import '../../styles/mixins';
 .drawing-container {
   position: absolute;
   top: 0;
@@ -193,17 +213,21 @@ export default {
 }
 
 .canvas-dimensions {
+  position: relative;
   font-family: monospace;
   font-size: 16px;
   color: #888;
   font-weight: 500;
-  padding: 4px 8px;
+  padding: 4px 8px 4px 0;
   background-color: #c8c8c8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .dimensions-text {
-  position: absolute;
-  left: 8px;
+  flex: 1;
+  padding-left: 8px;
 }
 
 .extend-canvas-btn {
@@ -241,6 +265,25 @@ export default {
 
 .extend-canvas-btn:hover .extend-canvas-icon {
   color: rgba(185, 185, 185, 0.95);
+}
+
+.social-preset-btn {
+  position: relative;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: $border-default;
+  background-color: transparent;
+  color: $color-primary;
+  border-radius: $radius-button;
+  cursor: pointer;
+  font-family: $font-primary;
+  font-size: 12px;
+  transition: $transition-default;
+}
+
+.social-preset-btn:hover {
+  background-color: $btn-hover-bg;
+  border-color: $border-color-hover;
 }
 
 </style>

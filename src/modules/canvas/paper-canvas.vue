@@ -133,6 +133,7 @@ export default {
             this.$refs.overlayCanvas.resizeCanvas(ctx.canvas.width, ctx.canvas.height)
             this.$refs.overlayCanvas.syncColor()
           }
+          inputHandler.dispatchCommand('zoom-to-fit')
         })
       }
     },
