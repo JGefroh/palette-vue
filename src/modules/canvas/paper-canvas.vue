@@ -4,7 +4,7 @@
       <overlay-canvas ref="overlayCanvas"></overlay-canvas>
       <drawing-canvas ref="drawingCanvas"></drawing-canvas>
     </div>
-    <text-options-panel ref="textOptionsPanel" :zoom="zoom" :pan-x="panX" :pan-y="panY"></text-options-panel>
+    <text-options ref="textOptionsPanel" :zoom="zoom" :pan-x="panX" :pan-y="panY"></text-options>
     <minimap
       :zoom="zoom"
       :pan-x="panX"
@@ -44,7 +44,7 @@
 <script>
 import OverlayCanvas from './overlay-canvas.vue'
 import DrawingCanvas from './drawing-canvas.vue'
-import TextOptionsPanel from './text-options-panel.vue'
+import TextOptions from '../toolbar/text-options.vue'
 import Minimap from './minimap.vue'
 import { globalCursorManager } from '../input/global-cursor-manager.js'
 import { globalState } from '../persistence/global-state.js'
@@ -56,7 +56,7 @@ export default {
   components: {
     OverlayCanvas,
     DrawingCanvas,
-    TextOptionsPanel,
+    TextOptions,
     Minimap
   },
   emits: ['on-initialize', 'on-stroke-start'],

@@ -94,7 +94,7 @@ import { globalState } from '../persistence/global-state.js'
 import { textToolState } from '../tools/text.js'
 
 export default {
-  name: 'TextOptionsPanel',
+  name: 'TextOptions',
   props: {
     zoom: {
       type: Number,
