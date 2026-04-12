@@ -2,7 +2,7 @@
     Palette
 </h1>
 <p align="center">
-    An intuitive, uncluttered web-based drawing tool for quick doodles, conceptual diagrams, and markups.
+    An intuitive, uncluttered web-based drawing tool for quick doodles, markups, and visual thinking.
     <br/><br/>
     <a href="https://palette.jgefroh.com"/>Live Site</a>
 </p>
@@ -13,7 +13,9 @@
 
 # Intro
 
-Palette is designed for creating quick doodles, markups, wireframes, and diagrams with precision and ease.
+Get your visual thoughts out fast - no login, no install, no friction. Works anywhere a browser does: especially useful on Apple Mac where you don't have Paint.
+
+Get a visual thought out of your head before you're forced to switch context!
 
 <br/>
 
@@ -22,21 +24,18 @@ Palette is designed for creating quick doodles, markups, wireframes, and diagram
 </p>
 
 ## Key Features
-* Simple drawing — Brush, lines, rectangles, circles w/ varied line styles
-* Quality of Life - Consistent keyboard shortcuts, automatic arrows, auto-saving with local persistence
-* Color control — Custom colors, included themes, eyedrop sampling, fill, and automatic image color extraction
-* Object manipulation — Full selection, rotation, and resizing, with copy, cut, and paste
-* Text support - font-size, color, style, and alignment support with as-expected keyboard controls
-* Multi-image support - create new tabs for new images, go back to old ones
-* Easy import — Native drag-and-drop for external image import
-* Full undo/redo — Complete operation history support
+* **Sketch without friction** — No login, no install, no account. Open https://palette.jgefroh.com and draw immediately
+* **No struggle drawing** - Don't worry about layers, objects, or grouping - just draw
+* **30-second thinking** — Keyboard shortcuts for everything - get your idea out before context-switching
+* **Markup anything** — Annotate screenshots and images without leaving the browser - just drag, drop, and draw
+* **Everything stays local** — No cloud, no tracking, no data sent anywhere. Works offline after first load
 
 
 ## Screenshots
 
 | <img width="2044" height="1090" alt="Screenshot 2026-04-11 at 9 57 07 AM" src="https://github.com/user-attachments/assets/9dc3e78c-dc42-4ca4-ade2-fcbed50ef1ed" /> |
 |:--:|
-| _Rapidly communicate concepts via diagrams_ |
+| _Rapidly communicate concepts via sketches_ |
 
 | <img width="2039" height="1053" alt="Screenshot 2026-04-11 at 9 50 59 AM" src="https://github.com/user-attachments/assets/078a61d4-99fd-4d91-be2d-67139a6581c6" /> |
 |:--:|
