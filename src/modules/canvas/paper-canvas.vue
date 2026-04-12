@@ -45,7 +45,7 @@
 import OverlayCanvas from './overlay-canvas.vue'
 import DrawingCanvas from './drawing-canvas.vue'
 import TextOptions from '../toolbar/text-options.vue'
-import Minimap from './minimap.vue'
+import Minimap from '../minimap/minimap.vue'
 import { globalCursorManager } from '../input/global-cursor-manager.js'
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
