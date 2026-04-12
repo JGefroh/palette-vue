@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024
-const STORAGE_WARNING_THRESHOLD = 0.8
+const STORAGE_WARNING_THRESHOLD = 0.50
 
 class AutosaveMonitor {
   constructor() {
@@ -11,6 +11,24 @@ class AutosaveMonitor {
     })
     this.lastError = null
     this.checkInterval = null
+    this.messages = {
+      "enabled": {
+        state: 'enabled',
+        message: "Autosave enabled"
+      },
+      "near-limit": {
+        state: 'near-limit',
+        message: "{{percentageRemaining}}% storage remaining"
+      },
+      "no-storage": {
+        state: 'no-storage',
+        message: 'Autosave failing - no storage left'
+      },
+      "unavailable": {
+        state: 'unavailable',
+        message: 'Autosave failing - storage unavailable'
+      }
+    }
   }
 
   start() {
@@ -40,23 +58,14 @@ class AutosaveMonitor {
       const percentageRemaining = Math.round((1 - usageRatio) * 100)
 
       if (usageRatio >= STORAGE_WARNING_THRESHOLD) {
-        this.status.state = 'near-limit'
-        this.status.message = `${percentageRemaining}% storage remaining`
+        this.setState('near-limit', {"percentageRemaining": percentageRemaining});
       } else {
-        this.status.state = 'enabled'
-        this.status.message = 'Autosave enabled'
+        this.setState('enabled')
       }
 
       this.lastError = null
     } catch (error) {
-      if (error.name === 'QuotaExceededError') {
-        this.status.state = 'no-storage'
-        this.status.message = 'Autosave failing - no storage left'
-      } else {
-        this.status.state = 'unavailable'
-        this.status.message = 'Autosave failing - storage unavailable'
-      }
-      this.lastError = error
+      this.reportSaveFailure(error)
     }
   }
 
@@ -84,13 +93,28 @@ class AutosaveMonitor {
 
   reportSaveFailure(error) {
     if (error.name === 'QuotaExceededError') {
-      this.status.state = 'no-storage'
-      this.status.message = 'Autosave failing - no storage left'
+      this.setState('no-storage');
     } else {
-      this.status.state = 'unavailable'
-      this.status.message = 'Autosave failing - storage unavailable'
+      this.setState('unavailable');
     }
     this.lastError = error
+  }
+
+  setState(stateKey, stateParams) {
+    const state = this.messages[stateKey];
+    if (!state) {
+      return;
+    }
+    this.status.state = state.state;
+    let message = state.message;
+
+    if (stateParams) {
+      Object.keys(stateParams).forEach((key) => {
+        message = message.replace(`{{${key}}}`, stateParams[key]);
+      });
+    }
+
+    this.status.message = message;
   }
 }
 
