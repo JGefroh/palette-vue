@@ -8,11 +8,11 @@
       <div class="extend-canvas-icon">▶</div>
     </button>
     <div class="canvas-dimensions">
-      <button class="social-preset-btn" @click="showPresetMenu = !showPresetMenu" title="Social media presets">
+      <button class="canvas-size-preset-btn" @click="showPresetMenu = !showPresetMenu" title="Canvas size presets">
         <span class="fa fa-fw fa-images"></span>
       </button>
       <div class="dimensions-text">{{ canvasWidth }}px × {{ canvasHeight }}px • AR {{ aspectRatio }} • DPR {{ devicePixelRatio }}</div>
-      <social-media-preset-menu :is-open="showPresetMenu" :drawing-ctx="drawingCtx" :set-canvas-dimensions="setCanvasDimensions" @close="showPresetMenu = false" />
+      <canvas-size-preset-menu :is-open="showPresetMenu" :drawing-ctx="drawingCtx" :set-canvas-dimensions="setCanvasDimensions" @close="showPresetMenu = false" />
     </div>
   </div>
 </template>
@@ -21,11 +21,11 @@
 import { globalState } from '../persistence/global-state.js'
 import { globalCanvasManager } from '../canvas/global-canvas-manager.js'
 import { inputHandler } from '../input/input-handler.js'
-import SocialMediaPresetMenu from './social-media-preset-menu.vue'
+import CanvasSizePresetMenu from './canvas-size-preset-menu.vue'
 
 export default {
   components: {
-    SocialMediaPresetMenu
+    CanvasSizePresetMenu
   },
   data() {
     return {
@@ -283,7 +283,7 @@ export default {
   color: rgba(185, 185, 185, 0.95);
 }
 
-.social-preset-btn {
+.canvas-size-preset-btn {
   position: relative;
   flex-shrink: 0;
   padding: 4px 8px;
@@ -297,7 +297,7 @@ export default {
   transition: $transition-default;
 }
 
-.social-preset-btn:hover {
+.canvas-size-preset-btn:hover {
   background-color: $btn-hover-bg;
   border-color: $border-color-hover;
 }
